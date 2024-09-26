@@ -10,10 +10,11 @@
 #import "AssetBindData.h"
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^HasCompressCallback)(BOOL hasCompressed);
 @interface AssetData : NSObject
 @property (strong, nonatomic, readonly) PHAsset *asset;
 @property (strong, nonatomic, readonly) NSNumber *fileSize;
-- (BOOL)isHasCompress;
+- (void)hasCompress:(HasCompressCallback)callback;
 - (void)setHasCompress:(bool)hasCompress;
 - (instancetype)initWithAsset:(PHAsset *)asset andNumber:(NSNumber *)fileSize;
 @end

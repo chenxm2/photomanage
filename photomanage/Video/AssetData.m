@@ -6,9 +6,14 @@
 //
 
 #import "AssetData.h"
+#import "AssetBindData.h"
+
+typedef void (^AssetBindDataCallback)(AssetBindData *data);
+
 static NSString * const kIsCompress = @"";
 @interface AssetData ()
 @property (nonatomic, strong) NSNumber *isCompress;
+@property (nonatomic, strong) AssetBindData *assetBindData;
 @end
 
 @implementation AssetData
@@ -21,19 +26,57 @@ static NSString * const kIsCompress = @"";
     return self;
 }
 
-- (BOOL)isHasCompress {
-    if (self.isCompress == nil) {
-        self.isCompress =  [[NSUserDefaults standardUserDefaults] objectForKey:self.asset.localIdentifier];
-    }
-    
-    
-    return [self.isCompress boolValue];
+- (void)hasCompress:(HasCompressCallback)callback
+{
+    [self loadBindData:^(AssetBindData *data) {
+        callback([data.isCompress boolValue]);
+    }];
 }
 
 - (void)setHasCompress:(bool)hasCompress {
-    self.isCompress = [[NSNumber alloc] initWithBool:hasCompress];
-    [[NSUserDefaults standardUserDefaults] setObject:self.isCompress forKey:self.asset.localIdentifier];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self loadBindData:^(AssetBindData *data) {
+        [data setIsCompress:[NSNumber numberWithBool:hasCompress]];
+    }];
+}
+
+- (void)loadBindData:(AssetBindDataCallback)callback {
+    if (_assetBindData == nil) {
+        WEAK_SELF
+        [GCDUtility executeOnSerialQueue:^{
+            STRONG_SELF
+            if (strongSelf) {
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                NSData *savedData = [defaults objectForKey:strongSelf.asset.localIdentifier];
+                if (savedData) {
+                    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:savedData];
+                    AssetBindData *unarchivedAssetData = [unarchiver decodeObjectOfClass:[AssetBindData class] forKey:kAssetBindData];
+                    [unarchiver finishDecoding];
+                    if (unarchivedAssetData != nil) {
+                        [GCDUtility executeOnMainThread:^{
+                            callback(unarchivedAssetData);
+                        }];
+                    } else {
+                        AssetBindData *newData = [[AssetBindData alloc] init];
+                        newData.orgLocalIdentifier = strongSelf.asset.localIdentifier;
+                        [GCDUtility executeOnMainThread:^{
+                            callback(newData);
+                        }];
+                        
+                    }
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        AssetBindData *newData = [[AssetBindData alloc] init];
+                        newData.orgLocalIdentifier = strongSelf.asset.localIdentifier;
+                        [GCDUtility executeOnMainThread:^{
+                            callback(newData);
+                        }];
+                    });
+                }
+            }
+        }];
+    } else {
+        callback(_assetBindData);
+    }
 }
 
 @end

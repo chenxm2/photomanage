@@ -38,11 +38,17 @@
 - (void)updateAssetData:(AssetData *)data; {
     [self.imageView setSmallImageWithAsset:data.asset];
     self.sizeLabel.text = [NSString fileSizeStringWithNumber:data.fileSize];
-    if ([data isHasCompress]) {
-        self.compressedTag.hidden = NO;
-    } else {
-        self.compressedTag.hidden = YES;
-    }
+    WEAK_SELF
+    [data hasCompress:^(BOOL hasCompressed) {
+        STRONG_SELF
+        if (strongSelf) {
+            if (hasCompressed) {
+                self.compressedTag.hidden = NO;
+            } else {
+                self.compressedTag.hidden = YES;
+            }
+        }
+    }];
 }
 
 @end
