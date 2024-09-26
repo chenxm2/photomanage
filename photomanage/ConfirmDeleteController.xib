@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ConfirmDeleteController">
+            <connections>
+                <outlet property="collectionView" destination="fAX-4F-Gpf" id="omf-6Q-QzG"/>
+                <outlet property="deleteButton" destination="rQA-kY-zhG" id="HJ5-z2-uNT"/>
+                <outlet property="restoreButton" destination="OpE-DD-bb1" id="6w7-cH-Ffq"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="fAX-4F-Gpf">
+                    <rect key="frame" x="0.0" y="59" width="393" height="671"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="G26-Ep-Bse">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rQA-kY-zhG">
+                    <rect key="frame" x="0.0" y="730" width="393" height="44"/>
+                    <color key="backgroundColor" systemColor="systemRedColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="0a4-Ec-JIB"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title="删除全部">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="deleteButton:" destination="-1" eventType="touchUpInside" id="vm6-Zm-1Sy"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OpE-DD-bb1">
+                    <rect key="frame" x="0.0" y="774" width="393" height="44"/>
+                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="ZFN-0g-68c"/>
+                    </constraints>
+                    <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title="恢复全部">
+                        <color key="titleColor" name="AccentColor"/>
+                    </state>
+                    <connections>
+                        <action selector="restoreButton:" destination="-1" eventType="touchUpInside" id="4r0-ng-95V"/>
+                    </connections>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="fAX-4F-Gpf" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="08n-aq-CrD"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="OpE-DD-bb1" secondAttribute="bottom" id="3nQ-Vq-7vP"/>
+                <constraint firstItem="OpE-DD-bb1" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="5CB-fk-bg6"/>
+                <constraint firstItem="OpE-DD-bb1" firstAttribute="top" secondItem="rQA-kY-zhG" secondAttribute="bottom" id="GmC-JS-HAb"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="rQA-kY-zhG" secondAttribute="trailing" id="UTp-Jg-IjT"/>
+                <constraint firstItem="rQA-kY-zhG" firstAttribute="top" secondItem="fAX-4F-Gpf" secondAttribute="bottom" id="bzI-9f-kUM"/>
+                <constraint firstItem="rQA-kY-zhG" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="c6A-NF-dei"/>
+                <constraint firstItem="fAX-4F-Gpf" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="sLg-VT-cdi"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="OpE-DD-bb1" secondAttribute="trailing" id="tF9-lc-bb4"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="fAX-4F-Gpf" secondAttribute="trailing" id="xnW-6c-hxJ"/>
+            </constraints>
+            <point key="canvasLocation" x="27" y="20"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
