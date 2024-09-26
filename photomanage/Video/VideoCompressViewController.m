@@ -30,6 +30,7 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 @property (weak, nonatomic) IBOutlet UIView *compressedContainer;
 @end
 
+
 @implementation VideoCompressViewController
 
 - (instancetype)initWithAssetData:(AssetData *)data
