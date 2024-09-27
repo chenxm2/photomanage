@@ -47,7 +47,8 @@ NSString * const kAssetBindData = @"AssetBindData";
         STRONG_SELF
         if (strongSelf) {
             NSMutableData *data = [NSMutableData data];
-            NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+
+            NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
             [archiver encodeObject:strongSelf forKey:strongSelf.orgLocalIdentifier];
             [archiver finishEncoding];
             

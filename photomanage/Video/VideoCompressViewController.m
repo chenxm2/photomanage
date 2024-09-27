@@ -8,6 +8,7 @@
 #import "VideoCompressViewController.h"
 #import "../Utils/String+FileSize.h"
 #import "VideoPlayerViewController.h"
+#import "VideoDataManager.h"
 
 static NSString * const kCompressedAlbum = @"压缩相册";
 
@@ -23,6 +24,7 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 @property (weak, nonatomic) IBOutlet UIImageView *orgImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *compressedImageView;
 @property (strong, nonatomic) AssetData *orgData;
+@property (strong, nonatomic) AssetData *compressedData;
 @property (weak, nonatomic) IBOutlet UIPickerView *qualityPickerView;
 @property (nonatomic, strong) NSArray *qualityOptions; // 存储视频预设的选项
 @property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
@@ -47,8 +49,22 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
     self.orgSizeLabel.text = [NSString fileSizeStringWithNumber:self.orgData.fileSize];
     [self.orgImageView setImageWithAsset:_orgData.asset];
     [self.compressedImageView setImageWithAsset:_orgData.asset];
-    
     [self initPickerView];
+
+    
+    WEAK_SELF
+    [self.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
+        STRONG_SELF
+        if (strongSelf) {
+            strongSelf.compressedData = [[VideoDataManager sharedManager] assetDataByLocalIdentifier:bindData.compressedlocalIdentifier];
+            if (strongSelf.compressedData != nil) {
+                strongSelf.compressedContainer.hidden = false;
+                [strongSelf.compressedImageView setImageWithAsset:strongSelf.compressedData.asset];
+                strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:strongSelf.compressedData.fileSize];
+            }
+        }
+        
+    }];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -91,9 +107,15 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 
 
 - (IBAction)playCompressedVideoClicked:(id)sender {
-    VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
-    [self.navigationController pushViewController:controller animated:YES];
-    [controller playVideoWithURL:self.compressedURL];
+    if (self.compressedURL != nil) {
+        VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
+        [self.navigationController pushViewController:controller animated:YES];
+        [controller playVideoWithURL:self.compressedURL];
+    } else if (self.compressedData != nil) {
+        VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
+        [self.navigationController pushViewController:controller animated:YES];
+        [controller playVideoWithAsset:self.compressedData.asset];
+    }
 }
 
 - (IBAction)saveToAlbum:(id)sender {
@@ -232,18 +254,24 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
         // 将压缩后的视频添加到相册
         PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:customAlbum];
         PHAssetCreationRequest *creationRequest = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:compressedURL];
+
         [albumChangeRequest addAssets:@[[creationRequest placeholderForCreatedAsset]]];
         tempLocalIdentifier = creationRequest.placeholderForCreatedAsset.localIdentifier;
 
     } completionHandler:^(BOOL success, NSError *error) {
-        if (success) {
-            self.orgData.hasCompress = true;
-            [GCDUtility executeOnMainThread:^{
-                [ActivityIndicatorUtility hideActivityIndicatorInView:self.view];
-                [self showHintAlert];
+        STRONG_SELF
+        if (strongSelf && success) {
+            [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
+                bindData.isCompress = @(YES);
+                bindData.compressedlocalIdentifier = tempLocalIdentifier;
+                [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier];
             }];
-            
-        } else {
+            [GCDUtility executeOnMainThread:^{
+                [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
+                [strongSelf showHintAlert];
+            }];
+
+        }else {
             NSLog(@"Error adding videos to album: %@", error);
         }
     }];

@@ -39,10 +39,11 @@
     [self.imageView setSmallImageWithAsset:data.asset];
     self.sizeLabel.text = [NSString fileSizeStringWithNumber:data.fileSize];
     WEAK_SELF
-    [data hasCompress:^(BOOL hasCompressed) {
+    
+    [data loadBindData:^(AssetBindData * _Nonnull bindData) {
         STRONG_SELF
         if (strongSelf) {
-            if (hasCompressed) {
+            if ([bindData.isCompress boolValue]) {
                 self.compressedTag.hidden = NO;
             } else {
                 self.compressedTag.hidden = YES;

@@ -14,8 +14,7 @@ typedef void (^HasCompressCallback)(BOOL hasCompressed);
 @interface AssetData : NSObject
 @property (strong, nonatomic, readonly) PHAsset *asset;
 @property (strong, nonatomic, readonly) NSNumber *fileSize;
-- (void)hasCompress:(HasCompressCallback)callback;
-- (void)setHasCompress:(bool)hasCompress;
+- (void)loadBindData:(AssetBindDataCallback)callback;
 - (instancetype)initWithAsset:(PHAsset *)asset andNumber:(NSNumber *)fileSize;
 @end
 
