@@ -61,6 +61,7 @@
 		478031242CA68D0D00AC4BC0 /* VideoDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VideoDataManager.m; path = photomanage/Utils/VideoDataManager.m; sourceTree = SOURCE_ROOT; };
 		478031262CAA421800AC4BC0 /* LogUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogUtility.h; sourceTree = "<group>"; };
 		478031272CAA421800AC4BC0 /* LogUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogUtility.m; sourceTree = "<group>"; };
+		478031292CAA981500AC4BC0 /* CallBackDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallBackDefine.h; sourceTree = "<group>"; };
 		47BDE2E52BFC7FE300419853 /* ConfirmDeleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConfirmDeleteController.h; sourceTree = "<group>"; };
 		47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfirmDeleteController.m; sourceTree = "<group>"; };
 		47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfirmDeleteController.xib; sourceTree = "<group>"; };
@@ -163,6 +164,7 @@
 				478031202CA50A9E00AC4BC0 /* ScreenUility.m */,
 				478031262CAA421800AC4BC0 /* LogUtility.h */,
 				478031272CAA421800AC4BC0 /* LogUtility.m */,
+				478031292CAA981500AC4BC0 /* CallBackDefine.h */,
 			);
 			path = Utils;
 			sourceTree = "<group>";

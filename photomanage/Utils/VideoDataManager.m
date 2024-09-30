@@ -117,6 +117,27 @@ static dispatch_once_t onceToken;
     }];
 }
 
+
+- (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback
+{
+    // 检查资源类型是否为视频
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+        options.networkAccessAllowed = NO; // 不允许从网络下载，直接检查本地是否有资源
+        
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            [GCDUtility executeOnMainThread:^{
+                if (avAsset) {
+                    callback(NO);
+                } else {
+                    callback(YES);
+                }
+            }];
+            
+        }];
+    }
+}
+
 - (void)handleCompleteLoad:(AssetDatasCallback)callback {
     NSLog(@"handleCompleteLoad");
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"fileSize" ascending:NO];

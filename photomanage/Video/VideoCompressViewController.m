@@ -130,38 +130,75 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 
 - (void)showConfirmationAlertWithData:(AssetData *)data preset:(NSString *)preset {
-    
+    WEAK_SELF
     [AlertUtility showConfirmationAlertInViewController:self withTitle:@"压缩视频" message:@"您确定要进行压缩？" confirmButtonTitle:@"确认" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
-        if (confirmed) {
+        STRONG_SELF
+        if (strongSelf && confirmed) {
             [ScreenUility setForceScreenOn:YES];
-            WEAK_SELF
             // 确认操作的处理代码
-            [ActivityIndicatorUtility showActivityIndicatorInView:self.view];
-            [self compressVideoWithAsset:data.asset preset:preset completion:^(NSURL *compressedURL, CGFloat compressedSizeMB) {
-                [GCDUtility executeOnMainThread:^{
-                    [ScreenUility setForceScreenOn:NO];
-                    STRONG_SELF
-                    if (strongSelf) {
-                        [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
-                        strongSelf.compressedContainer.hidden = false;
-                        [strongSelf.compressedImageView setImageWithAsset:strongSelf.orgData.asset];
-                        strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:[NSNumber numberWithFloat:compressedSizeMB]];
-                        strongSelf.compressedURL = compressedURL;
+            [ActivityIndicatorUtility showActivityIndicatorInView:strongSelf.view];
+            
+            [[VideoDataManager sharedManager] checkIfVideoIsOnlyInCloud:data.asset callback:^(BOOL result) {
+                if (strongSelf) {
+                    [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
+                    if (result) {
+                        [strongSelf showNetWorkConfirm:data preset:preset];
+                    } else {
+                        [strongSelf handleCompressVideoWithAsset:data preset:preset];
                     }
-                }];
-                NSLog(@"Video originalSizeMB: %.2f MB,  compressedSizeMB: %.2f", data.fileSize.floatValue, compressedSizeMB);
+                }
             }];
         }
     }];
 }
 
+- (void)showNetWorkConfirm:(AssetData *)data preset:(NSString *)preset {
+    WEAK_SELF
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"压缩视频" message:@"您的视频在仅在icloud中，需要访问网络，才能压缩~" confirmButtonTitle:@"确认" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
+        if (confirmed) {
+            STRONG_SELF
+            if (strongSelf) {
+                if (confirmed) {
+                    [strongSelf handleCompressVideoWithAsset:data preset:preset];
+                }
+            }
+        }
+    }];
+}
+
+- (void)handleCompressVideoWithAsset:(AssetData *)data preset:(NSString *)preset {
+    WEAK_SELF
+    [ActivityIndicatorUtility showActivityIndicatorInView:weakSelf.view];
+    [self compressVideoWithAsset:data.asset preset:preset completion:^(NSURL *compressedURL, CGFloat compressedSizeMB) {
+        [ScreenUility setForceScreenOn:NO];
+        STRONG_SELF
+        if (strongSelf) {
+            [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
+            strongSelf.compressedContainer.hidden = false;
+            [strongSelf.compressedImageView setImageWithAsset:strongSelf.orgData.asset];
+            strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:[NSNumber numberWithFloat:compressedSizeMB]];
+            strongSelf.compressedURL = compressedURL;
+        }
+        NSLog(@"Video originalSizeMB: %.2f MB,  compressedSizeMB: %.2f", data.fileSize.floatValue, compressedSizeMB);
+    }];
+}
+
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
-    NSLog(@"compressVideoWithAsset preset = %@", preset);
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"begin"];
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.version = PHVideoRequestOptionsVersionOriginal;
-    // 获取视频文件路径
-    [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary *info) {
-        [GCDUtility executeOnSerialQueue:^{
+    options.networkAccessAllowed = true;
+    
+    [self requestAVAssetForVideo:asset options:options preset:preset completion:completion];
+    
+}
+
+- (void)requestAVAssetForVideo:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
+    [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        // 检查 avAsset 是否为 nil
+        if (avAsset) {
+            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"got avasset = %@", avAsset]];
+            
             AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:preset];
             exportSession.outputFileType = AVFileTypeMPEG4;
             
@@ -180,32 +217,57 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             
             // 执行压缩
             [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                 [NSString stringWithFormat:@"compressVideoWithAsset complete statsu = %ld", (long)exportSession.status]];
-                if (exportSession.status == AVAssetExportSessionStatusCompleted) {
-                    // 获取原始大小
-                    NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
-                    PHAssetResource *videoResource = resources.firstObject;
-                    unsigned long long originalSize = [[videoResource valueForKey:@"fileSize"] unsignedLongLongValue];
-                    CGFloat originalSizeMB = originalSize / (1024.0 * 1024.0);
-                    
-                    // 获取压缩后的视频大小
-                    NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
-                    CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
-                    // 返回结果
-                    if (completion) {
-                        completion(outputURL, compressedSizeMB);
-                    }
-                } else {
-                    if (completion) {
-                        completion(outputURL, 0);
-                    }
+                [GCDUtility executeOnMainThread:^{
                     [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                     [NSString stringWithFormat:@"Video compression failed: %@", exportSession.error.localizedDescription]];
+                     [NSString stringWithFormat:@"compressVideoWithAsset complete statsu = %ld", (long)exportSession.status]];
+                    if (exportSession.status == AVAssetExportSessionStatusCompleted) {
+                        // 获取原始大小
+                        NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
+                        PHAssetResource *videoResource = resources.firstObject;
+                        unsigned long long originalSize = [[videoResource valueForKey:@"fileSize"] unsignedLongLongValue];
+                        CGFloat originalSizeMB = originalSize / (1024.0 * 1024.0);
+                        
+                        // 获取压缩后的视频大小
+                        NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
+                        CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
+                        // 返回结果
+                        if (completion) {
+                            completion(outputURL, compressedSizeMB);
+                        }
+                    } else {
+                        if (completion) {
+                            completion(outputURL, 0);
+                        }
+                        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+                         [NSString stringWithFormat:@"Video compression failed: %@", exportSession.error.localizedDescription]];
+                    }
+                }];
+
+            }];
+            // 视频下载成功，开始压缩操作
+        } else {
+            // 视频下载失败，检查 info 字典
+            [GCDUtility executeOnMainThread:^{
+                NSError *error = info[PHImageErrorKey];
+                if (error) {
+                    NSLog(@"视频下载失败，错误信息：%@", error.localizedDescription);
+                } else {
+                    // 视频尚未下载或正在下载中
+                    NSLog(@"视频尚未下载，正在等待...");
+                    // 可以使用递归请求的方法，等待直到下载完成
+                    [self waitForAssetToDownload:asset options:options preset:preset completion:completion];
                 }
             }];
-        }];
+        }
     }];
+}
+
+// 等待视频下载完成
+- (void)waitForAssetToDownload:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
+    // 使用一个简单的定时器，每隔一段时间重新检查下载状态
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self requestAVAssetForVideo:asset options:options preset:preset completion:completion];
+    });
 }
 
 - (void)createAlbumAndSaveCompressed:(NSURL *)compressedURL {
@@ -360,6 +422,24 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     }
     
     return result;
+}
+
+- (void)checkIfVideoIsInICloud:(PHAsset *)asset {
+    // 检查资源类型是否为视频
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+        options.networkAccessAllowed = NO; // 不允许从网络下载，直接检查本地是否有资源
+        
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            if (avAsset) {
+                // 视频在本地
+                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"视频在本地"];
+            } else {
+                // 视频不在本地（可能在 iCloud 中）
+                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"视频在 iCloud 中"];
+            }
+        }];
+    }
 }
 
 

@@ -36,7 +36,7 @@ const CGSize smallSize = {300.0, 300.0};
                                  }
                              }];
                          } else {
-                             NSLog(@"requestImageForAsset fail");
+                             NSLog(@"setImageWithAsset fail");
                          }
                      }];
 }
@@ -65,7 +65,7 @@ const CGSize smallSize = {300.0, 300.0};
                                  }
                              }];
                          } else {
-                             NSLog(@"requestImageForAsset fail");
+                             NSLog(@"setSmallImageWithAsset fail");
                          }
                      }];
 }
