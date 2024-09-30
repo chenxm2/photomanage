@@ -19,4 +19,5 @@
 #import "Utils/UIView+Toast.h"
 #import "Utils/StyledButton.h"
 #import "Utils/ScreenUility.h"
+#import "Utils/LogUtility.h"
 #endif /* CommonHeaders_h */

@@ -14,6 +14,7 @@
 		4768620B2BFB58EA003D7DA8 /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4768620A2BFB58EA003D7DA8 /* ContentViewController.m */; };
 		478031212CA50A9E00AC4BC0 /* ScreenUility.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031202CA50A9E00AC4BC0 /* ScreenUility.m */; };
 		478031252CA68D0D00AC4BC0 /* VideoDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031242CA68D0D00AC4BC0 /* VideoDataManager.m */; };
+		478031282CAA421800AC4BC0 /* LogUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031272CAA421800AC4BC0 /* LogUtility.m */; };
 		47BDE2E82BFC7FE300419853 /* ConfirmDeleteController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */; };
 		47BDE2E92BFC7FE300419853 /* ConfirmDeleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */; };
 		47BDE2EC2BFC82FC00419853 /* ConfirmDeleteViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BDE2EB2BFC82FC00419853 /* ConfirmDeleteViewCell.m */; };
@@ -58,6 +59,8 @@
 		478031202CA50A9E00AC4BC0 /* ScreenUility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenUility.m; sourceTree = "<group>"; };
 		478031232CA68D0D00AC4BC0 /* VideoDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoDataManager.h; path = photomanage/Utils/VideoDataManager.h; sourceTree = SOURCE_ROOT; };
 		478031242CA68D0D00AC4BC0 /* VideoDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VideoDataManager.m; path = photomanage/Utils/VideoDataManager.m; sourceTree = SOURCE_ROOT; };
+		478031262CAA421800AC4BC0 /* LogUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogUtility.h; sourceTree = "<group>"; };
+		478031272CAA421800AC4BC0 /* LogUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogUtility.m; sourceTree = "<group>"; };
 		47BDE2E52BFC7FE300419853 /* ConfirmDeleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConfirmDeleteController.h; sourceTree = "<group>"; };
 		47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfirmDeleteController.m; sourceTree = "<group>"; };
 		47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfirmDeleteController.xib; sourceTree = "<group>"; };
@@ -158,6 +161,8 @@
 				47D6BA4F2C9BCF8A00516CD6 /* StyledButton.m */,
 				4780311F2CA50A9E00AC4BC0 /* ScreenUility.h */,
 				478031202CA50A9E00AC4BC0 /* ScreenUility.m */,
+				478031262CAA421800AC4BC0 /* LogUtility.h */,
+				478031272CAA421800AC4BC0 /* LogUtility.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -380,6 +385,7 @@
 				47F558A02C859E3D0053CB04 /* VideoManageViewController.m in Sources */,
 				47BDE2EC2BFC82FC00419853 /* ConfirmDeleteViewCell.m in Sources */,
 				4768620B2BFB58EA003D7DA8 /* ContentViewController.m in Sources */,
+				478031282CAA421800AC4BC0 /* LogUtility.m in Sources */,
 				476862082BFB3BF5003D7DA8 /* PhotoPreviewController.m in Sources */,
 				47D6FDAE2BFB0367000385EA /* AppDelegate.m in Sources */,
 				47D6FDBF2BFB0368000385EA /* main.m in Sources */,

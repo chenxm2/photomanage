@@ -49,14 +49,18 @@ NSString * const kAssetBindData = @"AssetBindData";
             NSMutableData *data = [NSMutableData data];
 
             NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
-            [archiver encodeObject:strongSelf forKey:strongSelf.orgLocalIdentifier];
+            [archiver encodeObject:strongSelf forKey:kAssetBindData];
             [archiver finishEncoding];
             
             // 保存序列化数据到 NSUserDefaults
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:data forKey:kAssetBindData];
+            [defaults setObject:data forKey:strongSelf.orgLocalIdentifier];
         }
     }];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, orgLocalIdentifier: %@, compressedlocalIdentifier: %@, isCompress: %@>",
+            NSStringFromClass([self class]), self, self.orgLocalIdentifier, self.compressedlocalIdentifier, self.isCompress];
+}
 @end

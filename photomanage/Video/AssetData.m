@@ -60,7 +60,13 @@
 - (void)generateNewData:(AssetBindDataCallback)callback {
     AssetBindData *newData = [[AssetBindData alloc] init];
     newData.orgLocalIdentifier = self.asset.localIdentifier;
+    WEAK_SELF
     [GCDUtility executeOnMainThread:^{
+        STRONG_SELF
+        if (strongSelf) {
+            strongSelf.assetBindData = newData;
+        }
+        
         callback(newData);
     }];
 }

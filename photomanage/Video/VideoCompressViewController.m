@@ -17,6 +17,7 @@ static NSString * const kQualityStandar480P = @"标清 (480P)";
 static NSString * const kQualityMiddle = @"标准清晰度";
 static NSString * const kQualityHigh720P = @"高清 (720p)";
 static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
+static NSString * const kLogTag = @"VideoCompressViewController";
 
 @interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
 @property (weak, nonatomic) IBOutlet UILabel *orgSizeLabel;
@@ -132,11 +133,13 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
     
     [AlertUtility showConfirmationAlertInViewController:self withTitle:@"压缩视频" message:@"您确定要进行压缩？" confirmButtonTitle:@"确认" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
         if (confirmed) {
+            [ScreenUility setForceScreenOn:YES];
             WEAK_SELF
             // 确认操作的处理代码
             [ActivityIndicatorUtility showActivityIndicatorInView:self.view];
             [self compressVideoWithAsset:data.asset preset:preset completion:^(NSURL *compressedURL, CGFloat compressedSizeMB) {
                 [GCDUtility executeOnMainThread:^{
+                    [ScreenUility setForceScreenOn:NO];
                     STRONG_SELF
                     if (strongSelf) {
                         [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
@@ -154,7 +157,6 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
     NSLog(@"compressVideoWithAsset preset = %@", preset);
-    [ScreenUility setForceScreenOn:YES];
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.version = PHVideoRequestOptionsVersionOriginal;
     // 获取视频文件路径
@@ -178,7 +180,8 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
             
             // 执行压缩
             [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                NSLog(@"compressVideoWithAsset complete statsu = %ld", (long)exportSession.status);
+                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+                 [NSString stringWithFormat:@"compressVideoWithAsset complete statsu = %ld", (long)exportSession.status]];
                 if (exportSession.status == AVAssetExportSessionStatusCompleted) {
                     // 获取原始大小
                     NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
@@ -189,17 +192,16 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
                     // 获取压缩后的视频大小
                     NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
                     CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
-                    [ScreenUility setForceScreenOn:NO];
                     // 返回结果
                     if (completion) {
                         completion(outputURL, compressedSizeMB);
                     }
                 } else {
-                    [ScreenUility setForceScreenOn:NO];
                     if (completion) {
                         completion(outputURL, 0);
                     }
-                    NSLog(@"Video compression failed: %@", exportSession.error.localizedDescription);
+                    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+                     [NSString stringWithFormat:@"Video compression failed: %@", exportSession.error.localizedDescription]];
                 }
             }];
         }];
@@ -257,11 +259,19 @@ static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 
         [albumChangeRequest addAssets:@[[creationRequest placeholderForCreatedAsset]]];
         tempLocalIdentifier = creationRequest.placeholderForCreatedAsset.localIdentifier;
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+         [NSString stringWithFormat:@"performChanges tempLocalIdentifier = %@", tempLocalIdentifier]];
+        
 
     } completionHandler:^(BOOL success, NSError *error) {
         STRONG_SELF
         if (strongSelf && success) {
             [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
+                
+                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+                 [NSString stringWithFormat:@"completionHandler bindData %@", bindData]];
+                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
+                 [NSString stringWithFormat:@"completionHandler tempLocalIdentifier = %@", tempLocalIdentifier]];
                 bindData.isCompress = @(YES);
                 bindData.compressedlocalIdentifier = tempLocalIdentifier;
                 [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier];
