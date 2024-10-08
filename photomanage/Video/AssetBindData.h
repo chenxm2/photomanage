@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 extern NSString * const kAssetBindData;
-@interface AssetBindData : NSObject<NSCoding>
+@interface AssetBindData : NSObject<NSSecureCoding>
 @property (nonatomic, strong) NSString *orgLocalIdentifier;
 @property (nonatomic, strong) NSString *compressedlocalIdentifier;
 @property (nonatomic, strong) NSNumber *isCompress;

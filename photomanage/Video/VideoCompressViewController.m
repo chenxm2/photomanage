@@ -329,7 +329,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         STRONG_SELF
         if (strongSelf && success) {
             [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
-                
                 [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
                  [NSString stringWithFormat:@"completionHandler bindData %@", bindData]];
                 [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
