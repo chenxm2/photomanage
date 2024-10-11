@@ -11,12 +11,6 @@
 #import "VideoDataManager.h"
 
 static NSString * const kCompressedAlbum = @"压缩相册";
-
-static NSString * const kQualityLow = @"低清晰度";
-static NSString * const kQualityStandar480P = @"标清 (480P)";
-static NSString * const kQualityMiddle = @"标准清晰度";
-static NSString * const kQualityHigh720P = @"高清 (720p)";
-static NSString * const kQualityHigh1080p = @"超高清 (1080p)";
 static NSString * const kLogTag = @"VideoCompressViewController";
 
 @interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
@@ -31,6 +25,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
 @property (strong, nonatomic) NSURL *compressedURL;
 @property (weak, nonatomic) IBOutlet UIView *compressedContainer;
+@property (strong, nonatomic) AVAssetReader *reader;
+@property (strong, nonatomic) AVAssetWriter *writer;
 @end
 
 
@@ -62,6 +58,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 strongSelf.compressedContainer.hidden = false;
                 [strongSelf.compressedImageView setImageWithAsset:strongSelf.compressedData.asset];
                 strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:strongSelf.compressedData.fileSize];
+                
             }
         }
         
@@ -77,12 +74,9 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 - (void)initPickerView {
     // 初始化视频清晰度选项数组
     self.qualityOptions = @[
-        
-//        kQualityStandar480P,
+        kQualityHigh,
         kQualityMiddle,
         kQualityLow,
-//        kQualityHigh720P,
-//        kQualityHigh1080p
     ];
     
     // 初始化 UIPickerView
@@ -90,9 +84,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     self.qualityPickerView.delegate = self;
     self.qualityPickerView.dataSource = self;
     
-    
     // 设置初始选择值
-    self.selectedPreset = AVAssetExportPresetMediumQuality;
+    self.selectedPreset = kQualityHigh;
 }
 
 - (IBAction)beginCompressClicked:(id)sender {
@@ -194,57 +187,14 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)requestAVAssetForVideo:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
+    WEAK_SELF
     [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         // 检查 avAsset 是否为 nil
         if (avAsset) {
-            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"got avasset = %@", avAsset]];
-            
-            AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:preset];
-            exportSession.outputFileType = AVFileTypeMPEG4;
-            
-            // 定义输出路径
-            NSString *outputPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"compressedVideo.mp4"];
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:outputPath]) {
-                NSError *removeError;
-                if (![[NSFileManager defaultManager] removeItemAtPath:outputPath error:nil]) {
-                    NSLog(@"Failed to remove old file: %@", removeError.localizedDescription);
-                }
+            STRONG_SELF
+            if (strongSelf) {
+                [strongSelf finalCompressActionWithAsset:avAsset preset:preset completion:completion];
             }
-            
-            NSURL *outputURL = [NSURL fileURLWithPath:outputPath];
-            exportSession.outputURL = outputURL;
-            
-            // 执行压缩
-            [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                [GCDUtility executeOnMainThread:^{
-                    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                     [NSString stringWithFormat:@"compressVideoWithAsset complete statsu = %ld", (long)exportSession.status]];
-                    if (exportSession.status == AVAssetExportSessionStatusCompleted) {
-                        // 获取原始大小
-                        NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
-                        PHAssetResource *videoResource = resources.firstObject;
-                        unsigned long long originalSize = [[videoResource valueForKey:@"fileSize"] unsignedLongLongValue];
-                        CGFloat originalSizeMB = originalSize / (1024.0 * 1024.0);
-                        
-                        // 获取压缩后的视频大小
-                        NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
-                        CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
-                        // 返回结果
-                        if (completion) {
-                            completion(outputURL, compressedSizeMB);
-                        }
-                    } else {
-                        if (completion) {
-                            completion(outputURL, 0);
-                        }
-                        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                         [NSString stringWithFormat:@"Video compression failed: %@", exportSession.error.localizedDescription]];
-                    }
-                }];
-
-            }];
-            // 视频下载成功，开始压缩操作
         } else {
             // 视频下载失败，检查 info 字典
             [GCDUtility executeOnMainThread:^{
@@ -260,6 +210,269 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             }];
         }
     }];
+}
+
+- (void)callOnMainThreadCompletion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion compressURL:(NSURL *)url size:(CGFloat)compressedSizeMB {
+    [GCDUtility executeOnMainThread:^{
+        completion(url, compressedSizeMB);
+    }];
+}
+
+- (void)finalCompressActionWithAsset:(AVAsset *)asset preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"got avasset = %@", asset]];
+        
+    // 定义输出路径
+    NSString *outputPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"compressedVideo.mp4"];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:outputPath]) {
+        NSError *removeError;
+        if (![[NSFileManager defaultManager] removeItemAtPath:outputPath error:nil]) {
+            NSLog(@"Failed to remove old file: %@", removeError.localizedDescription);
+        }
+    }
+    
+    NSURL *outputURL = [NSURL fileURLWithPath:outputPath];
+    NSError *error = nil;
+    AVAssetWriter *assetWriter = [AVAssetWriter assetWriterWithURL:outputURL fileType:AVFileTypeMPEG4 error:&error];
+    if (error) {
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"assetWriterWithURL fail %@", error]];
+        completion(nil, 0);
+        return;
+    }
+    
+    
+    AVAssetTrack *videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+    // 获取原始码率
+    CGAffineTransform videoTransform = videoTrack.preferredTransform;  // 获取变换矩阵
+    CGFloat originalBitRate = [self calculateBitRateForVideoTrack:videoTrack];
+    
+    // 设置压缩参数，按比例压缩码率
+    NSDictionary *videoSettings = [self videoSettingsForPreset:preset videoTrack:videoTrack originalBitRate:originalBitRate];
+    
+    // 创建视频写入
+    AVAssetWriterInput *videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
+    videoWriterInput.expectsMediaDataInRealTime = NO;
+    videoWriterInput.transform = videoTransform;  // 关键代码，保留视频方向
+    
+    // 获取视频轨道
+    // 添加视频输入到写入器
+    if ([assetWriter canAddInput:videoWriterInput]) {
+        [assetWriter addInput:videoWriterInput];
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addInput videoWriterInput"];
+    } else {
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoWriterInput faile"];
+        [self callOnMainThreadCompletion:completion compressURL:nil size:0];
+        return;
+    }
+    
+    
+    self.writer = assetWriter;
+    
+    // 创建音频写入输入
+    AVAssetWriterInput *audioWriterInput = nil;
+    if ([[asset tracksWithMediaType:AVMediaTypeAudio] count] > 0) {
+        AVAssetTrack *audioTrack = [[asset tracksWithMediaType:AVMediaTypeAudio] firstObject];
+        NSDictionary *audioSettings = @{
+            AVFormatIDKey: @(kAudioFormatMPEG4AAC),
+            AVNumberOfChannelsKey: @(audioTrack.formatDescriptions.count),
+            AVSampleRateKey: @(44100),
+            AVEncoderBitRateKey: @(128000)
+        };
+        audioWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio outputSettings:audioSettings];
+        if ([assetWriter canAddInput:audioWriterInput]) {
+            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addInput audioWriterInput"];
+            [assetWriter addInput:audioWriterInput];
+        } else {
+            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"can not write"];
+        }
+    }
+    
+    // 启动写入过程
+    [assetWriter startWriting];
+    [assetWriter startSessionAtSourceTime:kCMTimeZero];
+    
+    // 使用 AVAssetReader 读取数据
+    AVAssetReader *assetReader = [AVAssetReader assetReaderWithAsset:asset error:&error];
+    if (error) {
+        [self callOnMainThreadCompletion:completion compressURL:nil size:0];
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"AVAssetReader fail"];
+        return;
+    }
+    
+    self.reader = assetReader;
+    
+    // 视频读取输入
+    if (!videoTrack) {
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoTrack nil"];
+    }
+    NSDictionary *videoReaderOutputSettings = @{
+        (id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),  // YUV 格式
+        (id)kCVPixelBufferWidthKey: @(videoTrack.naturalSize.width),  // 视频宽度
+        (id)kCVPixelBufferHeightKey: @(videoTrack.naturalSize.height),  // 视频高度
+    };
+    AVAssetReaderTrackOutput *videoReaderOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:videoTrack outputSettings:videoReaderOutputSettings];
+    if ([assetReader canAddOutput:videoReaderOutput]) {
+        [assetReader addOutput:videoReaderOutput];
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addOutput videoReaderOutput"];
+    } else {
+        [self callOnMainThreadCompletion:completion compressURL:nil size:0];
+        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoReaderOutput fail"];
+        return;
+    }
+    
+    NSDictionary *audioReaderOutputSettings = @{
+        AVFormatIDKey: @(kAudioFormatLinearPCM),
+        AVLinearPCMBitDepthKey: @(16),
+        AVLinearPCMIsNonInterleaved: @(NO),
+        AVLinearPCMIsFloatKey: @(NO),
+        AVLinearPCMIsBigEndianKey: @(NO)
+    };
+    // 音频读取输入
+    AVAssetReaderTrackOutput *audioReaderOutput = nil;
+    if (audioWriterInput) {
+        AVAssetTrack *audioTrack = [[asset tracksWithMediaType:AVMediaTypeAudio] firstObject];
+         audioReaderOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:audioTrack outputSettings:audioReaderOutputSettings];
+        if ([assetReader canAddOutput:audioReaderOutput]) {
+            [assetReader addOutput:audioReaderOutput];
+            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addOutput audioReaderOutput"];
+        } else {
+            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"audioWriterInput fail"];
+        }
+    }
+    
+    // 开始读取数据并写入
+    [assetReader startReading];
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"startReading"];
+    
+    // 创建一个 dispatch group
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_queue_t videoCompressQueue = dispatch_queue_create("video.compress.queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t audioCompressQueue = dispatch_queue_create("video.compress.queue", DISPATCH_QUEUE_SERIAL);
+    
+    dispatch_group_enter(group); // 手动进入 group
+    [videoWriterInput requestMediaDataWhenReadyOnQueue:videoCompressQueue usingBlock:^{
+        NSLog(@"isReadyForMoreMediaData");
+        while ([videoWriterInput isReadyForMoreMediaData]) {
+            CMSampleBufferRef sampleBuffer = [videoReaderOutput copyNextSampleBuffer];
+            if (sampleBuffer) {
+                NSLog(@"getVideoSample beging");
+                [videoWriterInput appendSampleBuffer:sampleBuffer];
+                CFRelease(sampleBuffer);
+                NSLog(@"getVideoSample end");
+            } else {
+                NSLog(@"audio finish");
+                [videoWriterInput markAsFinished];
+                dispatch_group_leave(group); // 任务 1 完成，离开 group
+                break;
+            }
+        }
+    }];
+    
+    dispatch_group_enter(group); // 手动进入 group
+    [audioWriterInput requestMediaDataWhenReadyOnQueue:audioCompressQueue usingBlock:^{
+            while ([audioWriterInput isReadyForMoreMediaData]) {
+                CMSampleBufferRef sampleBuffer = [audioReaderOutput copyNextSampleBuffer];
+                if (sampleBuffer) {
+                    // 解码音频样本并转换为PCM格式
+                    NSLog(@"getAudioSample beging");
+                    [audioWriterInput appendSampleBuffer:sampleBuffer];
+                    CFRelease(sampleBuffer);
+                    NSLog(@"getAudioSample end");
+                } else {
+                    NSLog(@"audio finish");
+                    [audioWriterInput markAsFinished];
+                    dispatch_group_leave(group); // 任务 1 完成，离开 group
+                    break;
+                }
+            }
+    }];
+    
+    
+    // 等待所有任务完成后执行某个操作
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"All tasks finished");
+        if ([assetReader status] == AVAssetReaderStatusReading) {
+            NSLog(@"cancelReading");
+            [assetReader cancelReading];
+        }
+        
+        [assetWriter finishWritingWithCompletionHandler:^{
+            if (assetWriter.status == AVAssetWriterStatusCompleted) {
+                NSLog(@"file finish");
+                NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
+                CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
+                [self callOnMainThreadCompletion:completion compressURL:outputURL size:compressedSizeMB];
+            } else {
+                [self callOnMainThreadCompletion:completion compressURL:nil size:0];
+            }
+        }];
+    });
+}
+
+
+- (NSDictionary *)videoSettingsForPreset:(NSString *)preset
+                                        videoTrack:(AVAssetTrack *)videoTrack
+                                    originalBitRate:(CGFloat)originalBitRate {
+    CGSize videoSize = videoTrack.naturalSize;
+    
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"videoSettingsForPreset videoSize = %@", [NSValue valueWithCGSize:videoSize]]];
+    CGFloat orgframeRate = videoTrack.nominalFrameRate;
+    NSLog(@"视频原帧率为: %.2f fps", orgframeRate);
+    
+    CGSize outputSize;
+    CGFloat videoBitRate = originalBitRate * 0.7; // 默认压缩到 70%
+    NSInteger frameRate = 30;
+    if ([kQualityHigh isEqual:preset]) {
+        videoBitRate = originalBitRate * 0.9; // 高保真，压缩到 90% 原码率
+        frameRate = 30; // 高帧率
+        outputSize = videoSize;
+    } else if ([kQualityMiddle isEqual:preset]) {
+        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
+        frameRate = 24; // 中等帧率
+        outputSize = CGSizeMake(videoSize.width * 0.75, videoSize.height * 0.75); // 减小到 75% 原始分辨率
+    } else if ([kQualityLow isEqual:preset]) {
+        videoBitRate = originalBitRate * 0.3; // 低质量，压缩到 30% 原码率
+        frameRate = 15;
+        outputSize = CGSizeMake(videoSize.width * 0.5, videoSize.height * 0.5);
+    } else {
+        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
+        frameRate = 24; // 中等帧率
+        outputSize = CGSizeMake(videoSize.width * 0.75, videoSize.height * 0.75); // 减小到 75% 原始分辨率
+    }
+    
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"videoSettingsForPreset videoBitRate = %f frameRate = %ld width =%f height =%f",
+                                                                 videoBitRate, (long)frameRate, outputSize.width, outputSize.height]];
+    
+    NSDictionary *compressionSettings = @{
+        AVVideoAverageBitRateKey: @(videoBitRate),
+        AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
+    };
+    
+    NSDictionary *videoSettings = @{
+        AVVideoCodecKey: AVVideoCodecTypeH264,
+        AVVideoWidthKey: @(outputSize.width),
+        AVVideoHeightKey: @(outputSize.height),
+        AVVideoCompressionPropertiesKey: compressionSettings
+    };
+
+    return videoSettings;
+}
+
+
+- (CGFloat)calculateBitRateForVideoTrack:(AVAssetTrack *)videoTrack {
+    CGSize videoSize = videoTrack.naturalSize;
+    CMTime duration = videoTrack.timeRange.duration;
+    float videoDurationInSeconds = CMTimeGetSeconds(duration);
+    
+    NSLog(@"CMTime in seconds: %f", videoDurationInSeconds);
+    
+    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"calculateBitRateForVideoTrack videoSize = %@", [NSValue valueWithCGSize:videoSize]]];
+    
+    // 用视频大小和持续时间估算码率
+    float estimatedSize = videoTrack.totalSampleDataLength;
+    CGFloat bitRate = (estimatedSize * 8) / videoDurationInSeconds; // bitRate = 文件大小 * 8 / 时间 (bps)
+    
+    return bitRate;
 }
 
 // 等待视频下载完成
@@ -335,7 +548,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                  [NSString stringWithFormat:@"completionHandler tempLocalIdentifier = %@", tempLocalIdentifier]];
                 bindData.isCompress = @(YES);
                 bindData.compressedlocalIdentifier = tempLocalIdentifier;
-                [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier];
+                [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier  compressQuality:strongSelf.selectedPreset];
+                
             }];
             [GCDUtility executeOnMainThread:^{
                 [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
@@ -391,7 +605,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSString *selectedQuality = self.qualityOptions[row];
     NSLog(@"用户选择了: %@", selectedQuality);
-    self.selectedPreset = [self presetWithQuality:selectedQuality];
+    self.selectedPreset = selectedQuality;
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
@@ -404,23 +618,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     label.textColor = [UIColor whiteColor]; // 设置文字颜色
     label.font = [UIFont systemFontOfSize:16]; // 设置文字大小
     return label;
-}
-
-- (NSString *)presetWithQuality:(NSString *)quality {
-    NSString *result = AVAssetExportPresetMediumQuality;
-    if ([quality isEqualToString:kQualityLow]) {
-        result = AVAssetExportPresetLowQuality;
-    } else if ([quality isEqualToString:kQualityStandar480P]) {
-        result = AVAssetExportPreset640x480;
-    } else if ([quality isEqualToString:kQualityMiddle]) {
-        result = AVAssetExportPresetMediumQuality;
-    } else if ([quality isEqualToString:kQualityHigh720P]) {
-        result = AVAssetExportPreset1280x720;
-    } else if ([quality isEqualToString:kQualityHigh1080p]) {
-        result = AVAssetExportPreset1920x1080;
-    }
-    
-    return result;
 }
 
 - (void)checkIfVideoIsInICloud:(PHAsset *)asset {
@@ -440,6 +637,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         }];
     }
 }
+
 
 
 

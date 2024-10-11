@@ -23,7 +23,12 @@
         // 初始化 AVPlayerViewController
     self.playerViewController = [[AVPlayerViewController alloc] init];
     self.playerViewController.view.frame = self.view.bounds;
+    self.playerViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.playerViewController.showsPlaybackControls = YES;
+    [self addChildViewController:self.playerViewController];
     [self.view addSubview:self.playerViewController.view];
+    
+    [self.playerViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - Public Methods

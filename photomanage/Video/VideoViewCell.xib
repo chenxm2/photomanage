@@ -26,10 +26,17 @@
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="已压缩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="agT-7q-B6Z">
-                        <rect key="frame" x="63" y="0.0" width="49" height="19.333333333333332"/>
+                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="操作过" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="agT-7q-B6Z">
+                        <rect key="frame" x="69" y="0.0" width="43" height="17"/>
                         <color key="backgroundColor" systemColor="systemGreenColor"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="已压缩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRz-yT-5XO">
+                        <rect key="frame" x="0.0" y="0.0" width="43" height="17"/>
+                        <color key="backgroundColor" systemColor="systemCyanColor"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -37,6 +44,7 @@
             </view>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="ZVv-jz-Bvc" secondAttribute="trailing" id="4G7-bb-j3i"/>
+                <constraint firstItem="DRz-yT-5XO" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="4Ug-zT-asm"/>
                 <constraint firstItem="ZVv-jz-Bvc" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="84A-3e-M3M"/>
                 <constraint firstItem="aE9-lE-Dgc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="LgT-U5-5d6"/>
                 <constraint firstAttribute="trailing" secondItem="aE9-lE-Dgc" secondAttribute="trailing" id="Lhk-ty-PPi"/>
@@ -44,11 +52,13 @@
                 <constraint firstAttribute="bottom" secondItem="ZVv-jz-Bvc" secondAttribute="bottom" id="biE-eZ-d56"/>
                 <constraint firstAttribute="bottom" secondItem="aE9-lE-Dgc" secondAttribute="bottom" id="dY1-u2-Qch"/>
                 <constraint firstItem="agT-7q-B6Z" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="e9i-Y7-84A"/>
+                <constraint firstItem="DRz-yT-5XO" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="m6F-xo-4SL"/>
                 <constraint firstAttribute="trailing" secondItem="agT-7q-B6Z" secondAttribute="trailing" id="sLc-Ff-bu3"/>
                 <constraint firstItem="ZVv-jz-Bvc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="zZY-ge-7R2"/>
             </constraints>
             <size key="customSize" width="112" height="87"/>
             <connections>
+                <outlet property="compressQuality" destination="DRz-yT-5XO" id="F7x-eD-qhp"/>
                 <outlet property="compressedTag" destination="agT-7q-B6Z" id="p3x-sj-nhX"/>
                 <outlet property="imageView" destination="aE9-lE-Dgc" id="UAb-R4-e9O"/>
                 <outlet property="sizeLabel" destination="ZVv-jz-Bvc" id="B5t-tw-brp"/>
@@ -57,8 +67,11 @@
         </collectionViewCell>
     </objects>
     <resources>
+        <systemColor name="systemCyanColor">
+            <color red="0.1960784314" green="0.67843137249999996" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemGreenColor">
-            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

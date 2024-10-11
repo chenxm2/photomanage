@@ -49,7 +49,7 @@ static dispatch_once_t onceToken;
     return [_dataMap objectForKey:localIdentifier];
 }
 
-- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier {
+- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality {
     if (compressedLocalIdentifier == nil) {
         return;
     }
@@ -59,6 +59,9 @@ static dispatch_once_t onceToken;
             PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:compressedLocalIdentifier] options:nil];
             [self createDataByPHFetchResult:fetchResult callback:^(NSArray<AssetData *> * _Nonnull dataList) {
                 [dataList enumerateObjectsUsingBlock:^(AssetData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [obj loadBindData:^(AssetBindData * _Nonnull bindData) {
+                        [bindData setCompressQulity:quality];
+                    }];
                     [self.dataMap setObject:obj forKey:obj.asset.localIdentifier];
                 }];
             }];

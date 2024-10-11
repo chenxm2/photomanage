@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *compressedTag;
+@property (weak, nonatomic) IBOutlet UILabel *compressQuality;
 
 @end
 @implementation VideoViewCell
@@ -47,6 +48,12 @@
                 self.compressedTag.hidden = NO;
             } else {
                 self.compressedTag.hidden = YES;
+            }
+            
+            if (bindData.compressQulity == nil) {
+                self.compressQuality.text = @"原始视频";
+            } else {
+                self.compressQuality.text = bindData.compressQulity;
             }
         }
     }];

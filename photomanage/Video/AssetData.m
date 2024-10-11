@@ -48,16 +48,16 @@
                             }];
                         } else {
                             [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"decodeObjectOfClass fail"];
-                            [strongSelf generateNewData:callback];
+                            [strongSelf generateNewBindData:callback];
                         }
                     } else {
                         [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"initForReadingFromData unarchiver fail"];
                         [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:error.description];
-                        [strongSelf generateNewData:callback];
+                        [strongSelf generateNewBindData:callback];
                     }
                 } else {
                     [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"savedData nil"];
-                    [strongSelf generateNewData:callback];
+                    [strongSelf generateNewBindData:callback];
                 }
             }
         }];
@@ -66,7 +66,7 @@
     }
 }
 
-- (void)generateNewData:(AssetBindDataCallback)callback {
+- (void)generateNewBindData:(AssetBindDataCallback)callback {
     AssetBindData *newData = [[AssetBindData alloc] init];
     newData.orgLocalIdentifier = self.asset.localIdentifier;
     [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:

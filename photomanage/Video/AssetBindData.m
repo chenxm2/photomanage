@@ -7,6 +7,11 @@
 
 #import "AssetBindData.h"
 NSString * const kAssetBindData = @"AssetBindData";
+
+NSString * const kQualityLow = @"低清晰度";
+NSString * const kQualityMiddle = @"标准质量";
+NSString * const kQualityHigh = @"高保真";
+
 @implementation AssetBindData
 // 序列化对象
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -14,6 +19,7 @@ NSString * const kAssetBindData = @"AssetBindData";
     [aCoder encodeObject:self.orgLocalIdentifier forKey:@"orgLocalIdentifier"];
     [aCoder encodeObject:self.compressedlocalIdentifier forKey:@"compressedlocalIdentifier"];
     [aCoder encodeObject:self.isCompress forKey:@"isCompress"];
+    [aCoder encodeObject:self.compressQulity forKey:@"compressQulity"];
 }
 
 // 反序列化对象
@@ -25,10 +31,12 @@ NSString * const kAssetBindData = @"AssetBindData";
             _orgLocalIdentifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"orgLocalIdentifier"];
             _compressedlocalIdentifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"compressedlocalIdentifier"];
             _isCompress = [aDecoder decodeObjectOfClass:[NSNumber class] forKey:@"isCompress"];
+            _compressQulity = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"compressQulity"];
         } else {
             _orgLocalIdentifier = [aDecoder decodeObjectForKey:@"orgLocalIdentifier"];
             _compressedlocalIdentifier = [aDecoder decodeObjectForKey:@"compressedlocalIdentifier"];
             _isCompress = [aDecoder decodeObjectForKey:@"isCompress"];
+            _compressQulity = [aDecoder decodeObjectForKey:@"compressQulity"];
         }
         [[LogUtility sharedInstance] logDebugWithTag:@"AssetBindData" message:@"initWithCoder enter"];
     }
@@ -46,6 +54,11 @@ NSString * const kAssetBindData = @"AssetBindData";
 
 - (void)setIsCompress:(NSNumber *)isCompress {
     _isCompress = isCompress;
+    [self writeDataToFile];
+}
+
+- (void)setCompressQulity:(NSString *)compressQulity {
+    _compressQulity = compressQulity;
     [self writeDataToFile];
 }
 
@@ -80,7 +93,7 @@ NSString * const kAssetBindData = @"AssetBindData";
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, orgLocalIdentifier: %@, compressedlocalIdentifier: %@, isCompress: %@>",
-            NSStringFromClass([self class]), self, self.orgLocalIdentifier, self.compressedlocalIdentifier, self.isCompress];
+    return [NSString stringWithFormat:@"<%@: %p, orgLocalIdentifier: %@, compressedlocalIdentifier: %@, isCompress: %@,   quality: %@>",
+            NSStringFromClass([self class]), self, self.orgLocalIdentifier, self.compressedlocalIdentifier, self.isCompress, self.compressQulity];
 }
 @end
