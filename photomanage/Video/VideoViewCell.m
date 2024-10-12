@@ -50,11 +50,7 @@
                 self.compressedTag.hidden = YES;
             }
             
-            if (bindData.compressQulity == nil) {
-                self.compressQuality.text = @"原始视频";
-            } else {
-                self.compressQuality.text = bindData.compressQulity;
-            }
+            self.compressQuality.text = [bindData getQualityString];
         }
     }];
 }

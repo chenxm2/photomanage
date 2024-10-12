@@ -92,6 +92,14 @@ NSString * const kQualityHigh = @"高保真";
     }];
 }
 
+- (NSString *)getQualityString {
+    if (self.compressQulity == nil) {
+        return @"原始视频";
+    } else {
+        return self.compressQulity;
+    }
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"<%@: %p, orgLocalIdentifier: %@, compressedlocalIdentifier: %@, isCompress: %@,   quality: %@>",
             NSStringFromClass([self class]), self, self.orgLocalIdentifier, self.compressedlocalIdentifier, self.isCompress, self.compressQulity];

@@ -49,7 +49,7 @@ static dispatch_once_t onceToken;
     return [_dataMap objectForKey:localIdentifier];
 }
 
-- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality {
+- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality callBack:(AssetDataCallback)callback {
     if (compressedLocalIdentifier == nil) {
         return;
     }
@@ -61,6 +61,8 @@ static dispatch_once_t onceToken;
                 [dataList enumerateObjectsUsingBlock:^(AssetData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     [obj loadBindData:^(AssetBindData * _Nonnull bindData) {
                         [bindData setCompressQulity:quality];
+                        
+                        callback(obj);
                     }];
                     [self.dataMap setObject:obj forKey:obj.asset.localIdentifier];
                 }];

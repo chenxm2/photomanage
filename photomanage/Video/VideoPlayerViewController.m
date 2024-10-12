@@ -48,6 +48,8 @@
         return;
     }
     
+    [self loadViewIfNeeded];
+    
     // 获取 PHAsset 的视频资源 URL
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.networkAccessAllowed = YES; // 允许从iCloud下载视频

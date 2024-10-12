@@ -11,12 +11,16 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VideoCompressViewController">
             <connections>
+                <outlet property="compressButton" destination="OXf-3S-4kI" id="Cyr-lE-ocQ"/>
+                <outlet property="compressQualityLabel" destination="drh-Pf-NpV" id="Cob-TD-BQ5"/>
                 <outlet property="compressedContainer" destination="m0I-hz-oRp" id="SqF-GV-ePa"/>
                 <outlet property="compressedImageView" destination="S8U-Jb-cpO" id="Xjt-zN-b56"/>
-                <outlet property="compressedSizeLabel" destination="zgo-dq-PZD" id="z7k-5p-HCy"/>
+                <outlet property="compressedSizeLabel" destination="zgo-dq-PZD" id="hRy-1L-z7N"/>
                 <outlet property="orgImageView" destination="AgQ-X0-pSS" id="e9h-MQ-gCT"/>
                 <outlet property="orgSizeLabel" destination="tld-mT-prJ" id="zMC-Lb-LgN"/>
+                <outlet property="qualityLabel" destination="GYG-BY-uM8" id="K2l-Us-Cak"/>
                 <outlet property="qualityPickerView" destination="pZ0-l0-eoh" id="mZk-Fb-VJb"/>
+                <outlet property="saveToAlbumButton" destination="f4X-UC-bMy" id="oJo-OH-FqJ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

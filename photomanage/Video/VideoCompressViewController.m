@@ -14,7 +14,9 @@ static NSString * const kCompressedAlbum = @"压缩相册";
 static NSString * const kLogTag = @"VideoCompressViewController";
 
 @interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
+@property (weak, nonatomic) IBOutlet UILabel *qualityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *orgSizeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *compressQualityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *compressedSizeLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *orgImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *compressedImageView;
@@ -25,6 +27,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
 @property (strong, nonatomic) NSURL *compressedURL;
 @property (weak, nonatomic) IBOutlet UIView *compressedContainer;
+@property (weak, nonatomic) IBOutlet StyledButton *compressButton;
+@property (weak, nonatomic) IBOutlet StyledButton *saveToAlbumButton;
 @property (strong, nonatomic) AVAssetReader *reader;
 @property (strong, nonatomic) AVAssetWriter *writer;
 @end
@@ -59,11 +63,35 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 [strongSelf.compressedImageView setImageWithAsset:strongSelf.compressedData.asset];
                 strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:strongSelf.compressedData.fileSize];
                 
+                [strongSelf.compressedData loadBindData:^(AssetBindData * _Nonnull compressBindData) {
+                    strongSelf.compressQualityLabel.text = [compressBindData getQualityString];
+                    [strongSelf updateCompressButton];
+                    [strongSelf updateSaveButton];
+                }];
+                
             }
+            
+            strongSelf.qualityLabel.text = [bindData getQualityString];
         }
         
     }];
     // Do any additional setup after loading the view from its nib.
+}
+
+- (void)updateCompressButton {
+    if (self.compressedContainer.hidden) {
+        [self.compressButton setTitle:@"压缩" forState:UIControlStateNormal];
+    } else {
+        [self.compressButton setTitle:@"重新压缩" forState:UIControlStateNormal];
+    }
+}
+
+- (void)updateSaveButton {
+    if (self.compressedData != nil) {
+        [self.saveToAlbumButton setTitle:@"已保存" forState:UIControlStateNormal];
+    } else {
+        [self.saveToAlbumButton setTitle:@"保存至相册" forState:UIControlStateNormal];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -113,7 +141,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (IBAction)saveToAlbum:(id)sender {
-    [self createAlbumAndSaveCompressed:self.compressedURL];
+    if (self.compressedURL != nil) {
+        [self createAlbumAndSaveCompressed:self.compressedURL];
+    } else {
+        [self.view showToastWithMessage:@"已在相册"];
+    }
 }
 
 
@@ -171,6 +203,10 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             [strongSelf.compressedImageView setImageWithAsset:strongSelf.orgData.asset];
             strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:[NSNumber numberWithFloat:compressedSizeMB]];
             strongSelf.compressedURL = compressedURL;
+            strongSelf.compressedData = nil;
+            [strongSelf updateCompressButton];
+            [strongSelf updateSaveButton];
+            strongSelf.compressQualityLabel.text = preset;
         }
         NSLog(@"Video originalSizeMB: %.2f MB,  compressedSizeMB: %.2f", data.fileSize.floatValue, compressedSizeMB);
     }];
@@ -351,16 +387,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     dispatch_group_enter(group); // 手动进入 group
     [videoWriterInput requestMediaDataWhenReadyOnQueue:videoCompressQueue usingBlock:^{
-        NSLog(@"isReadyForMoreMediaData");
         while ([videoWriterInput isReadyForMoreMediaData]) {
             CMSampleBufferRef sampleBuffer = [videoReaderOutput copyNextSampleBuffer];
             if (sampleBuffer) {
-                NSLog(@"getVideoSample beging");
                 [videoWriterInput appendSampleBuffer:sampleBuffer];
                 CFRelease(sampleBuffer);
-                NSLog(@"getVideoSample end");
             } else {
-                NSLog(@"audio finish");
                 [videoWriterInput markAsFinished];
                 dispatch_group_leave(group); // 任务 1 完成，离开 group
                 break;
@@ -374,12 +406,9 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 CMSampleBufferRef sampleBuffer = [audioReaderOutput copyNextSampleBuffer];
                 if (sampleBuffer) {
                     // 解码音频样本并转换为PCM格式
-                    NSLog(@"getAudioSample beging");
                     [audioWriterInput appendSampleBuffer:sampleBuffer];
                     CFRelease(sampleBuffer);
-                    NSLog(@"getAudioSample end");
                 } else {
-                    NSLog(@"audio finish");
                     [audioWriterInput markAsFinished];
                     dispatch_group_leave(group); // 任务 1 完成，离开 group
                     break;
@@ -398,9 +427,10 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         
         [assetWriter finishWritingWithCompletionHandler:^{
             if (assetWriter.status == AVAssetWriterStatusCompleted) {
-                NSLog(@"file finish");
+                
                 NSData *compressedData = [NSData dataWithContentsOfURL:outputURL];
                 CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
+                NSLog(@"file finish compressedSizeMB = %f", compressedSizeMB);
                 [self callOnMainThreadCompletion:completion compressURL:outputURL size:compressedSizeMB];
             } else {
                 [self callOnMainThreadCompletion:completion compressURL:nil size:0];
@@ -420,24 +450,24 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     NSLog(@"视频原帧率为: %.2f fps", orgframeRate);
     
     CGSize outputSize;
-    CGFloat videoBitRate = originalBitRate * 0.7; // 默认压缩到 70%
+    CGFloat videoBitRate = originalBitRate * 0.6; // 默认压缩到 70%
     NSInteger frameRate = 30;
     if ([kQualityHigh isEqual:preset]) {
         videoBitRate = originalBitRate * 0.9; // 高保真，压缩到 90% 原码率
         frameRate = 30; // 高帧率
         outputSize = videoSize;
     } else if ([kQualityMiddle isEqual:preset]) {
-        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
+        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 70% 原码率
         frameRate = 24; // 中等帧率
-        outputSize = CGSizeMake(videoSize.width * 0.75, videoSize.height * 0.75); // 减小到 75% 原始分辨率
+        outputSize = CGSizeMake(videoSize.width * 0.8, videoSize.height * 0.8); // 减小到 80% 原始分辨率
     } else if ([kQualityLow isEqual:preset]) {
         videoBitRate = originalBitRate * 0.3; // 低质量，压缩到 30% 原码率
         frameRate = 15;
         outputSize = CGSizeMake(videoSize.width * 0.5, videoSize.height * 0.5);
     } else {
-        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
+        videoBitRate = originalBitRate * 0.7; // 中等质量，压缩到 60% 原码率
         frameRate = 24; // 中等帧率
-        outputSize = CGSizeMake(videoSize.width * 0.75, videoSize.height * 0.75); // 减小到 75% 原始分辨率
+        outputSize = CGSizeMake(videoSize.width * 0.8, videoSize.height * 0.8); // 减小到 80% 原始分辨率
     }
     
     [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"videoSettingsForPreset videoBitRate = %f frameRate = %ld width =%f height =%f",
@@ -548,7 +578,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                  [NSString stringWithFormat:@"completionHandler tempLocalIdentifier = %@", tempLocalIdentifier]];
                 bindData.isCompress = @(YES);
                 bindData.compressedlocalIdentifier = tempLocalIdentifier;
-                [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier  compressQuality:strongSelf.selectedPreset];
+                [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier  compressQuality:strongSelf.selectedPreset callBack:^(AssetData * _Nonnull assetData) {
+                    NSLog(@"onCompressedVideoSaveToAlblum %@", assetData);
+                    strongSelf.compressedData = assetData;
+                    strongSelf.compressedURL = nil;
+                    [strongSelf updateSaveButton];
+                }];
                 
             }];
             [GCDUtility executeOnMainThread:^{

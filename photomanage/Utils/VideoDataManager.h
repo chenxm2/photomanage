@@ -17,7 +17,7 @@ typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
 + (instancetype)sharedManager;
 - (void)fetchVideosSortedBySize:(AssetDatasCallback)callback;
 - (AssetData *)assetDataByLocalIdentifier:(NSString *)localIdentifier;
-- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality;
+- (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality callBack:(AssetDataCallback)callback;
 - (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback;
 @end
 
