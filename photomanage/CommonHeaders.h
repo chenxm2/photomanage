@@ -21,4 +21,5 @@
 #import "Utils/ScreenUility.h"
 #import "Utils/LogUtility.h"
 #import "Utils/CallBackDefine.h"
+#import "Utils/String+Localized.h"
 #endif /* CommonHeaders_h */

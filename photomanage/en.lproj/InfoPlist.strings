@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  photomanage
+
+  Created by chenxianming on 2024/10/12.
+*/
+
+// Localizable App Name是App在英语环境环境下显示的名称
+CFBundleDisplayName = "Album Slimming";

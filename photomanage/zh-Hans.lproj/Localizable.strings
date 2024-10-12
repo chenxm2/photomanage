@@ -1,0 +1,10 @@
+"confirm" = "确定";
+"cancel" = "取消";
+"compress" = "压缩";
+"re_compress" = "重新压缩";
+"album" = "相册";
+"compress_album_name" = "压缩视频";
+"saved" = "已保存";
+"save_to_album" = "保存到相册";
+"already_in_album" = "已在相册了";
+"compress_sure" = "您确定要进行压缩？";

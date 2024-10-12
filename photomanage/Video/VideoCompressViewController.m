@@ -10,7 +10,6 @@
 #import "VideoPlayerViewController.h"
 #import "VideoDataManager.h"
 
-static NSString * const kCompressedAlbum = @"压缩相册";
 static NSString * const kLogTag = @"VideoCompressViewController";
 
 @interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
@@ -31,6 +30,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (weak, nonatomic) IBOutlet StyledButton *saveToAlbumButton;
 @property (strong, nonatomic) AVAssetReader *reader;
 @property (strong, nonatomic) AVAssetWriter *writer;
+@property (strong, nonatomic) NSString *compressAlbumName;
 @end
 
 
@@ -47,6 +47,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.compressAlbumName = [NSString localizedStringWithName:@"compress_album_name"];
     self.orgSizeLabel.text = [NSString fileSizeStringWithNumber:self.orgData.fileSize];
     [self.orgImageView setImageWithAsset:_orgData.asset];
     [self.compressedImageView setImageWithAsset:_orgData.asset];
@@ -80,17 +81,17 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)updateCompressButton {
     if (self.compressedContainer.hidden) {
-        [self.compressButton setTitle:@"压缩" forState:UIControlStateNormal];
+        [self.compressButton setTitle:[NSString localizedStringWithName:@"compress"] forState:UIControlStateNormal];
     } else {
-        [self.compressButton setTitle:@"重新压缩" forState:UIControlStateNormal];
+        [self.compressButton setTitle:[NSString localizedStringWithName:@"re_compress"]  forState:UIControlStateNormal];
     }
 }
 
 - (void)updateSaveButton {
     if (self.compressedData != nil) {
-        [self.saveToAlbumButton setTitle:@"已保存" forState:UIControlStateNormal];
+        [self.saveToAlbumButton setTitle:[NSString localizedStringWithName:@"saved"] forState:UIControlStateNormal];
     } else {
-        [self.saveToAlbumButton setTitle:@"保存至相册" forState:UIControlStateNormal];
+        [self.saveToAlbumButton setTitle:[NSString localizedStringWithName:@"save_to_album"] forState:UIControlStateNormal];
     }
 }
 
@@ -144,7 +145,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     if (self.compressedURL != nil) {
         [self createAlbumAndSaveCompressed:self.compressedURL];
     } else {
-        [self.view showToastWithMessage:@"已在相册"];
+        [self.view showToastWithMessage:[NSString localizedStringWithName:@"already_in_album"]];
     }
 }
 
@@ -156,7 +157,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)showConfirmationAlertWithData:(AssetData *)data preset:(NSString *)preset {
     WEAK_SELF
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"压缩视频" message:@"您确定要进行压缩？" confirmButtonTitle:@"确认" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"compress_album_name"] message:[NSString localizedStringWithName:@"compress_sure"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
         STRONG_SELF
         if (strongSelf && confirmed) {
             [ScreenUility setForceScreenOn:YES];
@@ -498,7 +499,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
     
     for (PHAssetCollection *collection in collections) {
-        if ([collection.localizedTitle isEqualToString:kCompressedAlbum]) {
+        if ([collection.localizedTitle isEqualToString:self.compressAlbumName]) {
             createdCollection = collection;
             break;
         }
@@ -507,7 +508,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     // 如果相册不存在，创建一个
     if (!createdCollection) {
         [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            PHAssetCollectionChangeRequest *albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:kCompressedAlbum];
+            PHAssetCollectionChangeRequest *albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:self.compressAlbumName];
         } completionHandler:^(BOOL success, NSError *error) {
             if (success) {
                 NSLog(@"Custom album created.");
@@ -527,7 +528,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     PHAssetCollection *customAlbum = nil;
     for (PHAssetCollection *collection in collections) {
-        if ([collection.localizedTitle isEqualToString:kCompressedAlbum]) {
+        if ([collection.localizedTitle isEqualToString:self.compressAlbumName]) {
             customAlbum = collection;
             break;
         }

@@ -32,9 +32,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.isShow = NO;
-    self.navigationItem.title = @"相册";
-    self.title = @"相册";
-    self.tabBarController.title = @"相册";
     self.originAssetsArray = [[NSMutableArray alloc] init];
     self.deleteAssetsArray = [[NSMutableArray alloc] init];
     self.view.backgroundColor = [UIColor whiteColor];
@@ -45,7 +42,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    self.tabBarController.title = [NSString localizedStringWithName:@"album"];
     if ([self.originAssetsArray count] == 0) {
         [self getAuth];
     } else {
