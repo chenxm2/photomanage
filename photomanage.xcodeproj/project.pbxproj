@@ -202,14 +202,13 @@
 		47D6FDAB2BFB0367000385EA /* photomanage */ = {
 			isa = PBXGroup;
 			children = (
+				47D9E67D2CBA70B100880083 /* Photo */,
 				47D6BA252C9525A900516CD6 /* Utils */,
 				47F5589D2C859DBD0053CB04 /* Video */,
 				47D6FDAC2BFB0367000385EA /* AppDelegate.h */,
 				47D6FDAD2BFB0367000385EA /* AppDelegate.m */,
 				47D6FDAF2BFB0367000385EA /* SceneDelegate.h */,
 				47D6FDB02BFB0367000385EA /* SceneDelegate.m */,
-				47D6FDB22BFB0367000385EA /* PhotoManageViewController.h */,
-				47D6FDB32BFB0367000385EA /* PhotoManageViewController.m */,
 				47D6FDB52BFB0367000385EA /* Main.storyboard */,
 				47D6FDB82BFB0368000385EA /* Assets.xcassets */,
 				47D6FDBA2BFB0368000385EA /* LaunchScreen.storyboard */,
@@ -217,6 +216,14 @@
 				47D9E6762CBA621000880083 /* Localizable.strings */,
 				47D9E6722CBA5FEA00880083 /* InfoPlist.strings */,
 				47D6FDBE2BFB0368000385EA /* main.m */,
+				47D6BA3E2C9577B700516CD6 /* CommonHeaders.h */,
+			);
+			path = photomanage;
+			sourceTree = "<group>";
+		};
+		47D9E67D2CBA70B100880083 /* Photo */ = {
+			isa = PBXGroup;
+			children = (
 				476861FE2BFB1ED4003D7DA8 /* PhotoCollectionViewCell.h */,
 				476861FF2BFB1ED4003D7DA8 /* PhotoCollectionViewCell.m */,
 				476862062BFB3BF5003D7DA8 /* PhotoPreviewController.h */,
@@ -230,9 +237,10 @@
 				47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */,
 				47BDE2EA2BFC82FC00419853 /* ConfirmDeleteViewCell.h */,
 				47BDE2EB2BFC82FC00419853 /* ConfirmDeleteViewCell.m */,
-				47D6BA3E2C9577B700516CD6 /* CommonHeaders.h */,
+				47D6FDB22BFB0367000385EA /* PhotoManageViewController.h */,
+				47D6FDB32BFB0367000385EA /* PhotoManageViewController.m */,
 			);
-			path = photomanage;
+			path = Photo;
 			sourceTree = "<group>";
 		};
 		47F5589D2C859DBD0053CB04 /* Video */ = {
