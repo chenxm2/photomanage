@@ -29,23 +29,14 @@
     return self;
 }
 
-- (void)logInfoWithTag:(NSString *)tag message:(NSString *)message {
-    [self logWithLevel:@"INFO" tag:tag message:message];
-}
-
-- (void)logDebugWithTag:(NSString *)tag message:(NSString *)message {
-    [self logWithLevel:@"DEBUG" tag:tag message:message];
-}
-
-- (void)logErrorWithTag:(NSString *)tag message:(NSString *)message {
-    [self logWithLevel:@"ERROR" tag:tag message:message];
-}
-
-- (void)logWarningWithTag:(NSString *)tag message:(NSString *)message {
-    [self logWithLevel:@"WARNING" tag:tag message:message];
-}
-
-- (void)logWithLevel:(NSString *)level tag:(NSString *)tag message:(NSString *)message {
+// 用来处理可变参数的内部方法
+- (void)logWithLevel:(NSString *)level tag:(NSString *)tag message:(NSString *)format, ... {
+    va_list args;
+    va_start(args, format);
+    
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    
     dispatch_async(self.logQueue, ^{
         NSString *logMessage = [NSString stringWithFormat:@"%@ [%@][%@]: %@", [NSDate date], level, tag, message];
         
@@ -58,6 +49,45 @@
         }
     });
 }
+
+// 修改后的日志接口方法，支持格式化字符串
+- (void)logInfoWithTag:(NSString *)tag message:(NSString *)format, ... {
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    
+    [self logWithLevel:@"INFO" tag:tag message:@"%@", message];
+}
+
+- (void)logDebugWithTag:(NSString *)tag message:(NSString *)format, ... {
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    
+    [self logWithLevel:@"DEBUG" tag:tag message:@"%@", message];
+}
+
+- (void)logErrorWithTag:(NSString *)tag message:(NSString *)format, ... {
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    
+    [self logWithLevel:@"ERROR" tag:tag message:@"%@", message];
+}
+
+- (void)logWarningWithTag:(NSString *)tag message:(NSString *)format, ... {
+    va_list args;
+    va_start(args, format);
+    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    
+    [self logWithLevel:@"WARNING" tag:tag message:@"%@", message];
+}
+
+#pragma mark - File Logging
 
 - (NSString *)currentLogFilePath {
     NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];

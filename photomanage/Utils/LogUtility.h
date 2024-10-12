@@ -10,12 +10,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LogUtility : NSObject
+
 + (instancetype)sharedInstance;
-- (void)logInfoWithTag:(NSString *)tag message:(NSString *)message;
-- (void)logDebugWithTag:(NSString *)tag message:(NSString *)message;
-- (void)logErrorWithTag:(NSString *)tag message:(NSString *)message;
-- (void)logWarningWithTag:(NSString *)tag message:(NSString *)message;
+
+// 支持格式化字符串的日志方法
+- (void)logInfoWithTag:(NSString *)tag message:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
+- (void)logDebugWithTag:(NSString *)tag message:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
+- (void)logErrorWithTag:(NSString *)tag message:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
+- (void)logWarningWithTag:(NSString *)tag message:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
 
 @end
+
+#define LogUtil [LogUtility sharedInstance]
 
 NS_ASSUME_NONNULL_END

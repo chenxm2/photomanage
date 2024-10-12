@@ -15,7 +15,6 @@ NSString * const kQualityHigh = @"高保真";
 @implementation AssetBindData
 // 序列化对象
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [[LogUtility sharedInstance] logDebugWithTag:@"AssetBindData" message:@"encodeWithCoder"];
     [aCoder encodeObject:self.orgLocalIdentifier forKey:@"orgLocalIdentifier"];
     [aCoder encodeObject:self.compressedlocalIdentifier forKey:@"compressedlocalIdentifier"];
     [aCoder encodeObject:self.isCompress forKey:@"isCompress"];
@@ -24,7 +23,6 @@ NSString * const kQualityHigh = @"高保真";
 
 // 反序列化对象
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    [[LogUtility sharedInstance] logDebugWithTag:@"AssetBindData" message:@"initWithCoder"];
     self = [super init];
     if (self) {
         if ([aDecoder requiresSecureCoding]) {
@@ -38,7 +36,6 @@ NSString * const kQualityHigh = @"高保真";
             _isCompress = [aDecoder decodeObjectForKey:@"isCompress"];
             _compressQulity = [aDecoder decodeObjectForKey:@"compressQulity"];
         }
-        [[LogUtility sharedInstance] logDebugWithTag:@"AssetBindData" message:@"initWithCoder enter"];
     }
     return self;
 }
@@ -77,17 +74,11 @@ NSString * const kQualityHigh = @"高保真";
             NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
             [archiver encodeObject:strongSelf forKey:kAssetBindData];
             [archiver finishEncoding];
-            
-            
-            [[LogUtility sharedInstance] logInfoWithTag:@"AssetBindData" message:
-            [NSString stringWithFormat:@"writeDataToFile size = %d", data.length]];
-            
+
             // 保存序列化数据到 NSUserDefaults
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:data forKey:strongSelf.orgLocalIdentifier];
             [defaults synchronize];
-            [[LogUtility sharedInstance] logInfoWithTag:@"AssetBindData" message:
-            [NSString stringWithFormat:@"writeDataToFile data = %@", strongSelf]];
         }
     }];
 }

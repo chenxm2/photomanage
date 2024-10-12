@@ -213,7 +213,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"begin"];
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.version = PHVideoRequestOptionsVersionOriginal;
     options.networkAccessAllowed = true;
@@ -255,7 +254,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)finalCompressActionWithAsset:(AVAsset *)asset preset:(NSString *)preset completion:(void (^)(NSURL *compressedURL, CGFloat compressedSizeMB))completion {
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"got avasset = %@", asset]];
         
     // 定义输出路径
     NSString *outputPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"compressedVideo.mp4"];
@@ -271,7 +269,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     NSError *error = nil;
     AVAssetWriter *assetWriter = [AVAssetWriter assetWriterWithURL:outputURL fileType:AVFileTypeMPEG4 error:&error];
     if (error) {
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"assetWriterWithURL fail %@", error]];
         completion(nil, 0);
         return;
     }
@@ -294,9 +291,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     // 添加视频输入到写入器
     if ([assetWriter canAddInput:videoWriterInput]) {
         [assetWriter addInput:videoWriterInput];
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addInput videoWriterInput"];
     } else {
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoWriterInput faile"];
         [self callOnMainThreadCompletion:completion compressURL:nil size:0];
         return;
     }
@@ -316,10 +311,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         };
         audioWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio outputSettings:audioSettings];
         if ([assetWriter canAddInput:audioWriterInput]) {
-            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addInput audioWriterInput"];
             [assetWriter addInput:audioWriterInput];
         } else {
-            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"can not write"];
         }
     }
     
@@ -331,7 +324,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     AVAssetReader *assetReader = [AVAssetReader assetReaderWithAsset:asset error:&error];
     if (error) {
         [self callOnMainThreadCompletion:completion compressURL:nil size:0];
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"AVAssetReader fail"];
         return;
     }
     
@@ -339,7 +331,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     // 视频读取输入
     if (!videoTrack) {
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoTrack nil"];
+        
     }
     NSDictionary *videoReaderOutputSettings = @{
         (id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),  // YUV 格式
@@ -349,10 +341,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     AVAssetReaderTrackOutput *videoReaderOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:videoTrack outputSettings:videoReaderOutputSettings];
     if ([assetReader canAddOutput:videoReaderOutput]) {
         [assetReader addOutput:videoReaderOutput];
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addOutput videoReaderOutput"];
     } else {
         [self callOnMainThreadCompletion:completion compressURL:nil size:0];
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"videoReaderOutput fail"];
         return;
     }
     
@@ -370,20 +360,17 @@ static NSString * const kLogTag = @"VideoCompressViewController";
          audioReaderOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:audioTrack outputSettings:audioReaderOutputSettings];
         if ([assetReader canAddOutput:audioReaderOutput]) {
             [assetReader addOutput:audioReaderOutput];
-            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"addOutput audioReaderOutput"];
         } else {
-            [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"audioWriterInput fail"];
         }
     }
     
     // 开始读取数据并写入
     [assetReader startReading];
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"startReading"];
     
     // 创建一个 dispatch group
     dispatch_group_t group = dispatch_group_create();
     dispatch_queue_t videoCompressQueue = dispatch_queue_create("video.compress.queue", DISPATCH_QUEUE_SERIAL);
-    dispatch_queue_t audioCompressQueue = dispatch_queue_create("video.compress.queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t audioCompressQueue = dispatch_queue_create("audio.compress.queue", DISPATCH_QUEUE_SERIAL);
     
     dispatch_group_enter(group); // 手动进入 group
     [videoWriterInput requestMediaDataWhenReadyOnQueue:videoCompressQueue usingBlock:^{
@@ -444,8 +431,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                                         videoTrack:(AVAssetTrack *)videoTrack
                                     originalBitRate:(CGFloat)originalBitRate {
     CGSize videoSize = videoTrack.naturalSize;
-    
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"videoSettingsForPreset videoSize = %@", [NSValue valueWithCGSize:videoSize]]];
+
     CGFloat orgframeRate = videoTrack.nominalFrameRate;
     NSLog(@"视频原帧率为: %.2f fps", orgframeRate);
     
@@ -470,9 +456,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         outputSize = CGSizeMake(videoSize.width * 0.8, videoSize.height * 0.8); // 减小到 80% 原始分辨率
     }
     
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"videoSettingsForPreset videoBitRate = %f frameRate = %ld width =%f height =%f",
-                                                                 videoBitRate, (long)frameRate, outputSize.width, outputSize.height]];
-    
     NSDictionary *compressionSettings = @{
         AVVideoAverageBitRateKey: @(videoBitRate),
         AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
@@ -492,12 +475,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 - (CGFloat)calculateBitRateForVideoTrack:(AVAssetTrack *)videoTrack {
     CGSize videoSize = videoTrack.naturalSize;
     CMTime duration = videoTrack.timeRange.duration;
-    float videoDurationInSeconds = CMTimeGetSeconds(duration);
-    
-    NSLog(@"CMTime in seconds: %f", videoDurationInSeconds);
-    
-    [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:[NSString stringWithFormat:@"calculateBitRateForVideoTrack videoSize = %@", [NSValue valueWithCGSize:videoSize]]];
-    
+    float videoDurationInSeconds = CMTimeGetSeconds(duration);    
     // 用视频大小和持续时间估算码率
     float estimatedSize = videoTrack.totalSampleDataLength;
     CGFloat bitRate = (estimatedSize * 8) / videoDurationInSeconds; // bitRate = 文件大小 * 8 / 时间 (bps)
@@ -564,18 +542,10 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
         [albumChangeRequest addAssets:@[[creationRequest placeholderForCreatedAsset]]];
         tempLocalIdentifier = creationRequest.placeholderForCreatedAsset.localIdentifier;
-        [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-         [NSString stringWithFormat:@"performChanges tempLocalIdentifier = %@", tempLocalIdentifier]];
-        
-
     } completionHandler:^(BOOL success, NSError *error) {
         STRONG_SELF
         if (strongSelf && success) {
             [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
-                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                 [NSString stringWithFormat:@"completionHandler bindData %@", bindData]];
-                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:
-                 [NSString stringWithFormat:@"completionHandler tempLocalIdentifier = %@", tempLocalIdentifier]];
                 bindData.isCompress = @(YES);
                 bindData.compressedlocalIdentifier = tempLocalIdentifier;
                 [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier  compressQuality:strongSelf.selectedPreset callBack:^(AssetData * _Nonnull assetData) {
@@ -664,10 +634,8 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
             if (avAsset) {
                 // 视频在本地
-                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"视频在本地"];
             } else {
                 // 视频不在本地（可能在 iCloud 中）
-                [[LogUtility sharedInstance] logInfoWithTag:kLogTag message:@"视频在 iCloud 中"];
             }
         }];
     }

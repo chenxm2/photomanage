@@ -31,8 +31,6 @@
             if (strongSelf) {
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 NSData *savedData = [defaults objectForKey:strongSelf.asset.localIdentifier];
-                [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:
-                 [NSString stringWithFormat:@"loadBindData orgLocalIdentifier = %@, size = %lu", strongSelf.asset.localIdentifier, (unsigned long)savedData.length]];
                 if (savedData) {
                     NSError *error = nil;
                     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:savedData error:&error];
@@ -40,23 +38,17 @@
                         AssetBindData *unarchivedAssetData = [unarchiver decodeObjectOfClass:[AssetBindData class] forKey:kAssetBindData];
                         [unarchiver finishDecoding];
                         if (unarchivedAssetData != nil) {
-                            [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:
-                             [NSString stringWithFormat:@"loadBindData data = %@", unarchivedAssetData]];
                             [GCDUtility executeOnMainThread:^{
                                 strongSelf.assetBindData = unarchivedAssetData;
                                 callback(unarchivedAssetData);
                             }];
                         } else {
-                            [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"decodeObjectOfClass fail"];
                             [strongSelf generateNewBindData:callback];
                         }
                     } else {
-                        [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"initForReadingFromData unarchiver fail"];
-                        [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:error.description];
                         [strongSelf generateNewBindData:callback];
                     }
                 } else {
-                    [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:@"savedData nil"];
                     [strongSelf generateNewBindData:callback];
                 }
             }
@@ -69,8 +61,6 @@
 - (void)generateNewBindData:(AssetBindDataCallback)callback {
     AssetBindData *newData = [[AssetBindData alloc] init];
     newData.orgLocalIdentifier = self.asset.localIdentifier;
-    [[LogUtility sharedInstance] logInfoWithTag:@"AssetData" message:
-     [NSString stringWithFormat:@"generateNewData data = %@", newData]];
     WEAK_SELF
     [GCDUtility executeOnMainThread:^{
         STRONG_SELF
