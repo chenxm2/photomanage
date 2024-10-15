@@ -132,7 +132,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <tabBarAppearance key="standardAppearance"/>
+                        <tabBarAppearance key="standardAppearance">
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </tabBarAppearance>
                     </tabBar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="arL-0h-RBP"/>
@@ -164,7 +166,7 @@
                             </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jk0-KA-muC"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="top" secondItem="jk0-KA-muC" secondAttribute="top" id="3WM-IK-DjY"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="SFC-dB-vwd" secondAttribute="trailing" id="66c-bB-VKd"/>
