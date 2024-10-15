@@ -28,29 +28,27 @@
         WEAK_SELF
         [GCDUtility executeOnSerialQueue:^{
             STRONG_SELF
-            if (strongSelf) {
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                NSData *savedData = [defaults objectForKey:strongSelf.asset.localIdentifier];
-                if (savedData) {
-                    NSError *error = nil;
-                    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:savedData error:&error];
-                    if (error == nil) {
-                        AssetBindData *unarchivedAssetData = [unarchiver decodeObjectOfClass:[AssetBindData class] forKey:kAssetBindData];
-                        [unarchiver finishDecoding];
-                        if (unarchivedAssetData != nil) {
-                            [GCDUtility executeOnMainThread:^{
-                                strongSelf.assetBindData = unarchivedAssetData;
-                                callback(unarchivedAssetData);
-                            }];
-                        } else {
-                            [strongSelf generateNewBindData:callback];
-                        }
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            NSData *savedData = [defaults objectForKey:strongSelf.asset.localIdentifier];
+            if (savedData) {
+                NSError *error = nil;
+                NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:savedData error:&error];
+                if (error == nil) {
+                    AssetBindData *unarchivedAssetData = [unarchiver decodeObjectOfClass:[AssetBindData class] forKey:kAssetBindData];
+                    [unarchiver finishDecoding];
+                    if (unarchivedAssetData != nil) {
+                        [GCDUtility executeOnMainThread:^{
+                            strongSelf.assetBindData = unarchivedAssetData;
+                            callback(unarchivedAssetData);
+                        }];
                     } else {
                         [strongSelf generateNewBindData:callback];
                     }
                 } else {
                     [strongSelf generateNewBindData:callback];
                 }
+            } else {
+                [strongSelf generateNewBindData:callback];
             }
         }];
     } else {
@@ -64,10 +62,7 @@
     WEAK_SELF
     [GCDUtility executeOnMainThread:^{
         STRONG_SELF
-        if (strongSelf) {
-            strongSelf.assetBindData = newData;
-        }
-        
+        strongSelf.assetBindData = newData;
         callback(newData);
     }];
 }

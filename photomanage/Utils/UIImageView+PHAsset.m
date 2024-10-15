@@ -31,9 +31,7 @@ const CGSize smallSize = {300.0, 300.0};
                              NSLog(@"result +++");
                              [GCDUtility executeOnMainThread:^{
                                  STRONG_SELF
-                                 if (strongSelf) {
-                                     [strongSelf setImage:result];
-                                 }
+                                 [strongSelf setImage:result];
                              }];
                          } else {
                              NSLog(@"setImageWithAsset fail");
@@ -60,9 +58,7 @@ const CGSize smallSize = {300.0, 300.0};
                          if (result) {
                              [GCDUtility executeOnMainThread:^{
                                  STRONG_SELF
-                                 if (strongSelf) {
-                                     [strongSelf setImage:result];
-                                 }
+                                 [strongSelf setImage:result];
                              }];
                          } else {
                              NSLog(@"setSmallImageWithAsset fail");

@@ -40,6 +40,8 @@
 		47D9E6742CBA5FEA00880083 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47D9E6722CBA5FEA00880083 /* InfoPlist.strings */; };
 		47D9E6782CBA621000880083 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47D9E6762CBA621000880083 /* Localizable.strings */; };
 		47D9E67C2CBA6A5E00880083 /* String+Localized.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D9E67B2CBA6A5E00880083 /* String+Localized.m */; };
+		47D9E6802CBA875500880083 /* MultiListerner.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D9E67F2CBA875500880083 /* MultiListerner.m */; };
+		47D9E6842CBE4F0000880083 /* Compresser.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D9E6832CBE4F0000880083 /* Compresser.m */; };
 		47F558A02C859E3D0053CB04 /* VideoManageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F5589F2C859E3D0053CB04 /* VideoManageViewController.m */; };
 		47F558A72C85A9BF0053CB04 /* VideoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F558A52C85A9BF0053CB04 /* VideoViewCell.m */; };
 		47F558A82C85A9BF0053CB04 /* VideoViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47F558A62C85A9BF0053CB04 /* VideoViewCell.xib */; };
@@ -113,6 +115,10 @@
 		47D9E6792CBA621400880083 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; lineEnding = 0; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		47D9E67A2CBA6A5E00880083 /* String+Localized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "String+Localized.h"; sourceTree = "<group>"; };
 		47D9E67B2CBA6A5E00880083 /* String+Localized.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "String+Localized.m"; sourceTree = "<group>"; };
+		47D9E67E2CBA875500880083 /* MultiListerner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiListerner.h; sourceTree = "<group>"; };
+		47D9E67F2CBA875500880083 /* MultiListerner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiListerner.m; sourceTree = "<group>"; };
+		47D9E6822CBE4F0000880083 /* Compresser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Compresser.h; sourceTree = "<group>"; };
+		47D9E6832CBE4F0000880083 /* Compresser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Compresser.m; sourceTree = "<group>"; };
 		47F5589E2C859E3D0053CB04 /* VideoManageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoManageViewController.h; sourceTree = "<group>"; };
 		47F5589F2C859E3D0053CB04 /* VideoManageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoManageViewController.m; sourceTree = "<group>"; };
 		47F558A42C85A9BF0053CB04 /* VideoViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoViewCell.h; sourceTree = "<group>"; };
@@ -176,6 +182,8 @@
 				478031292CAA981500AC4BC0 /* CallBackDefine.h */,
 				47D9E67A2CBA6A5E00880083 /* String+Localized.h */,
 				47D9E67B2CBA6A5E00880083 /* String+Localized.m */,
+				47D9E67E2CBA875500880083 /* MultiListerner.h */,
+				47D9E67F2CBA875500880083 /* MultiListerner.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -243,9 +251,19 @@
 			path = Photo;
 			sourceTree = "<group>";
 		};
+		47D9E6812CBE4E9A00880083 /* Compress */ = {
+			isa = PBXGroup;
+			children = (
+				47D9E6822CBE4F0000880083 /* Compresser.h */,
+				47D9E6832CBE4F0000880083 /* Compresser.m */,
+			);
+			path = Compress;
+			sourceTree = "<group>";
+		};
 		47F5589D2C859DBD0053CB04 /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				47D9E6812CBE4E9A00880083 /* Compress */,
 				478031222CA68CA300AC4BC0 /* DataSource */,
 				47F5589E2C859E3D0053CB04 /* VideoManageViewController.h */,
 				47F5589F2C859E3D0053CB04 /* VideoManageViewController.m */,
@@ -410,10 +428,12 @@
 				475958382C9C346F004B24B5 /* AssetBindData.m in Sources */,
 				47F558A02C859E3D0053CB04 /* VideoManageViewController.m in Sources */,
 				47D9E67C2CBA6A5E00880083 /* String+Localized.m in Sources */,
+				47D9E6802CBA875500880083 /* MultiListerner.m in Sources */,
 				47BDE2EC2BFC82FC00419853 /* ConfirmDeleteViewCell.m in Sources */,
 				4768620B2BFB58EA003D7DA8 /* ContentViewController.m in Sources */,
 				478031282CAA421800AC4BC0 /* LogUtility.m in Sources */,
 				476862082BFB3BF5003D7DA8 /* PhotoPreviewController.m in Sources */,
+				47D9E6842CBE4F0000880083 /* Compresser.m in Sources */,
 				47D6FDAE2BFB0367000385EA /* AppDelegate.m in Sources */,
 				47D6FDBF2BFB0368000385EA /* main.m in Sources */,
 				478031212CA50A9E00AC4BC0 /* ScreenUility.m in Sources */,

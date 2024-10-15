@@ -27,11 +27,10 @@
     WEAK_SELF
     [[VideoDataManager sharedManager] fetchVideosSortedBySize:^(NSArray<AssetData *> * _Nonnull dataList) {
        STRONG_SELF
-        if (strongSelf) {
-            [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
-            strongSelf.sortedData = dataList;
-            [strongSelf.collectionView reloadData];
-        }
+        [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
+        strongSelf.sortedData = dataList;
+        [strongSelf.collectionView reloadData];
+        
     }];
 }
 

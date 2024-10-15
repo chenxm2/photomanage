@@ -69,17 +69,15 @@ NSString * const kQualityHigh = @"高保真";
     WEAK_SELF
     [GCDUtility executeOnSerialQueue:^{
         STRONG_SELF
-        if (strongSelf) {
-            NSMutableData *data = [NSMutableData data];
-            NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-            [archiver encodeObject:strongSelf forKey:kAssetBindData];
-            [archiver finishEncoding];
-
-            // 保存序列化数据到 NSUserDefaults
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:data forKey:strongSelf.orgLocalIdentifier];
-            [defaults synchronize];
-        }
+        NSMutableData *data = [NSMutableData data];
+        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+        [archiver encodeObject:strongSelf forKey:kAssetBindData];
+        [archiver finishEncoding];
+        
+        // 保存序列化数据到 NSUserDefaults
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:data forKey:strongSelf.orgLocalIdentifier];
+        [defaults synchronize];
     }];
 }
 
