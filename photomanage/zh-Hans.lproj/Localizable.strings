@@ -8,3 +8,5 @@
 "save_to_album" = "保存到相册";
 "already_in_album" = "已在相册了";
 "compress_sure" = "您确定要进行压缩？";
+"downloading" = "下载中...";
+"compressing" = "压缩中...";

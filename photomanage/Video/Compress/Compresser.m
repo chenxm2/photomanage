@@ -15,6 +15,7 @@
 @property (strong, nonatomic) AVAssetReaderTrackOutput *videoReaderOutput;
 @property (strong, nonatomic) AVAssetWriterInput *audioWriterInput;
 @property (strong, nonatomic) AVAssetReaderTrackOutput *audioReaderOutput;
+@property (assign, nonatomic) float progress;
 @end
 
 @implementation Compresser
@@ -22,7 +23,19 @@
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.version = PHVideoRequestOptionsVersionOriginal;
     options.networkAccessAllowed = true;
-    
+    WEAK_SELF
+    options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+        [GCDUtility executeOnMainThread:^{
+           STRONG_SELF
+            if (strongSelf.downloadProgress != nil) {
+                if (error) {
+                    strongSelf.downloadProgress(progress, YES, error);
+                } else {
+                    strongSelf.downloadProgress(progress, NO, nil);
+                }
+            }
+        }];
+    };
     [self requestAVAssetForVideo:asset options:options preset:preset completion:completion];
 }
 
@@ -33,12 +46,25 @@
         if (avAsset) {
             STRONG_SELF
             [strongSelf finalCompressActionWithAsset:avAsset preset:preset completion:completion];
+            [GCDUtility executeOnMainThread:^{
+                STRONG_SELF
+                
+                if (strongSelf.downloadProgress != nil) {
+                    strongSelf.downloadProgress(1.0, YES, nil);
+                }
+                
+                if (strongSelf.beginCompressCallBack != nil) {
+                    strongSelf.beginCompressCallBack();
+                }
+            }];
+            
         } else {
             // 视频下载失败，检查 info 字典
             [GCDUtility executeOnMainThread:^{
                 NSError *error = info[PHImageErrorKey];
+                STRONG_SELF
                 if (error) {
-                    NSLog(@"视频下载失败，错误信息：%@", error.localizedDescription);
+                    strongSelf.downloadProgress(0, YES, error);
                 } else {
                     // 视频尚未下载或正在下载中
                     NSLog(@"视频尚未下载，正在等待...");
@@ -216,6 +242,7 @@
     // 开始读取数据并写入
     [self.reader startReading];
     
+    float totalDuration = [self getTotalDurationWithAsset:asset];
     // 创建一个 dispatch group
     dispatch_group_t group = dispatch_group_create();
     dispatch_queue_t videoCompressQueue = dispatch_queue_create("video.compress.queue", DISPATCH_QUEUE_SERIAL);
@@ -228,6 +255,7 @@
         while ([strongSelf.videoWriterInput isReadyForMoreMediaData]) {
             CMSampleBufferRef sampleBuffer = [strongSelf.videoReaderOutput copyNextSampleBuffer];
             if (sampleBuffer) {
+                [strongSelf caculateProgressSample:sampleBuffer totalDuration:totalDuration];
                 [strongSelf.videoWriterInput appendSampleBuffer:sampleBuffer];
                 CFRelease(sampleBuffer);
             } else {
@@ -254,6 +282,7 @@
                 }
             }
     }];
+
     
     // 等待所有任务完成后执行某个操作
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
@@ -271,8 +300,48 @@
             } else {
                 [strongSelf callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"finishWritingWithCompletionHandler fail"];
             }
+            
+            [GCDUtility executeOnMainThread:^{
+                STRONG_SELF
+                if (strongSelf.compressProgress != nil) {
+                    strongSelf.compressProgress(1, YES, nil);
+                }
+            }];
+          
         }];
     });
+}
+
+- (float)getTotalDurationWithAsset:(AVAsset *)asset {
+    float res = 0;
+    AVAssetTrack *videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+    if (videoTrack) {
+        res = CMTimeGetSeconds(asset.duration);
+    }
+
+    return res;
+}
+
+- (void)caculateProgressSample:(CMSampleBufferRef)sampleBuffer totalDuration:(float)totalDuration {
+    CMTime presentationTimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+    // 将时间戳转换为秒数
+    float timestampSeconds = CMTimeGetSeconds(presentationTimeStamp);
+    float progress = 0;
+    if (totalDuration != 0) {
+        progress = timestampSeconds / totalDuration;
+    }
+    WEAK_SELF
+    if ((progress - self.progress) * 100 > 1) {
+        self.progress = progress;
+        [GCDUtility executeOnMainThread:^{
+            STRONG_SELF
+            if (strongSelf.compressProgress != nil) {
+                strongSelf.compressProgress(progress, NO, nil);
+                [LogUtil logInfoWithTag:@"progress" message:@" == %d", (int)(progress * 100)];
+            }
+        }];
+    }
+    
 }
 
 // 等待视频下载完成

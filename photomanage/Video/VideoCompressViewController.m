@@ -158,15 +158,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         STRONG_SELF
         if (confirmed) {
             [ScreenUility setForceScreenOn:YES];
-            // 确认操作的处理代码
-            [ActivityIndicatorUtility showActivityIndicatorInView:strongSelf.view];
             [[VideoDataManager sharedManager] checkIfVideoIsOnlyInCloud:data.asset callback:^(BOOL result) {
                 if (strongSelf) {
-                    [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
                     if (result) {
                         [strongSelf showNetWorkConfirm:data preset:preset];
                     } else {
-                        [strongSelf handleCompressVideoWithAsset:data preset:preset];
+                        [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:NO];
                     }
                 }
             }];
@@ -180,19 +177,43 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         if (confirmed) {
             STRONG_SELF
             if (confirmed) {
-                [strongSelf handleCompressVideoWithAsset:data preset:preset];
+                [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:YES];
             }
         }
     }];
 }
 
-- (void)handleCompressVideoWithAsset:(AssetData *)data preset:(NSString *)preset {
+- (void)handleCompressVideoWithAsset:(AssetData *)data preset:(NSString *)preset isInCloud:(BOOL)isInCloud {
     WEAK_SELF
-    [ActivityIndicatorUtility showActivityIndicatorInView:weakSelf.view];
     self.compresser = [[Compresser alloc] init];
+    if (isInCloud) {
+        MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:self.view withString:[NSString localizedStringWithName:@"downloading"]];
+        [self.compresser setDownloadProgress:^(double progress, BOOL finished, NSError * _Nonnull error) {
+            if (finished || error) {
+                [hud hideAnimated:YES];
+            } else {
+                hud.progress = progress;
+            }
+        }];
+    }
+    
+
+    __block MBProgressHUD *beginCompressHUD = nil;
+    [self.compresser setBeginCompressCallBack:^{
+        beginCompressHUD = [ProgressHUDWrapper showProgressToView:self.view withString:[NSString localizedStringWithName:@"compressing"]];
+    }];
+    
+    [self.compresser setCompressProgress:^(double progress, BOOL finished, NSError * _Nonnull error) {
+        if (finished || error) {
+            [beginCompressHUD hideAnimated:YES];
+        } else {
+            beginCompressHUD.progress = progress;
+        }
+    }];
+    
+    
     [self.compresser compressVideoWithAsset:data.asset preset:preset completion:^(BOOL succeed, NSURL * _Nullable fileURL, NSString * _Nonnull errMsg) {
         STRONG_SELF
-        [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
         if (succeed) {
             NSData *compressedData = [NSData dataWithContentsOfURL:fileURL];
             CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);

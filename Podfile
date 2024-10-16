@@ -7,5 +7,5 @@ target 'photomanage' do
 
   # Pods for photomanage
   pod 'Masonry'
-
+  pod 'MBProgressHUD', '~> 1.2.0'
 end

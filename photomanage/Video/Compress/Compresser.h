@@ -10,6 +10,9 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^CompressResultCallBack)(BOOL succeed, NSURL * _Nullable fileURL, NSString *errMsg);
 @interface Compresser : NSObject
+@property (nonatomic, strong) ProgressCallback downloadProgress;
+@property (nonatomic, strong) ProgressCallback compressProgress;
+@property (nonatomic, strong) CallBack beginCompressCallBack;
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion;
 @end
 
