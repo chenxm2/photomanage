@@ -6,6 +6,7 @@
 //
 
 #import "AppDelegate.h"
+#import "RMStore.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +17,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [[UIButton appearance] setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     return YES;
 }
 

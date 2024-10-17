@@ -6,61 +6,79 @@
 //
 
 #import "KeychainHelper.h"
+#import <Security/Security.h>
+
+#import "KeychainHelper.h"
+#import <Security/Security.h>
 
 @implementation KeychainHelper
-
-+ (NSMutableDictionary *)getKeychainQuery:(NSString *)service {
-    return [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            (__bridge id)kSecClassGenericPassword, (__bridge id)kSecClass,
-            service, (__bridge id)kSecAttrService,
-            service, (__bridge id)kSecAttrAccount,
-            (__bridge id)kSecAttrAccessibleAfterFirstUnlock, (__bridge id)kSecAttrAccessible,
-            nil];
-}
-
-+ (void)save:(NSString *)service data:(id)data {
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    SecItemDelete((__bridge CFDictionaryRef)keychainQuery);  // 删除旧的记录
-
-    NSMutableData *archivedData = [NSMutableData data];
-    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:archivedData];
-    [archiver encodeObject:data forKey:NSKeyedArchiveRootObjectKey];
-    [archiver finishEncoding];
-
-    [keychainQuery setObject:archivedData forKey:(__bridge id)kSecValueData];
-    SecItemAdd((__bridge CFDictionaryRef)keychainQuery, NULL);
-}
-
-+ (id)load:(NSString *)service {
-    id ret = nil;
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    
-    [keychainQuery setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
-    [keychainQuery setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
-    
-    CFDataRef keyData = NULL;
-    if (SecItemCopyMatching((__bridge CFDictionaryRef)keychainQuery, (CFTypeRef *)&keyData) == noErr) {
-        @try {
-            NSData *data = (__bridge NSData *)keyData;
-            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
-            if (unarchiver) {
-                ret = [unarchiver decodeObjectOfClass:[NSDictionary class] forKey:NSKeyedArchiveRootObjectKey];
-                [unarchiver finishDecoding];
-            }
-        } @catch (NSException *e) {
-            NSLog(@"解档失败: %@", e);
-        } @finally {
-            if (keyData) {
-                CFRelease(keyData);
-            }
-        }
++ (void)saveString:(NSString *)value forKey:(NSString *)key {
+    if (value && key) {
+        NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
+        [self saveData:data forKey:key];
     }
-    return ret;
 }
 
-+ (void)delete:(NSString *)service {
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
++ (NSString *)loadStringForKey:(NSString *)key {
+    NSData *data = [self loadDataForKey:key];
+    return data ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] : nil;
+}
+
++ (void)saveNumber:(NSNumber *)value forKey:(NSString *)key {
+    if (value && key) {
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value requiringSecureCoding:NO error:nil];
+        [self saveData:data forKey:key];
+    }
+}
+
++ (NSNumber *)loadNumberForKey:(NSString *)key {
+    NSData *data = [self loadDataForKey:key];
+    return data ? [NSKeyedUnarchiver unarchivedObjectOfClass:[NSNumber class] fromData:data error:nil] : nil;
+}
+
++ (void)saveData:(NSData *)data forKey:(NSString *)key {
+    if (!data || !key) {
+        return;
+    }
+
+    NSMutableDictionary *keychainItem = [NSMutableDictionary dictionary];
+    keychainItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    keychainItem[(__bridge id)kSecAttrAccount] = key;
+    keychainItem[(__bridge id)kSecValueData] = data;
+
+    // Delete existing item
+    [self deleteItemForKey:key];
+
+    // Add item to Keychain
+    SecItemAdd((__bridge CFDictionaryRef)keychainItem, NULL);
+}
+
++ (NSData *)loadDataForKey:(NSString *)key {
+    if (!key) {
+        return nil;
+    }
+
+    NSMutableDictionary *keychainItem = [NSMutableDictionary dictionary];
+    keychainItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    keychainItem[(__bridge id)kSecAttrAccount] = key;
+    keychainItem[(__bridge id)kSecReturnData] = @YES;
+    keychainItem[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
+
+    CFTypeRef result = NULL;
+    SecItemCopyMatching((__bridge CFDictionaryRef)keychainItem, &result);
+    return (__bridge_transfer NSData *)result;
+}
+
++ (void)deleteItemForKey:(NSString *)key {
+    if (!key) {
+        return;
+    }
+
+    NSMutableDictionary *keychainItem = [NSMutableDictionary dictionary];
+    keychainItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    keychainItem[(__bridge id)kSecAttrAccount] = key;
+
+    SecItemDelete((__bridge CFDictionaryRef)keychainItem);
 }
 
 @end

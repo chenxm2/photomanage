@@ -9,6 +9,5 @@ target 'photomanage' do
   pod 'Masonry'
   pod 'MBProgressHUD', '~> 1.2.0'
   pod 'YYModel'
-  pod 'RMStore', '~> 0.7'
-  pod 'AFNetworking', '~> 4.0'
+  pod 'RMStore'
 end

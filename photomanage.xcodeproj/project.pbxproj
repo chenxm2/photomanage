@@ -45,6 +45,7 @@
 		47E86E262CBFB08400AECAF7 /* ProgressHUDWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E86E252CBFB08400AECAF7 /* ProgressHUDWrapper.m */; };
 		47E86E2D2CC0BADC00AECAF7 /* KeychainHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E86E2C2CC0BADC00AECAF7 /* KeychainHelper.m */; };
 		47E86E302CC0EB6C00AECAF7 /* JSONConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E86E2F2CC0EB6C00AECAF7 /* JSONConverter.m */; };
+		47E86E342CC1031400AECAF7 /* StoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E86E332CC1031400AECAF7 /* StoreManager.m */; };
 		47F558A02C859E3D0053CB04 /* VideoManageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F5589F2C859E3D0053CB04 /* VideoManageViewController.m */; };
 		47F558A72C85A9BF0053CB04 /* VideoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F558A52C85A9BF0053CB04 /* VideoViewCell.m */; };
 		47F558A82C85A9BF0053CB04 /* VideoViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47F558A62C85A9BF0053CB04 /* VideoViewCell.xib */; };
@@ -128,6 +129,8 @@
 		47E86E2C2CC0BADC00AECAF7 /* KeychainHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeychainHelper.m; sourceTree = "<group>"; };
 		47E86E2E2CC0EB6C00AECAF7 /* JSONConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSONConverter.h; sourceTree = "<group>"; };
 		47E86E2F2CC0EB6C00AECAF7 /* JSONConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSONConverter.m; sourceTree = "<group>"; };
+		47E86E322CC1031400AECAF7 /* StoreManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StoreManager.h; sourceTree = "<group>"; };
+		47E86E332CC1031400AECAF7 /* StoreManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StoreManager.m; sourceTree = "<group>"; };
 		47F5589E2C859E3D0053CB04 /* VideoManageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoManageViewController.h; sourceTree = "<group>"; };
 		47F5589F2C859E3D0053CB04 /* VideoManageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoManageViewController.m; sourceTree = "<group>"; };
 		47F558A42C85A9BF0053CB04 /* VideoViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoViewCell.h; sourceTree = "<group>"; };
@@ -225,6 +228,7 @@
 		47D6FDAB2BFB0367000385EA /* photomanage */ = {
 			isa = PBXGroup;
 			children = (
+				47E86E312CC102E600AECAF7 /* StoreManager */,
 				47D9E67D2CBA70B100880083 /* Photo */,
 				47D6BA252C9525A900516CD6 /* Utils */,
 				47F5589D2C859DBD0053CB04 /* Video */,
@@ -273,6 +277,15 @@
 				47D9E6832CBE4F0000880083 /* Compresser.m */,
 			);
 			path = Compress;
+			sourceTree = "<group>";
+		};
+		47E86E312CC102E600AECAF7 /* StoreManager */ = {
+			isa = PBXGroup;
+			children = (
+				47E86E322CC1031400AECAF7 /* StoreManager.h */,
+				47E86E332CC1031400AECAF7 /* StoreManager.m */,
+			);
+			path = StoreManager;
 			sourceTree = "<group>";
 		};
 		47F5589D2C859DBD0053CB04 /* Video */ = {
@@ -450,6 +463,7 @@
 				476862082BFB3BF5003D7DA8 /* PhotoPreviewController.m in Sources */,
 				47D9E6842CBE4F0000880083 /* Compresser.m in Sources */,
 				47D6FDAE2BFB0367000385EA /* AppDelegate.m in Sources */,
+				47E86E342CC1031400AECAF7 /* StoreManager.m in Sources */,
 				47D6FDBF2BFB0368000385EA /* main.m in Sources */,
 				478031212CA50A9E00AC4BC0 /* ScreenUility.m in Sources */,
 				476862022BFB1ED4003D7DA8 /* PhotoCollectionViewCell.m in Sources */,
