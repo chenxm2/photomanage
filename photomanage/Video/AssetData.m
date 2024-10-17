@@ -30,23 +30,14 @@
             STRONG_SELF
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             NSData *savedData = [defaults objectForKey:strongSelf.asset.localIdentifier];
-            if (savedData) {
-                NSError *error = nil;
-                NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:savedData error:&error];
-                if (error == nil) {
-                    AssetBindData *unarchivedAssetData = [unarchiver decodeObjectOfClass:[AssetBindData class] forKey:kAssetBindData];
-                    [unarchiver finishDecoding];
-                    if (unarchivedAssetData != nil) {
-                        [GCDUtility executeOnMainThread:^{
-                            strongSelf.assetBindData = unarchivedAssetData;
-                            callback(unarchivedAssetData);
-                        }];
-                    } else {
-                        [strongSelf generateNewBindData:callback];
-                    }
-                } else {
-                    [strongSelf generateNewBindData:callback];
-                }
+            AssetBindData *res = [JSONConverter modelFromData:savedData modelClass:[AssetBindData class]];
+            if (res) {
+                [GCDUtility executeOnMainThread:^{
+                    STRONG_SELF
+                    strongSelf.assetBindData = res;
+                    callback(res);
+                }];
+                
             } else {
                 [strongSelf generateNewBindData:callback];
             }

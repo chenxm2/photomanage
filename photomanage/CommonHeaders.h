@@ -23,4 +23,5 @@
 #import "Utils/CallBackDefine.h"
 #import "Utils/String+Localized.h"
 #import "Utils/ProgressHUDWrapper.h"
+#import "Utils/JSONConverter.h"
 #endif /* CommonHeaders_h */

@@ -13,37 +13,6 @@ NSString * const kQualityMiddle = @"标准质量";
 NSString * const kQualityHigh = @"高保真";
 
 @implementation AssetBindData
-// 序列化对象
-- (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:self.orgLocalIdentifier forKey:@"orgLocalIdentifier"];
-    [aCoder encodeObject:self.compressedlocalIdentifier forKey:@"compressedlocalIdentifier"];
-    [aCoder encodeObject:self.isCompress forKey:@"isCompress"];
-    [aCoder encodeObject:self.compressQulity forKey:@"compressQulity"];
-}
-
-// 反序列化对象
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    self = [super init];
-    if (self) {
-        if ([aDecoder requiresSecureCoding]) {
-            _orgLocalIdentifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"orgLocalIdentifier"];
-            _compressedlocalIdentifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"compressedlocalIdentifier"];
-            _isCompress = [aDecoder decodeObjectOfClass:[NSNumber class] forKey:@"isCompress"];
-            _compressQulity = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"compressQulity"];
-        } else {
-            _orgLocalIdentifier = [aDecoder decodeObjectForKey:@"orgLocalIdentifier"];
-            _compressedlocalIdentifier = [aDecoder decodeObjectForKey:@"compressedlocalIdentifier"];
-            _isCompress = [aDecoder decodeObjectForKey:@"isCompress"];
-            _compressQulity = [aDecoder decodeObjectForKey:@"compressQulity"];
-        }
-    }
-    return self;
-}
-
-+ (BOOL)supportsSecureCoding {
-    return YES;
-}
-
 - (void)setOrgLocalIdentifier:(NSString *)orgLocalIdentifier {
     _orgLocalIdentifier = orgLocalIdentifier;
     [self writeDataToFile];
@@ -69,10 +38,11 @@ NSString * const kQualityHigh = @"高保真";
     WEAK_SELF
     [GCDUtility executeOnSerialQueue:^{
         STRONG_SELF
-        NSMutableData *data = [NSMutableData data];
-        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-        [archiver encodeObject:strongSelf forKey:kAssetBindData];
-        [archiver finishEncoding];
+//        NSMutableData *data = [NSMutableData data];
+//        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+//        [archiver encodeObject:strongSelf forKey:kAssetBindData];
+//        [archiver finishEncoding];
+        NSData *data = [JSONConverter dataFromModel:strongSelf];
         
         // 保存序列化数据到 NSUserDefaults
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
