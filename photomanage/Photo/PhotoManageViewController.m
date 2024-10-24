@@ -13,6 +13,7 @@
 #import "Masonry.h"
 #import "PhotoPreviewController.h"
 #import "ConfirmDeleteController.h"
+#import "../Goods/GoodsViewController.h"
 
 @interface PhotoManageViewController () <AllPhotoViewDelegate, PhotoPreviewControllerDelegate, ConfirmDeleteControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *bottomBar;
@@ -135,6 +136,11 @@
             [strongSelf updateNumberLabel];
         }
     });
+}
+
+- (IBAction)testPay:(id)sender {
+    GoodsViewController *controller = [[GoodsViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (IBAction)showOrHide:(id)sender {

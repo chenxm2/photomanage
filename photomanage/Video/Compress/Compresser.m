@@ -337,11 +337,9 @@
             STRONG_SELF
             if (strongSelf.compressProgress != nil) {
                 strongSelf.compressProgress(progress, NO, nil);
-                [LogUtil logInfoWithTag:@"progress" message:@" == %d", (int)(progress * 100)];
             }
         }];
     }
-    
 }
 
 // 等待视频下载完成

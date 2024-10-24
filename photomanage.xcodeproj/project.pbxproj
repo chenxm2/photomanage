@@ -15,6 +15,9 @@
 		478031212CA50A9E00AC4BC0 /* ScreenUility.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031202CA50A9E00AC4BC0 /* ScreenUility.m */; };
 		478031252CA68D0D00AC4BC0 /* VideoDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031242CA68D0D00AC4BC0 /* VideoDataManager.m */; };
 		478031282CAA421800AC4BC0 /* LogUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031272CAA421800AC4BC0 /* LogUtility.m */; };
+		47B5F1832CC7922F0031E2DF /* GoodsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B5F1812CC7922F0031E2DF /* GoodsViewController.m */; };
+		47B5F1842CC7922F0031E2DF /* GoodsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */; };
+		47B5F1862CC799550031E2DF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47B5F1852CC799550031E2DF /* StoreKit.framework */; };
 		47BDE2E82BFC7FE300419853 /* ConfirmDeleteController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */; };
 		47BDE2E92BFC7FE300419853 /* ConfirmDeleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */; };
 		47BDE2EC2BFC82FC00419853 /* ConfirmDeleteViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BDE2EB2BFC82FC00419853 /* ConfirmDeleteViewCell.m */; };
@@ -71,6 +74,11 @@
 		478031262CAA421800AC4BC0 /* LogUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogUtility.h; sourceTree = "<group>"; };
 		478031272CAA421800AC4BC0 /* LogUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogUtility.m; sourceTree = "<group>"; };
 		478031292CAA981500AC4BC0 /* CallBackDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallBackDefine.h; sourceTree = "<group>"; };
+		47B5F1802CC7922F0031E2DF /* GoodsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoodsViewController.h; sourceTree = "<group>"; };
+		47B5F1812CC7922F0031E2DF /* GoodsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoodsViewController.m; sourceTree = "<group>"; };
+		47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GoodsViewController.xib; sourceTree = "<group>"; };
+		47B5F1852CC799550031E2DF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		47B5F18B2CC7B3820031E2DF /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = StoreKitConfig.storekit; path = photomanage/StoreKitConfig.storekit; sourceTree = "<group>"; };
 		47BDE2E52BFC7FE300419853 /* ConfirmDeleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConfirmDeleteController.h; sourceTree = "<group>"; };
 		47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfirmDeleteController.m; sourceTree = "<group>"; };
 		47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfirmDeleteController.xib; sourceTree = "<group>"; };
@@ -146,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7207FFBC85ED68A2F90CBE26 /* Pods_photomanage.framework in Frameworks */,
+				47B5F1862CC799550031E2DF /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +164,7 @@
 		006B6005A981C52CAD894478 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47B5F1852CC799550031E2DF /* StoreKit.framework */,
 				1A0032A270BD7EA3C18DCF81 /* Pods_photomanage.framework */,
 			);
 			name = Frameworks;
@@ -167,6 +177,16 @@
 				478031242CA68D0D00AC4BC0 /* VideoDataManager.m */,
 			);
 			path = DataSource;
+			sourceTree = "<group>";
+		};
+		47B5F17F2CC792080031E2DF /* Goods */ = {
+			isa = PBXGroup;
+			children = (
+				47B5F1802CC7922F0031E2DF /* GoodsViewController.h */,
+				47B5F1812CC7922F0031E2DF /* GoodsViewController.m */,
+				47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */,
+			);
+			path = Goods;
 			sourceTree = "<group>";
 		};
 		47D6BA252C9525A900516CD6 /* Utils */ = {
@@ -209,6 +229,7 @@
 		47D6FDA02BFB0367000385EA = {
 			isa = PBXGroup;
 			children = (
+				47B5F18B2CC7B3820031E2DF /* StoreKitConfig.storekit */,
 				47D6BA3D2C95751F00516CD6 /* PrefixHeader.pch */,
 				47D6FDAB2BFB0367000385EA /* photomanage */,
 				47D6FDAA2BFB0367000385EA /* Products */,
@@ -228,6 +249,7 @@
 		47D6FDAB2BFB0367000385EA /* photomanage */ = {
 			isa = PBXGroup;
 			children = (
+				47B5F17F2CC792080031E2DF /* Goods */,
 				47E86E312CC102E600AECAF7 /* StoreManager */,
 				47D9E67D2CBA70B100880083 /* Photo */,
 				47D6BA252C9525A900516CD6 /* Utils */,
@@ -388,6 +410,7 @@
 				47D9E6782CBA621000880083 /* Localizable.strings in Resources */,
 				47F558A82C85A9BF0053CB04 /* VideoViewCell.xib in Resources */,
 				47D6BA442C9ACC0200516CD6 /* VideoPlayerViewController.xib in Resources */,
+				47B5F1842CC7922F0031E2DF /* GoodsViewController.xib in Resources */,
 				47D6FDBC2BFB0368000385EA /* Base in Resources */,
 				47D6FDB72BFB0367000385EA /* Base in Resources */,
 			);
@@ -467,6 +490,7 @@
 				47D6FDBF2BFB0368000385EA /* main.m in Sources */,
 				478031212CA50A9E00AC4BC0 /* ScreenUility.m in Sources */,
 				476862022BFB1ED4003D7DA8 /* PhotoCollectionViewCell.m in Sources */,
+				47B5F1832CC7922F0031E2DF /* GoodsViewController.m in Sources */,
 				47D6BA2F2C95610000516CD6 /* VideoCompressViewController.m in Sources */,
 				47D6BA432C9ACC0200516CD6 /* VideoPlayerViewController.m in Sources */,
 				47D6BA4D2C9AE45600516CD6 /* UIView+Toast.m in Sources */,

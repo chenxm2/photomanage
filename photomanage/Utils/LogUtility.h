@@ -21,6 +21,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#define LogUtil [LogUtility sharedInstance]
-
+#define LogInfo(...) [[LogUtility sharedInstance] logInfoWithTag:@"Photomanage" message:__VA_ARGS__]
 NS_ASSUME_NONNULL_END

@@ -33,9 +33,9 @@
                        failure:(void (^)(NSError *))failureBlock {
     
     [self.store requestProducts:productIdentifiers success:^(NSArray *products, NSArray *invalidProductIdentifiers) {
-            
+            successBlock(products);
         } failure:^(NSError *error) {
-            
+            failureBlock(error);
         }];
 }
 
@@ -44,9 +44,9 @@
                 success:(void (^)())successBlock
                 failure:(void (^)(NSError *error))failureBlock {
     [self.store addPayment:productIdentifier success:^(SKPaymentTransaction *transaction) {
-            
+            successBlock();
         } failure:^(SKPaymentTransaction *transaction, NSError *error) {
-            
+            failureBlock(error);
     }];
 }
 
@@ -54,6 +54,11 @@
 - (void)verifyTransaction:(SKPaymentTransaction *)transaction
                   success:(void (^)())successBlock
                   failure:(void (^)(NSError *error))failureBlock {
+    
+    if (successBlock) {
+        successBlock();
+        return;
+    }
     // Get the receipt data directly from the transaction
     NSData *receiptData = transaction.transactionReceipt;
 
