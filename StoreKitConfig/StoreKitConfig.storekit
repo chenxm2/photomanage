@@ -1,5 +1,5 @@
 {
-  "identifier" : "DE319D1F",
+  "identifier" : "711B84B2",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -7,7 +7,7 @@
     {
       "displayPrice" : "0.99",
       "familyShareable" : false,
-      "internalID" : "6737222913",
+      "internalID" : "6737306591",
       "localizations" : [
         {
           "description" : "用于图片删除及视频压缩所使用的货币",
@@ -15,7 +15,7 @@
           "locale" : "zh_CN"
         }
       ],
-      "productID" : "com.testtest.coin",
+      "productID" : "com.private.test.photomanage.product1",
       "referenceName" : "瘦币",
       "type" : "Consumable"
     }
@@ -24,7 +24,7 @@
     "_applicationInternalID" : "6711343877",
     "_developerTeamID" : "UU544PXJQ5",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 751285128.61805797,
+    "_lastSynchronizedDate" : 751517264.85269499,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [

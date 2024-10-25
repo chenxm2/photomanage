@@ -9,6 +9,8 @@
 #import "../StoreManager/StoreManager.h"
 
 @interface GoodsViewController ()
+@property (weak, nonatomic) IBOutlet UILabel *slimmingCoinText;
+@property (weak, nonatomic) IBOutlet UIButton *buyButton;
 @property (nonatomic, strong) NSString *productId;
 @end
 
@@ -17,12 +19,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    NSString *slimmingText = [NSString localizedStringWithName:@"slimming_coin"];
+    self.slimmingCoinText.text = [NSString stringWithFormat:@"%d%@", kProductIdContainCoin, slimmingText];
+    [self fetchsGoods];
+    self.buyButton.hidden = YES;
 }
-- (IBAction)fetchsGoods:(id)sender {
+
+- (void)fetchsGoods {
     NSMutableSet<NSString *> *param = [[NSMutableSet alloc] init];
-    [param addObject:@"com.testtest.coin"];
+    [param addObject:kProductId];
+    WEAK_SELF
     [[StoreManager sharedManager] fetchAvailableProducts:param success:^(NSArray<SKProduct *> * _Nonnull products) {
         LogInfo(@"fetchAvailableProducts success = %@",  products);
+        STRONG_SELF
         for (SKProduct *product in products) {
             LogInfo(@"fetchAvailableProducts  %@, %@",  product.description, product.productIdentifier);
             
@@ -31,7 +40,12 @@
             priceFormatter.locale = [product priceLocale];
             NSString *res = [priceFormatter stringFromNumber:product.price];
             LogInfo(@"fetchAvailableProducts  %@, %@",  res , product.productIdentifier);
-            self.productId = product.productIdentifier;
+            
+            strongSelf.productId = product.productIdentifier;
+            NSString *buy = [NSString localizedStringWithName:@"buy"];
+            NSString *fullBuyText = [NSString stringWithFormat:@"%@ %@", res, buy];
+            [strongSelf.buyButton setTitle:fullBuyText forState:UIControlStateNormal];
+            strongSelf.buyButton.hidden = NO;
         }
     } failure:^(NSError * _Nonnull error) {
         LogInfo(@"fetchAvailableProducts fail = %@", error);
@@ -39,10 +53,9 @@
 }
 - (IBAction)buyProduct:(id)sender {
     [[StoreManager sharedManager] purchaseProduct:self.productId success:^{
-        LogInfo(@"purchaseProduct success ");
         } failure:^(NSError * _Nonnull error) {
         
-        }];
+    }];
 }
 
 /*

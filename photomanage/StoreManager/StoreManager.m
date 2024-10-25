@@ -9,8 +9,14 @@
 #import "KeychainHelper.h"
 #import <RMStore/RMStore.h>
 
+NSString * const kProductId = @"com.private.test.photomanage.product1";
+NSUInteger const kProductIdContainCoin = 50;
+NSUInteger const kOnePhotoCost = 1;
+NSUInteger const kOneVideoCost = 10;
+
 @interface StoreManager () <RMStoreObserver, RMStoreReceiptVerificator>
 @property (nonatomic, strong) RMStore *store;
+@property (nonatomic, strong) NSString *savedCoinsKey;
 @end
 
 @implementation StoreManager
@@ -28,26 +34,54 @@
 }
 
 // Fetch available products
-- (void)fetchAvailableProducts:(NSSet<NSString *> *)productIdentifiers
+- (BOOL)fetchAvailableProducts:(NSSet<NSString *> *)productIdentifiers
                        success:(void (^)(NSArray<SKProduct *> *))successBlock
                        failure:(void (^)(NSError *))failureBlock {
+    if (successBlock == nil || successBlock == nil || productIdentifiers == nil) {
+        return NO;
+    }
     
-    [self.store requestProducts:productIdentifiers success:^(NSArray *products, NSArray *invalidProductIdentifiers) {
+    [self.store requestProducts:productIdentifiers success:^(NSArray *products, NSArray *invalidProductIdentifiers) { 
+        [GCDUtility executeOnMainThread:^{
             successBlock(products);
-        } failure:^(NSError *error) {
-            failureBlock(error);
         }];
+            
+        } failure:^(NSError *error) {
+            [GCDUtility executeOnMainThread:^{
+                failureBlock(error);
+            }];
+        }];
+    
+    return YES;
 }
 
 // Purchase a product
-- (void)purchaseProduct:(NSString *)productIdentifier
-                success:(void (^)())successBlock
+- (BOOL)purchaseProduct:(NSString *)productIdentifier
+                success:(void (^)(void))successBlock
                 failure:(void (^)(NSError *error))failureBlock {
+    if (successBlock == nil || failureBlock == nil) {
+        return NO;
+    }
+    
     [self.store addPayment:productIdentifier success:^(SKPaymentTransaction *transaction) {
-            successBlock();
+        NSLog(@"purchaseProduct success");
+        NSInteger coins = [self virtualCurrencyForProduct:productIdentifier];
+        [self addVirtualCurrency:coins completion:^(BOOL result) {
+            if (result) {
+                successBlock();
+            } else {
+                //todo: 后续考虑是不是把流程插入到验证阶段，存本地成功再验证通过。
+                failureBlock(nil);
+            }
+        }];
+            
         } failure:^(SKPaymentTransaction *transaction, NSError *error) {
-            failureBlock(error);
+            [GCDUtility executeOnMainThread:^{
+                failureBlock(error);
+            }];
     }];
+    
+    return YES;
 }
 
 // Verify transaction using Apple’s validation service
@@ -55,8 +89,12 @@
                   success:(void (^)())successBlock
                   failure:(void (^)(NSError *error))failureBlock {
     
+    
     if (successBlock) {
-        successBlock();
+        // todo:修复验证逻辑，callBack也一定要主线程
+        [GCDUtility executeOnMainThread:^{
+                    successBlock();
+        }];
         return;
     }
     // Get the receipt data directly from the transaction
@@ -151,43 +189,122 @@
 }
 
 // Get unique device identifier
-- (NSString *)getOrCreateUUID {
-    NSString *key = @"uniqueDeviceIdentifier";
-    NSString *uuid = [KeychainHelper loadStringForKey:key];
-    
-    if (!uuid) {
-        uuid = [[NSUUID UUID] UUIDString];
-        [KeychainHelper saveString:uuid forKey:key];
+- (BOOL)getOrCreateUUIDWithCompletion:(void (^)(NSString *__nullable coinKey))completion {
+    if (completion == nil) {
+        return NO;
     }
     
-    return uuid;
+    if (self.savedCoinsKey != nil) {
+        [GCDUtility executeOnMainThread:^{
+            completion(self.savedCoinsKey);
+        }];
+        return YES;
+    }
+    
+    NSString *key = @"uniqueDeviceIdentifier";
+    [KeychainHelper loadStringForKey:key withCompletion:^(NSString * _Nullable value) {
+        if (!value) {
+            LogInfo(@"new uniqueDeviceIdentifier = %@", value);
+            value = [[NSUUID UUID] UUIDString];
+            [KeychainHelper saveString:value forKey:key withCompletion:^(BOOL success) {
+                if (success) {
+                    self.savedCoinsKey = value;
+                    completion(value);
+                    
+                } else {
+                    completion(nil);
+                }
+            }];
+        } else {
+            LogInfo(@"use old uniqueDeviceIdentifier = %@", value);
+            self.savedCoinsKey = value;
+            completion(value);
+        }
+    }];
+    
+    return YES;
 }
 
 // Get total virtual currency from Keychain
-- (NSInteger)getTotalVirtualCurrency {
-    NSString *key = [self getOrCreateUUID]; // Use UUID as the key
-    NSNumber *currency = [KeychainHelper loadNumberForKey:key];
-    return currency ? [currency integerValue] : 0;
+- (BOOL)getTotalVirtualCurrencyWithCompletion:(void (^)(NSUInteger value))completion {
+    
+    if (completion == nil) {
+        LogInfo(@"getTotalVirtualCurrencyWithCompletion completion nil");
+        return NO;
+    }
+    
+    
+    [self getOrCreateUUIDWithCompletion:^(NSString * _Nullable value) {
+        if (value != nil) {
+            [KeychainHelper loadNumberForKey:value withCompletion:^(NSNumber * _Nullable value) {
+                if (value != nil) {
+                    LogInfo(@"getTotalVirtualCurrency = %lu", [value unsignedIntegerValue]);
+                    completion([value unsignedIntegerValue]);
+                } else {
+                    completion(0);
+                }
+            }];
+        } else {
+            completion(0);
+        }
+    }];
+    
+    return YES;
+}
+
+- (BOOL)subVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion {
+
+    if (completion == nil) {
+        return NO;
+    }
+    
+    [self getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+        NSUInteger result = value - amount;
+        [self getOrCreateUUIDWithCompletion:^(NSString * _Nullable coinKey) {
+            [KeychainHelper saveNumber:@(result) forKey:coinKey withCompletion:^(BOOL success) {
+                completion(success);
+                if (success) {
+                    LogInfo(@"subVirtualCurrency current = %lu, amount = %lu, result = %lu ", value, amount, result);
+                } else {
+                    LogInfo(@"subVirtualCurrency fail");
+                }
+            }];
+        }];
+    }];
+    
+    return YES;
 }
 
 // Add virtual currency to total
-- (void)addVirtualCurrency:(NSInteger)amount {
-    NSInteger total = [self getTotalVirtualCurrency];
-    total += amount; // Update total
-    NSString *key = [self getOrCreateUUID]; // Use UUID as the key
-    [KeychainHelper saveNumber:@(total) forKey:key]; // Save updated total in Keychain
+- (BOOL)addVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion {
+    if (completion == nil) {
+        return NO;
+    }
+    LogInfo(@"begin addVirtualCurrency");
+    [self getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+        NSUInteger result = amount + value;
+        [self getOrCreateUUIDWithCompletion:^(NSString * _Nullable coinKey) {
+            [KeychainHelper saveNumber:@(result) forKey:coinKey withCompletion:^(BOOL success) {
+                completion(success);
+                if (success) {
+                    LogInfo(@"addVirtualCurrency current = %lu, amount = %lu, result = %lu ", value, amount, result);
+                } else {
+                    LogInfo(@"addVirtualCurrency fail");
+                }
+            }];
+        }];
+    }];
+    
+    return YES;
 }
 
 // Get virtual currency amount for specific product
 - (NSInteger)virtualCurrencyForProduct:(NSString *)productIdentifier {
     // Add logic to determine the virtual currency amount for the given product
     // Example:
-    if ([productIdentifier isEqualToString:@"com.yourapp.virtualcurrency1"]) {
-        return 100; // 100 units for product 1
-    } else if ([productIdentifier isEqualToString:@"com.yourapp.virtualcurrency2"]) {
-        return 500; // 500 units for product 2
+    if ([productIdentifier isEqualToString:kProductId]) {
+        return kProductIdContainCoin; // 100 units for product 1
     }
     return 0; // Default to 0 if not found
 }
-
 @end

@@ -9,27 +9,32 @@
 #import <StoreKit/StoreKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString * const kProductId;
+extern NSUInteger const kProductIdContainCoin;
+extern NSUInteger const kOnePhotoCost;
+extern NSUInteger const kOneVideoCost;
 @interface StoreManager : NSObject
 
 + (instancetype)sharedManager;
 
 // Fetch available products
-- (void)fetchAvailableProducts:(NSSet<NSString *> *)productIdentifiers
+- (BOOL)fetchAvailableProducts:(NSSet<NSString *> *)productIdentifiers
                        success:(void (^)(NSArray<SKProduct *> *products))successBlock
                        failure:(void (^)(NSError *error))failureBlock;
 
 // Purchase a product
-- (void)purchaseProduct:(NSString *)productIdentifier
+- (BOOL)purchaseProduct:(NSString *)productIdentifier
                 success:(void (^)(void))successBlock
                 failure:(void (^)(NSError *error))failureBlock;
 
 
 // Get total virtual currency
-- (NSInteger)getTotalVirtualCurrency;
+- (BOOL)getTotalVirtualCurrencyWithCompletion:(void (^)(NSUInteger value))completion;
 
-// Add virtual currency
-- (void)addVirtualCurrency:(NSInteger)amount;
-
+- (BOOL)subVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion;
 @end
+
+#define STOTE_MANAGER [StoreManager sharedManager]
 
 NS_ASSUME_NONNULL_END

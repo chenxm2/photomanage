@@ -55,7 +55,7 @@
          referenceType = "1">
       </LocationScenarioReference>
       <StoreKitConfigurationFileReference
-         identifier = "../photomanage/StoreKitConfig.storekit">
+         identifier = "../StoreKitConfig/StoreKitConfig.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

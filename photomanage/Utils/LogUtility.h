@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)logWarningWithTag:(NSString *)tag message:(NSString *)format, ... NS_FORMAT_FUNCTION(2, 3);
 
 @end
-
+#ifdef DEBUG
 #define LogInfo(...) [[LogUtility sharedInstance] logInfoWithTag:@"Photomanage" message:__VA_ARGS__]
+#else
+#define LogInfo(...)
+#endif
 NS_ASSUME_NONNULL_END

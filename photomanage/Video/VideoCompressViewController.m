@@ -140,7 +140,14 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (IBAction)saveToAlbum:(id)sender {
     if (self.compressedURL != nil) {
-        [self createAlbumAndSaveCompressed:self.compressedURL];
+        [STOTE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+            if (value < kOnePhotoCost) {
+                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+            } else {
+                [self createAlbumAndSaveCompressed:self.compressedURL];
+            }
+        }];
+        
     } else {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"already_in_album"]];
     }
@@ -302,7 +309,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
                 [strongSelf showHintAlert];
             }];
-
+            
+            [STOTE_MANAGER subVirtualCurrency:kOneVideoCost completion:^(BOOL result) {
+                if (!result) {
+                    LogInfo(@"subVirtualCurrency fail");
+                }
+            }];
         }else {
             NSLog(@"Error adding videos to album: %@", error);
         }

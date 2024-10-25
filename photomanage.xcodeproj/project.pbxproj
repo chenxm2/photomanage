@@ -67,6 +67,7 @@
 		476862072BFB3BF5003D7DA8 /* PhotoPreviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoPreviewController.m; sourceTree = "<group>"; };
 		476862092BFB58EA003D7DA8 /* ContentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		4768620A2BFB58EA003D7DA8 /* ContentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
+		477379C62CCB3E4D00DD9D4A /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = StoreKitConfig.storekit; path = StoreKitConfig/StoreKitConfig.storekit; sourceTree = "<group>"; };
 		4780311F2CA50A9E00AC4BC0 /* ScreenUility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScreenUility.h; sourceTree = "<group>"; };
 		478031202CA50A9E00AC4BC0 /* ScreenUility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenUility.m; sourceTree = "<group>"; };
 		478031232CA68D0D00AC4BC0 /* VideoDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoDataManager.h; path = photomanage/Utils/VideoDataManager.h; sourceTree = SOURCE_ROOT; };
@@ -78,7 +79,6 @@
 		47B5F1812CC7922F0031E2DF /* GoodsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoodsViewController.m; sourceTree = "<group>"; };
 		47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GoodsViewController.xib; sourceTree = "<group>"; };
 		47B5F1852CC799550031E2DF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		47B5F18B2CC7B3820031E2DF /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = StoreKitConfig.storekit; path = photomanage/StoreKitConfig.storekit; sourceTree = "<group>"; };
 		47BDE2E52BFC7FE300419853 /* ConfirmDeleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConfirmDeleteController.h; sourceTree = "<group>"; };
 		47BDE2E62BFC7FE300419853 /* ConfirmDeleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfirmDeleteController.m; sourceTree = "<group>"; };
 		47BDE2E72BFC7FE300419853 /* ConfirmDeleteController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfirmDeleteController.xib; sourceTree = "<group>"; };
@@ -229,7 +229,7 @@
 		47D6FDA02BFB0367000385EA = {
 			isa = PBXGroup;
 			children = (
-				47B5F18B2CC7B3820031E2DF /* StoreKitConfig.storekit */,
+				477379C62CCB3E4D00DD9D4A /* StoreKitConfig.storekit */,
 				47D6BA3D2C95751F00516CD6 /* PrefixHeader.pch */,
 				47D6FDAB2BFB0367000385EA /* photomanage */,
 				47D6FDAA2BFB0367000385EA /* Products */,

@@ -10,3 +10,6 @@
 "compress_sure" = "您确定要进行压缩？";
 "downloading" = "下载中...";
 "compressing" = "压缩中...";
+"slimming_coin" = "瘦币";
+"buy" = "购买";
+"coins_not_enough" = "瘦币不足，请充值";

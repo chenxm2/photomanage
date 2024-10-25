@@ -24,4 +24,5 @@
 #import "Utils/String+Localized.h"
 #import "Utils/ProgressHUDWrapper.h"
 #import "Utils/JSONConverter.h"
+#import "StoreManager/StoreManager.h"
 #endif /* CommonHeaders_h */

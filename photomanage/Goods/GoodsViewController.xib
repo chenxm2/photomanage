@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GoodsViewController">
             <connections>
+                <outlet property="buyButton" destination="Yln-uv-8A0" id="XeD-EA-zrg"/>
+                <outlet property="slimmingCoinText" destination="HLQ-Kv-FKk" id="drC-zt-kpx"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,14 +21,6 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QNN-Ng-G9r">
-                    <rect key="frame" x="38" y="92" width="59" height="35"/>
-                    <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="plain" title="查询"/>
-                    <connections>
-                        <action selector="fetchsGoods:" destination="-1" eventType="touchUpInside" id="cmL-tw-3On"/>
-                    </connections>
-                </button>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yln-uv-8A0">
                     <rect key="frame" x="126" y="92" width="59" height="35"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -36,14 +30,17 @@
                         <action selector="buyProduct:" destination="-1" eventType="touchUpInside" id="mdn-Hc-v4a"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="test" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HLQ-Kv-FKk">
+                    <rect key="frame" x="41" y="99" width="30" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-            <constraints>
-                <constraint firstItem="QNN-Ng-G9r" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" constant="33" id="CTE-5L-U8d"/>
-                <constraint firstItem="QNN-Ng-G9r" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" constant="38" id="lLR-Ie-v9k"/>
-            </constraints>
-            <point key="canvasLocation" x="48" y="20"/>
+            <point key="canvasLocation" x="46.564885496183201" y="19.718309859154932"/>
         </view>
     </objects>
     <resources>
