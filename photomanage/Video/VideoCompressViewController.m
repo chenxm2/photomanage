@@ -52,10 +52,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     [self.orgImageView setImageWithAsset:_orgData.asset];
     [self.compressedImageView setImageWithAsset:_orgData.asset];
     [self initPickerView];
+    self.navigationController.delegate = self;
 
     
     WEAK_SELF
-    [self.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
+    [self.orgData loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
         STRONG_SELF
         strongSelf.compressedData = [[VideoDataManager sharedManager] assetDataByLocalIdentifier:bindData.compressedlocalIdentifier];
         if (strongSelf.compressedData != nil) {
@@ -63,7 +64,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             [strongSelf.compressedImageView setImageWithAsset:strongSelf.compressedData.asset];
             strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:strongSelf.compressedData.fileSize];
             
-            [strongSelf.compressedData loadBindData:^(AssetBindData * _Nonnull compressBindData) {
+            [strongSelf.compressedData loadBindData:^(AssetBindData * _Nonnull compressBindData, AssetData * _Nonnull data) {
                 strongSelf.compressQualityLabel.text = [compressBindData getQualityString];
                 [strongSelf updateCompressButton];
                 [strongSelf updateSaveButton];
@@ -294,7 +295,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     } completionHandler:^(BOOL success, NSError *error) {
         STRONG_SELF
         if (success) {
-            [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData) {
+            [strongSelf.orgData loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
                 bindData.isCompress = @(YES);
                 bindData.compressedlocalIdentifier = tempLocalIdentifier;
                 [[VideoDataManager sharedManager] onCompressedVideoSaveToAlblum:tempLocalIdentifier  compressQuality:strongSelf.selectedPreset callBack:^(AssetData * _Nonnull assetData) {

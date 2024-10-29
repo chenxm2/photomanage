@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)localizedStringWithName:(NSString *)name;
 + (NSString *)localizedConfirm;
 + (NSString *)localizedCancel;
-
++ (NSString *)localizedLoading;
 @end
 
 NS_ASSUME_NONNULL_END

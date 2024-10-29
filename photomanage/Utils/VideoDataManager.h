@@ -8,6 +8,19 @@
 #import <Foundation/Foundation.h>
 #import "AssetData.h"
 NS_ASSUME_NONNULL_BEGIN
+
+
+typedef NS_ENUM(NSInteger, FilterType) {
+    FilterTypeUnCompress,
+    FilterTypeUnCompressResult,
+    FilterTypeCompressed,
+};
+
+typedef NS_ENUM(NSInteger, SortType) {
+    SortTypeBySize,
+    SortTypeByTime
+};
+
 typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
 @interface VideoDataManager : NSObject
 @property (nonatomic, strong) NSArray<AssetData *> *videoList; // 示例属性，用于存储视频数据
@@ -15,10 +28,12 @@ typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
  Returns the shared instance of the VideoDataManager class.
  */
 + (instancetype)sharedManager;
-- (void)fetchVideosSortedBySize:(AssetDatasCallback)callback;
 - (AssetData *)assetDataByLocalIdentifier:(NSString *)localIdentifier;
 - (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality callBack:(AssetDataCallback)callback;
 - (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback;
+
+- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType completion:(AssetDatasCallback)callback;
+
 @end
 
 NS_ASSUME_NONNULL_END

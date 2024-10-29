@@ -41,7 +41,7 @@
     self.sizeLabel.text = [NSString fileSizeStringWithNumber:data.fileSize];
     WEAK_SELF
     
-    [data loadBindData:^(AssetBindData * _Nonnull bindData) {
+    [data loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
         STRONG_SELF
         if (strongSelf) {
             if ([bindData.isCompress boolValue]) {

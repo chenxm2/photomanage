@@ -35,7 +35,7 @@
                 [GCDUtility executeOnMainThread:^{
                     STRONG_SELF
                     strongSelf.assetBindData = res;
-                    callback(res);
+                    callback(res, strongSelf);
                 }];
                 
             } else {
@@ -43,7 +43,11 @@
             }
         }];
     } else {
-        callback(_assetBindData);
+        WEAK_SELF
+        [GCDUtility executeOnMainThread:^{
+            STRONG_SELF
+            callback(_assetBindData, strongSelf);
+        }];
     }
 }
 
@@ -54,8 +58,13 @@
     [GCDUtility executeOnMainThread:^{
         STRONG_SELF
         strongSelf.assetBindData = newData;
-        callback(newData);
+        callback(newData, strongSelf);
     }];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: %p, AssetBindData = %@",
+            NSStringFromClass([self class]), self, self.assetBindData];
 }
 
 @end

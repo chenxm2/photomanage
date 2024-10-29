@@ -24,6 +24,4 @@ extern NSString * const kQualityHigh;
 
 @end
 
-typedef void (^AssetBindDataCallback)(AssetBindData *bindData);
-
 NS_ASSUME_NONNULL_END

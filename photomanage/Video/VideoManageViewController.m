@@ -13,8 +13,12 @@
 
 @interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-@property (nonatomic, strong) NSArray<AssetData *> *sortedData;
+@property (nonatomic, strong) NSArray<AssetData *> *showDatas;
 @property (nonatomic, assign) Boolean isInitCollectionView;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *filterSegmented;
+@property (nonatomic, assign) FilterType currentFilterType;
+@property (weak, nonatomic) IBOutlet UIButton *sortButton;
+@property (nonatomic, assign) SortType curretSortType;
 @end
 
 @implementation VideoManageViewController
@@ -22,29 +26,93 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"VideoManageViewController viewDidLoad");
+    self.curretSortType = SortTypeByTime;
+    self.currentFilterType = FilterTypeUnCompress;
+    
+    self.filterSegmented.selectedSegmentIndex = 0;
     // Do any additional setup after loading the view.
-    [ActivityIndicatorUtility showActivityIndicatorInView:self.view];
-    WEAK_SELF
-    [[VideoDataManager sharedManager] fetchVideosSortedBySize:^(NSArray<AssetData *> * _Nonnull dataList) {
-       STRONG_SELF
-        [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
-        strongSelf.sortedData = dataList;
-        [strongSelf.collectionView reloadData];
-        
-    }];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self initCollectionView];
-    if ([self.sortedData count] > 0) {
-        [self.collectionView reloadData];
-    }
+    [self handleParamChange];
 }
+
+- (IBAction)handleSortButtonClicked:(id)sender {
+    // 创建 UIAlertController 实例，这里以 actionSheet 样式为例
+    WEAK_SELF
+    NSString *title = [NSString localizedStringWithName:@"sort_option"];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    // 添加按钮
+    
+    NSString *byTime = [NSString localizedStringWithName:@"sort_by_time"];
+    [alertController addAction:[UIAlertAction actionWithTitle:byTime style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        STRONG_SELF
+        strongSelf.curretSortType = SortTypeByTime;
+        [strongSelf.sortButton setTitle:byTime forState:UIControlStateNormal];
+        // 按时间排序的操作
+        NSLog(@"Sort by time");
+        [strongSelf handleParamChange];
+    }]];
+    
+    NSString *bySize = [NSString localizedStringWithName:@"sort_by_size"];
+    [alertController addAction:[UIAlertAction actionWithTitle:bySize style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        STRONG_SELF
+        strongSelf.curretSortType = SortTypeBySize;
+        [strongSelf.sortButton setTitle:bySize forState:UIControlStateNormal];
+        [strongSelf handleParamChange];
+        // 按大小排序的操作
+        NSLog(@"Sort by size");
+    }]];
+    
+    // 添加取消按钮
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        // 取消操作
+        NSLog(@"Cancel sort");
+    }]];
+    
+    // 呈现 UIAlertController
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
+- (IBAction)handleFilterChanged:(UISegmentedControl *)sender {
+    
+    switch (sender.selectedSegmentIndex) {
+        case 0:
+            self.currentFilterType = FilterTypeUnCompress;
+            break;
+        case 1:
+            self.currentFilterType = FilterTypeUnCompressResult;
+            break;
+        case 2:
+            self.currentFilterType = FilterTypeCompressed;
+            break;
+    }
+    
+    [self handleParamChange];
+}
+
+- (void)handleParamChange {
+    WEAK_SELF
+    if (self.showDatas == nil || [self.showDatas count] == 0) {
+        [ProgressHUDWrapper showLoadingToView:self.view withString:[NSString localizedLoading]];
+    }
+    
+    [[VideoDataManager sharedManager] fetchVideosWithSortedType:self.curretSortType filterType:self.currentFilterType completion:^(NSArray<AssetData *> * _Nonnull dataList) {
+        STRONG_SELF
+        [ProgressHUDWrapper hideHUDForView:strongSelf.view];
+        strongSelf.showDatas = dataList;
+        [strongSelf.collectionView reloadData];
+    }];
+}
+
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [ActivityIndicatorUtility hideActivityIndicatorInView:self.view];
     [super viewWillDisappear:animated];
 }
 
@@ -75,19 +143,19 @@
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [self.sortedData count];
+    return [self.showDatas count];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     VideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[VideoViewCell reuseIdentifier] forIndexPath:indexPath];
 
-    [cell updateAssetData:self.sortedData[indexPath.row]];
+    [cell updateAssetData:self.showDatas[indexPath.row]];
     
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    AssetData *data = self.sortedData[indexPath.row];
+    AssetData *data = self.showDatas[indexPath.row];
     VideoCompressViewController *controller = [[VideoCompressViewController alloc] initWithAssetData:data];
     [self.navigationController pushViewController:controller animated:YES];        
 }

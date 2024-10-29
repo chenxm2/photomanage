@@ -13,3 +13,7 @@
 "slimming_coin" = "瘦币";
 "buy" = "购买";
 "coins_not_enough" = "瘦币不足，请充值";
+"sort_option" = "排序方式";
+"sort_by_time" = "按时间";
+"sort_by_size" = "按大小";
+"loading" = "加载中";

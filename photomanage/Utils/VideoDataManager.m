@@ -7,8 +7,8 @@
 
 #import "VideoDataManager.h"
 @interface VideoDataManager ()
-@property (nonatomic, strong) NSMutableArray<PHAsset *> *sourceVideoArray;
 @property (nonatomic, strong) NSMutableArray<AssetData *> *sortedData;
+@property (nonatomic, strong) NSMutableArray<AssetData *> *orgData;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, AssetData *> *dataMap;
 @end
 
@@ -23,6 +23,7 @@ static dispatch_once_t onceToken;
     if (self) {
         _sortedData = [[NSMutableArray alloc] init]; // 初始化视频列表
         _dataMap = [[NSMutableDictionary alloc] init];
+        _orgData = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -59,12 +60,14 @@ static dispatch_once_t onceToken;
             PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:compressedLocalIdentifier] options:nil];
             [self createDataByPHFetchResult:fetchResult callback:^(NSArray<AssetData *> * _Nonnull dataList) {
                 [dataList enumerateObjectsUsingBlock:^(AssetData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    [obj loadBindData:^(AssetBindData * _Nonnull bindData) {
+                    NSLog(@"onCompressedVideoSaveToAlblum got %@", obj);
+                    [self.orgData insertObject:obj atIndex:0];
+                    [obj loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
                         [bindData setCompressQulity:quality];
-                        
-                        callback(obj);
+                        [self.dataMap setObject:data forKey:data.asset.localIdentifier];
+                        LogInfo(@"onCompressedVideoSaveToAlblum data = %@", data);
+                        callback(data);
                     }];
-                    [self.dataMap setObject:obj forKey:obj.asset.localIdentifier];
                 }];
             }];
         }];
@@ -96,31 +99,94 @@ static dispatch_once_t onceToken;
         [res addObject:data];
     }
     
-    callback(res);
+    [GCDUtility executeOnMainThread:^{
+        callback(res);
+    }];
 }
 
-- (void)fetchVideosSortedBySize:(AssetDatasCallback)callback {
+- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType completion:(AssetDatasCallback)callback {
+    if (self.orgData.count == 0) {
+        LogInfo(@"fetchVideosWithSortedType size orgData == 0 sortType = %ld, filterType = %ld", (long)sortType, filterType);
+        [self loadDataFromAlbumWithCompletion:^(NSArray<AssetData *> * _Nonnull dataList) {
+            [self filterVideosWithSortedType:sortType filterType:filterType orgData:dataList callBack:callback];
+        }];
+    } else {
+        LogInfo(@"fetchVideosWithSortedType size orgData > 0 sortType = %ld, filterType = %ld", (long)sortType, filterType);
+        [self filterVideosWithSortedType:sortType filterType:filterType orgData:self.orgData callBack:callback];
+    }
+}
+
+- (void)filterVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType orgData:(NSArray<AssetData *> *)dataList callBack:(AssetDatasCallback)callBack {
+    
     [GCDUtility executeOnSerialQueue:^{
-        if ([self.sortedData count] == 0) {
-            PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.includeAssetSourceTypes = PHAssetSourceTypeUserLibrary;
-            // 可以根据需要设置options，例如过滤图片
-            PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:options];
-            [self createDataByPHFetchResult:fetchResult callback:^(NSArray<AssetData *> * _Nonnull dataList) {
-                [self.sortedData addObjectsFromArray:dataList];
-                [self.sortedData enumerateObjectsUsingBlock:^(AssetData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    [self.dataMap setObject:obj forKey:obj.asset.localIdentifier];
-                }];
-                            
-            }];
-            [self handleCompleteLoad:callback];
-        } else {
-            [GCDUtility executeOnMainThread:^{
-                callback([self.sortedData copy]);
+        NSUInteger count = [dataList count];
+        __block NSUInteger current = 0;
+        
+        NSMutableArray<AssetData *> *filterData  = [[NSMutableArray alloc] init];
+        for (int i = 0; i < count; i++) {
+            [[dataList objectAtIndex:i] loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
+                current++;
+                if (filterType == FilterTypeUnCompress) {
+                    if (![bindData.isCompress boolValue] && bindData.compressQulity == nil) {
+                        [filterData addObject:data];
+                    }
+                } else if (filterType == FilterTypeUnCompressResult) {
+                    if (bindData.compressQulity != nil) {
+                        [filterData addObject:data];
+                    }
+                } else if (filterType == FilterTypeCompressed) {
+                    if ([bindData.isCompress boolValue]) {
+                        [filterData addObject:data];
+                    }
+                }
+                
+                if (current == count) {
+                    [self filterVideosWithSortedType:sortType orgData:filterData callBack:callBack];
+                }
             }];
         }
     }];
 }
+
+- (void)filterVideosWithSortedType:(SortType)sortType orgData:(NSMutableArray<AssetData *> *)dataList callBack:(AssetDatasCallback)callBack {
+    [GCDUtility executeOnSerialQueue:^{
+        if (sortType == SortTypeByTime) {
+            NSUInteger count = dataList.count;
+            for (NSUInteger i = 0; i < count / 2; i++) {
+                id obj = dataList[i];
+                dataList[i] = dataList[count - 1 - i];
+                dataList[count - 1 - i] = obj;
+            }
+        } else {
+            NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"fileSize" ascending:NO];
+            [dataList sortUsingDescriptors:@[sortDescriptor]];
+        }
+        
+        [GCDUtility executeOnMainThread:^{
+            callBack(dataList);
+        }];
+    }];
+}
+
+- (void)loadDataFromAlbumWithCompletion:(AssetDatasCallback)completion {
+    [GCDUtility executeOnSerialQueue:^{
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+        options.includeAssetSourceTypes = PHAssetSourceTypeUserLibrary;
+        // 可以根据需要设置options，例如过滤图片
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:options];
+        [self createDataByPHFetchResult:fetchResult callback:^(NSArray<AssetData *> * _Nonnull dataList) {
+            [dataList enumerateObjectsUsingBlock:^(AssetData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [self.orgData addObject:obj];
+                [self.dataMap setObject:obj forKey:obj.asset.localIdentifier];
+            }];
+            
+            completion(self.orgData);
+        }];
+    }];
+    
+}
+
+
 
 
 - (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback
@@ -151,5 +217,6 @@ static dispatch_once_t onceToken;
         callback([self.sortedData copy]);
     }];
 }
+
 
 @end

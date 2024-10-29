@@ -156,8 +156,53 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZIK-rG-bOV">
+                                <rect key="frame" x="0.0" y="103" width="393" height="66"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="c7S-sE-u3M">
+                                        <rect key="frame" x="96.666666666666686" y="16.666666666666671" width="200" height="34"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="33" id="QP9-iF-JdZ"/>
+                                            <constraint firstAttribute="width" constant="200" id="htJ-83-LAF"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="未压缩"/>
+                                            <segment title="压缩结果"/>
+                                            <segment title="已压缩"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="handleFilterChanged:" destination="sHx-dC-XLf" eventType="valueChanged" id="2cU-tI-BuV"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="caret_down_small" translatesAutoresizingMaskIntoConstraints="NO" id="NTc-8W-rS2">
+                                        <rect key="frame" x="367" y="23" width="20" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="60u-h3-vZJ"/>
+                                            <constraint firstAttribute="width" constant="20" id="Mht-Fl-SUu"/>
+                                        </constraints>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gcK-lS-YA5">
+                                        <rect key="frame" x="309" y="16.000000000000004" width="76" height="34.333333333333343"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="按时间"/>
+                                        <connections>
+                                            <action selector="handleSortButtonClicked:" destination="sHx-dC-XLf" eventType="touchUpInside" id="N5x-mY-t1H"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="NTc-8W-rS2" secondAttribute="trailing" constant="6" id="40K-Fb-vEK"/>
+                                    <constraint firstItem="gcK-lS-YA5" firstAttribute="centerY" secondItem="ZIK-rG-bOV" secondAttribute="centerY" id="7W7-DI-otV"/>
+                                    <constraint firstItem="c7S-sE-u3M" firstAttribute="centerY" secondItem="ZIK-rG-bOV" secondAttribute="centerY" id="CfJ-eL-baH"/>
+                                    <constraint firstAttribute="trailing" secondItem="gcK-lS-YA5" secondAttribute="trailing" constant="8" id="SXX-YF-fHm"/>
+                                    <constraint firstItem="NTc-8W-rS2" firstAttribute="centerY" secondItem="ZIK-rG-bOV" secondAttribute="centerY" id="YiC-Xl-b8f"/>
+                                    <constraint firstAttribute="height" constant="66" id="mab-RL-6qg"/>
+                                    <constraint firstItem="c7S-sE-u3M" firstAttribute="centerX" secondItem="ZIK-rG-bOV" secondAttribute="centerX" id="pGf-H0-Gg6"/>
+                                </constraints>
+                            </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="SFC-dB-vwd">
-                                <rect key="frame" x="0.0" y="103" width="393" height="666"/>
+                                <rect key="frame" x="0.0" y="169" width="393" height="600"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Od4-cu-yOe">
                                     <size key="itemSize" width="128" height="128"/>
@@ -171,23 +216,29 @@
                         <viewLayoutGuide key="safeArea" id="jk0-KA-muC"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="SFC-dB-vwd" firstAttribute="top" secondItem="jk0-KA-muC" secondAttribute="top" id="3WM-IK-DjY"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="SFC-dB-vwd" secondAttribute="trailing" id="66c-bB-VKd"/>
+                            <constraint firstItem="ZIK-rG-bOV" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="BsM-iT-3zC"/>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="Efq-XG-nQx"/>
+                            <constraint firstItem="ZIK-rG-bOV" firstAttribute="top" secondItem="jk0-KA-muC" secondAttribute="top" id="aJy-al-Zla"/>
+                            <constraint firstItem="SFC-dB-vwd" firstAttribute="top" secondItem="ZIK-rG-bOV" secondAttribute="bottom" id="ouw-rC-rkE"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="SFC-dB-vwd" secondAttribute="bottom" id="slf-r9-TVE"/>
+                            <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="ZIK-rG-bOV" secondAttribute="trailing" id="wPb-Of-GZ2"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="视频压缩" id="XYp-Ie-GR9"/>
                     <connections>
                         <outlet property="collectionView" destination="SFC-dB-vwd" id="7hG-MK-B6Y"/>
+                        <outlet property="filterSegmented" destination="c7S-sE-u3M" id="GQc-ch-grB"/>
+                        <outlet property="sortButton" destination="gcK-lS-YA5" id="Gw4-xe-QK9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HK8-fc-rNU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1659" y="87"/>
+            <point key="canvasLocation" x="1658.7786259541983" y="86.619718309859152"/>
         </scene>
     </scenes>
     <resources>
+        <image name="caret_down_small" width="20" height="20"/>
         <image name="icon_group_next" width="36" height="36"/>
         <image name="transcan" width="42.666667938232422" height="42.666667938232422"/>
         <systemColor name="systemBackgroundColor">

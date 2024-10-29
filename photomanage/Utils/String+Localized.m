@@ -20,4 +20,8 @@
     return NSLocalizedString(@"cancel", "cancel");
 }
 
++ (NSString *)localizedLoading {
+    return NSLocalizedString(@"loading", "loading");
+}
+
 @end
