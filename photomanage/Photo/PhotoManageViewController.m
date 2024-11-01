@@ -16,7 +16,7 @@
 #import "../Goods/GoodsViewController.h"
 
 @interface PhotoManageViewController () <AllPhotoViewDelegate, PhotoPreviewControllerDelegate, ConfirmDeleteControllerDelegate>
-@property (weak, nonatomic) IBOutlet UIView *bottomBar;
+@property (weak, nonatomic) IBOutlet UIView *topBar;
 @property (weak, nonatomic) IBOutlet UIButton *showHideButton;
 @property (weak, nonatomic) IBOutlet UIButton *deletedButton;
 @property (nonatomic, strong) NSMutableArray<PHAsset *> *originAssetsArray;
@@ -35,7 +35,8 @@
     self.isShow = NO;
     self.originAssetsArray = [[NSMutableArray alloc] init];
     self.deleteAssetsArray = [[NSMutableArray alloc] init];
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.topBar.backgroundColor = [ColorUtility colorWithRed:0.7 green:0.7 blue:0.7 alpha:0.1];
+    self.topBar.layer.cornerRadius = 8;
 }
 
 
@@ -127,7 +128,7 @@
                 [strongSelf.view addSubview:strongSelf.photoPreviewController.view];
                 [strongSelf.photoPreviewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
                     make.left.mas_equalTo(strongSelf.view.mas_left);
-                    make.top.equalTo(strongSelf.bottomBar.mas_bottom);
+                    make.top.equalTo(strongSelf.topBar.mas_bottom);
                     make.right.mas_equalTo(strongSelf.view.mas_right);
 //                    make.bottom.mas_equalTo(strongSelf.view.mas_bottom);
                     make.bottom.equalTo(self.view.mas_bottom).offset(-self.tabBarController.tabBar.frame.size.height); // 与 UITabBar 的底部对齐
@@ -153,7 +154,7 @@
             
             [self.allShowView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(self.view.mas_left);
-                make.top.equalTo(self.bottomBar.mas_bottom).offset(10);
+                make.top.equalTo(self.topBar.mas_bottom).offset(10);
                 make.right.mas_equalTo(self.view.mas_right);
                 make.bottom.mas_equalTo(self.view.mas_bottom).offset(-60);
             }];

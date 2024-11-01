@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PhotoManageViewController : UIViewController
+@interface PhotoManageViewController :UIViewController
 
 
 @end

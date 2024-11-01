@@ -26,4 +26,5 @@
 #import "Utils/JSONConverter.h"
 #import "StoreManager/StoreManager.h"
 #import "Utils/ColorUtility.h"
+#import "BaseUI/BaseViewController.h"
 #endif /* CommonHeaders_h */
