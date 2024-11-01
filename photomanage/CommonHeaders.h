@@ -25,4 +25,5 @@
 #import "Utils/ProgressHUDWrapper.h"
 #import "Utils/JSONConverter.h"
 #import "StoreManager/StoreManager.h"
+#import "Utils/ColorUtility.h"
 #endif /* CommonHeaders_h */
