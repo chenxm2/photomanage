@@ -21,6 +21,7 @@
 		478031282CAA421800AC4BC0 /* LogUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 478031272CAA421800AC4BC0 /* LogUtility.m */; };
 		4782E7642CD4AE4C00298191 /* ColorUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E7632CD4AE4C00298191 /* ColorUtility.m */; };
 		4782E7672CD4D52A00298191 /* CustomButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E7662CD4D52A00298191 /* CustomButtonView.m */; };
+		4782E76C2CD9F0BE00298191 /* UserDefaultsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E76B2CD9F0BE00298191 /* UserDefaultsManager.m */; };
 		47B5F1832CC7922F0031E2DF /* GoodsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B5F1812CC7922F0031E2DF /* GoodsViewController.m */; };
 		47B5F1842CC7922F0031E2DF /* GoodsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */; };
 		47B5F1862CC799550031E2DF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47B5F1852CC799550031E2DF /* StoreKit.framework */; };
@@ -93,6 +94,8 @@
 		4782E7632CD4AE4C00298191 /* ColorUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorUtility.m; sourceTree = "<group>"; };
 		4782E7652CD4D52A00298191 /* CustomButtonView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomButtonView.h; sourceTree = "<group>"; };
 		4782E7662CD4D52A00298191 /* CustomButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomButtonView.m; sourceTree = "<group>"; };
+		4782E76A2CD9F0BE00298191 /* UserDefaultsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDefaultsManager.h; sourceTree = "<group>"; };
+		4782E76B2CD9F0BE00298191 /* UserDefaultsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsManager.m; sourceTree = "<group>"; };
 		47B5F1802CC7922F0031E2DF /* GoodsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoodsViewController.h; sourceTree = "<group>"; };
 		47B5F1812CC7922F0031E2DF /* GoodsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoodsViewController.m; sourceTree = "<group>"; };
 		47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GoodsViewController.xib; sourceTree = "<group>"; };
@@ -257,6 +260,8 @@
 				47E86E2F2CC0EB6C00AECAF7 /* JSONConverter.m */,
 				4782E7622CD4AE4C00298191 /* ColorUtility.h */,
 				4782E7632CD4AE4C00298191 /* ColorUtility.m */,
+				4782E76A2CD9F0BE00298191 /* UserDefaultsManager.h */,
+				4782E76B2CD9F0BE00298191 /* UserDefaultsManager.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -539,6 +544,7 @@
 				47D6BA432C9ACC0200516CD6 /* VideoPlayerViewController.m in Sources */,
 				47D6BA4D2C9AE45600516CD6 /* UIView+Toast.m in Sources */,
 				47D6FDB12BFB0367000385EA /* SceneDelegate.m in Sources */,
+				4782E76C2CD9F0BE00298191 /* UserDefaultsManager.m in Sources */,
 				47E86E302CC0EB6C00AECAF7 /* JSONConverter.m in Sources */,
 				47E86E262CBFB08400AECAF7 /* ProgressHUDWrapper.m in Sources */,
 				47E86E2D2CC0BADC00AECAF7 /* KeychainHelper.m in Sources */,
@@ -640,7 +646,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -697,7 +703,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

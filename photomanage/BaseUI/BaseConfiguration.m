@@ -23,11 +23,11 @@
 }
 
 + (UIColor *)viewBackgroundColor {
-    return [ColorUtility colorWithDecimalRed:246 green:246 blue:246 alpha:0.5]; // 视图的默认背景颜色
+    return [UIColor whiteColor]; // 视图的默认背景颜色
 }
 
 + (UIImage *)rightItemImg {
-   return [UIImage imageNamed:@"test_right"];
+   return [UIImage imageNamed:@"coins"];
 }
 
 @end

@@ -11,13 +11,15 @@
 #import "AssetData.h"
 #import "VideoDataManager.h"
 
-@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+NSString * const kSelectIndex = @"VideoManage_SelectIndex";
+
+@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) NSArray<AssetData *> *showDatas;
 @property (nonatomic, assign) Boolean isInitCollectionView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *filterSegmented;
 @property (nonatomic, assign) FilterType currentFilterType;
-@property (weak, nonatomic) IBOutlet UIButton *sortButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *sortButton;
 @property (nonatomic, assign) SortType curretSortType;
 @end
 
@@ -28,10 +30,25 @@
     NSLog(@"VideoManageViewController viewDidLoad");
     self.curretSortType = SortTypeByTime;
     self.currentFilterType = FilterTypeUnCompress;
-    
     self.filterSegmented.selectedSegmentIndex = 0;
-    // Do any additional setup after loading the view.
+    if (@available(iOS 13.0, *)) {
+        self.filterSegmented.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
 
+    self.title = [NSString localizedStringWithName:@"video_compress"];
+    // Do any additional setup after loading the view.
+    self.sortButton.delegate = self;
+}
+
+- (BOOL)shouldShowLeftButton {
+    return NO;
+}
+
+- (BOOL)shouldShowRightButton {
+    return YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -40,7 +57,7 @@
     [self handleParamChange];
 }
 
-- (IBAction)handleSortButtonClicked:(id)sender {
+-(void)onButtonTap:(CustomButtonView *)view {
     // 创建 UIAlertController 实例，这里以 actionSheet 样式为例
     WEAK_SELF
     NSString *title = [NSString localizedStringWithName:@"sort_option"];
@@ -52,9 +69,8 @@
     [alertController addAction:[UIAlertAction actionWithTitle:byTime style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         STRONG_SELF
         strongSelf.curretSortType = SortTypeByTime;
-        [strongSelf.sortButton setTitle:byTime forState:UIControlStateNormal];
-        // 按时间排序的操作
-        NSLog(@"Sort by time");
+        [strongSelf.sortButton setButtonText:byTime];
+
         [strongSelf handleParamChange];
     }]];
     
@@ -62,21 +78,21 @@
     [alertController addAction:[UIAlertAction actionWithTitle:bySize style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         STRONG_SELF
         strongSelf.curretSortType = SortTypeBySize;
-        [strongSelf.sortButton setTitle:bySize forState:UIControlStateNormal];
+        [strongSelf.sortButton setButtonText:bySize];
         [strongSelf handleParamChange];
         // 按大小排序的操作
         NSLog(@"Sort by size");
     }]];
     
     // 添加取消按钮
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        // 取消操作
-        NSLog(@"Cancel sort");
+    [alertController addAction:[UIAlertAction actionWithTitle:[NSString localizedCancel] style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+
     }]];
     
     // 呈现 UIAlertController
     [self presentViewController:alertController animated:YES completion:nil];
 }
+
 
 
 - (IBAction)handleFilterChanged:(UISegmentedControl *)sender {
@@ -108,12 +124,6 @@
         strongSelf.showDatas = dataList;
         [strongSelf.collectionView reloadData];
     }];
-}
-
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -149,7 +159,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     VideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[VideoViewCell reuseIdentifier] forIndexPath:indexPath];
 
-    [cell updateAssetData:self.showDatas[indexPath.row]];
+    [cell updateAssetData:self.showDatas[indexPath.row] isSelected:NO];
     
     return cell;
 }

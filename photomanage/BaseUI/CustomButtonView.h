@@ -15,6 +15,12 @@ typedef NS_ENUM(NSInteger, ButtonImagePosition) {
     ButtonImagePositionRight
 };
 
+@class CustomButtonView;
+
+@protocol CustomButtonViewDelegate <NSObject>
+-(void)onButtonTap:(CustomButtonView *)view;
+@end
+
 IB_DESIGNABLE
 @interface CustomButtonView : UIView
 
@@ -27,6 +33,9 @@ IB_DESIGNABLE
 @property (nonatomic, strong) IBInspectable NSString *buttonText;
 @property (nonatomic, strong) IBInspectable UIImage *buttonImage;
 @property (nonatomic, assign) IBInspectable NSInteger imagePositionIndex; // 0 for left, 1 for right
+@property (nonatomic, assign) IBInspectable CGFloat fontSize;
+@property (nonatomic, strong) IBInspectable UIColor *buttonColor;
+@property (nonatomic, weak) id<CustomButtonViewDelegate> delegate;
 
 - (void)updateUI; // 更新界面
 

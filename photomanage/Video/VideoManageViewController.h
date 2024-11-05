@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoManageViewController : UIViewController
+@interface VideoManageViewController : BaseViewController
 
 @end
 

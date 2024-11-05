@@ -8,9 +8,9 @@
 #import "AssetBindData.h"
 NSString * const kAssetBindData = @"AssetBindData";
 
-NSString * const kQualityLow = @"低清晰度";
-NSString * const kQualityMiddle = @"标准质量";
-NSString * const kQualityHigh = @"高保真";
+NSString * const kQualityLow = @"低清";
+NSString * const kQualityMiddle = @"标准";
+NSString * const kQualityHigh = @"保真";
 
 @implementation AssetBindData
 - (void)setOrgLocalIdentifier:(NSString *)orgLocalIdentifier {

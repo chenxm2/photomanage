@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VideoViewCell : UICollectionViewCell
 + (NSString *)reuseIdentifier;
-- (void)updateAssetData:(AssetData *)data;
+- (void)updateAssetData:(AssetData *)data isSelected:(BOOL)isSelected;
 @end
 
 NS_ASSUME_NONNULL_END

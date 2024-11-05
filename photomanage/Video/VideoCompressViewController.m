@@ -52,7 +52,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     [self.orgImageView setImageWithAsset:_orgData.asset];
     [self.compressedImageView setImageWithAsset:_orgData.asset];
     [self initPickerView];
-    self.navigationController.delegate = self;
+
 
     
     WEAK_SELF
