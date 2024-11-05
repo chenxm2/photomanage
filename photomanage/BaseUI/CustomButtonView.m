@@ -8,6 +8,7 @@
 #import "CustomButtonView.h"
 
 @implementation CustomButtonView
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -26,7 +27,6 @@
 
 - (void)commonInit {
     // 初始化图像视图
-    
     _imageView = [[UIImageView alloc] init];
     _imageView.contentMode = UIViewContentModeScaleAspectFit; // 保持图像比例
     [self addSubview:_imageView];
@@ -47,8 +47,6 @@
 
     // 默认设置
     _imagePosition = ButtonImagePositionLeft;
-
-
 }
 
 - (void)setButtonText:(NSString *)buttonText {
@@ -86,37 +84,62 @@
 }
 
 - (void)setupConstraints {
+    // 移除之前的所有约束
+    [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {}];
+    [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {}];
+    
+    BOOL hasImage = self.buttonImage != nil;
+    int margin = 8;
+    
+    
     // 设置图标和文字的约束
     if (self.imagePosition == ButtonImagePositionLeft) {
         self.titleLabel.textAlignment = NSTextAlignmentLeft; // 左对齐
-        [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(self.mas_leading).offset(4);
-            make.centerY.equalTo(self);
-            make.height.equalTo(@20); // 固定高度
-            make.width.equalTo(@20); // 固定宽度
-        }];
-
-        [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(self.imageView.mas_trailing).offset(4); // 与图像保持一定距离
-            make.trailing.equalTo(self.mas_trailing);
-            make.centerY.equalTo(self);
-        }];
+        
+        if (hasImage) {
+            [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self).offset(margin);
+                make.centerY.equalTo(self);
+                make.height.equalTo(@20); // 固定高度
+                make.width.equalTo(@20); // 固定宽度
+            }];
+            
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self.imageView.mas_trailing).offset(0); // 与图像保持一定距离
+                make.trailing.equalTo(self).offset(-margin);
+                make.centerY.equalTo(self);
+            }];
+        } else {
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self).offset(margin);
+                make.trailing.equalTo(self).offset(-margin);
+                make.centerY.equalTo(self);
+            }];
+        }
     } else if (self.imagePosition == ButtonImagePositionRight) {
         self.titleLabel.textAlignment = NSTextAlignmentRight; // 右对齐
-        [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.leading.equalTo(self);
-            make.centerY.equalTo(self);
-            make.trailing.equalTo(self.imageView.mas_leading).offset(0); // 与图像保持一定距离
-        }];
 
-        [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.trailing.equalTo(self.mas_trailing).offset(0);
-            make.centerY.equalTo(self);
-            make.height.equalTo(@20); // 固定高度
-            make.width.equalTo(@20); // 固定宽度
-        }];
+        if (hasImage) {
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self).offset(margin);
+                make.trailing.equalTo(self.imageView.mas_leading).offset(0); // 与图像保持一定距离
+                make.centerY.equalTo(self);
+            }];
+
+            [self.imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.equalTo(self).offset(-margin);
+                make.centerY.equalTo(self);
+                make.height.equalTo(@20); // 固定高度
+                make.width.equalTo(@20); // 固定宽度
+            }];
+        } else {
+            [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self).offset(margin);
+                make.trailing.equalTo(self).offset(-margin);
+                make.centerY.equalTo(self);
+            }];
+        }
     }
-    
 }
 
 - (void)buttonTapped {
@@ -127,27 +150,20 @@
     }
 }
 
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    // 按下事件
-    
-    self.backgroundColor = [self.buttonColor colorWithAlphaComponent:0.3]; // 改变背景颜色以显示按下状态
+    self.backgroundColor = [self.buttonColor colorWithAlphaComponent:0.3]; // 按下状态
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    // 松开事件
-    
     self.backgroundColor = [UIColor clearColor]; // 恢复背景颜色
-    
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    // 触摸事件被取消
     self.backgroundColor = [UIColor clearColor]; // 恢复背景颜色
-    
 }
 
 - (void)dealloc {
+    // 自定义的清理操作
 }
 
 @end

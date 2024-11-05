@@ -54,12 +54,18 @@
 }
 
 - (void)configureButtons {
-    if ([self shouldShowLeftButton]) {
+    if ([self shouldShowLeftButton] && [self.navigationController.viewControllers count] > 1) {
         // 创建返回按钮
-        UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:@"返回"
-                                                                       style:UIBarButtonItemStylePlain
+        // 使用系统的返回图标
+        UIImage *backImage = [[UIImage imageNamed:@"icon_back_b"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]; // 系统提供的返回图标，可根据需要替换
+        UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithImage:backImage
+                                                                       style:UIBarButtonItemStyleDone
                                                                       target:self
                                                                       action:@selector(leftButtonTapped)];
+
+        // 设置导航栏左侧按钮
+        self.navigationItem.leftBarButtonItem = leftButton;
+
         self.navigationItem.leftBarButtonItem = leftButton;
     } else {
         self.navigationItem.leftBarButtonItem = nil; // 隐藏左侧按钮

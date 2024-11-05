@@ -35,13 +35,11 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
         self.filterSegmented.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
     }
 
+    self.collectionView.backgroundColor = [UIColor whiteColor];
     self.title = [NSString localizedStringWithName:@"video_compress"];
     // Do any additional setup after loading the view.
     self.sortButton.delegate = self;
-}
-
-- (BOOL)shouldShowLeftButton {
-    return NO;
+    
 }
 
 - (BOOL)shouldShowRightButton {

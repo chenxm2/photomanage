@@ -160,15 +160,16 @@
                                             <segment title="已压缩"/>
                                             <segment title="待删除"/>
                                         </segments>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <action selector="handleFilterChanged:" destination="sHx-dC-XLf" eventType="valueChanged" id="2cU-tI-BuV"/>
                                         </connections>
                                     </segmentedControl>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SWz-Pl-TuL" customClass="CustomButtonView">
-                                        <rect key="frame" x="311" y="18" width="70" height="30"/>
+                                        <rect key="frame" x="305" y="18" width="76" height="30"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="70" id="QGn-9S-RbY"/>
+                                            <constraint firstAttribute="width" constant="76" id="QGn-9S-RbY"/>
                                             <constraint firstAttribute="height" constant="30" id="v51-IK-zFs"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
@@ -181,12 +182,12 @@
                                                 <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="number" keyPath="fontSize">
-                                                <real key="value" value="12"/>
+                                                <real key="value" value="11"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="c7S-sE-u3M" firstAttribute="centerY" secondItem="ZIK-rG-bOV" secondAttribute="centerY" id="CfJ-eL-baH"/>
                                     <constraint firstItem="SWz-Pl-TuL" firstAttribute="centerY" secondItem="ZIK-rG-bOV" secondAttribute="centerY" id="Ohx-gO-oi7"/>
@@ -195,9 +196,9 @@
                                     <constraint firstItem="c7S-sE-u3M" firstAttribute="centerX" secondItem="ZIK-rG-bOV" secondAttribute="centerX" id="pGf-H0-Gg6"/>
                                 </constraints>
                             </view>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="SFC-dB-vwd">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="white" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="SFC-dB-vwd">
                                 <rect key="frame" x="0.0" y="169" width="393" height="649"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Od4-cu-yOe">
                                     <size key="itemSize" width="128" height="128"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>

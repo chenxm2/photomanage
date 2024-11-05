@@ -9,7 +9,7 @@
 #import "AssetData.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoCompressViewController : UIViewController
+@interface VideoCompressViewController : BaseViewController
 - (instancetype)initWithAssetData:(AssetData *)data;
 @end
 
