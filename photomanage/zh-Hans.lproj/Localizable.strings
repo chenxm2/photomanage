@@ -6,7 +6,7 @@
 "compress_album_name" = "压缩视频";
 "saved" = "已保存";
 "save_to_album" = "保存到相册";
-"already_in_album" = "已在相册了";
+"already_in_album" = "已保存到相册了";
 "compress_sure" = "您确定要进行压缩？";
 "downloading" = "下载中...";
 "compressing" = "压缩中...";
@@ -19,3 +19,8 @@
 "loading" = "加载中";
 "video_compress" = "视频压缩";
 "handle_compress" = "压缩处理";
+"play_video" = "播放";
+"delete_succees" = "删除成功";
+"delete_succees_detail" = "删除成功，结果可在已压缩Tab分类中查看";
+"permission_fail" = "权限请求失败，请到系统设打开权限才能正常使用";
+"no_need_delete" = "未保存的到相册的视频无需删";

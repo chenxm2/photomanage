@@ -74,6 +74,27 @@ static dispatch_once_t onceToken;
     }
 }
 
+- (void)deleteData:(AssetData *)data {
+    [GCDUtility executeOnMainThread:^{
+        [self.orgData removeObject:data];
+        [self.dataMap removeObjectForKey:data.asset.localIdentifier];
+    }];
+}
+
+- (void)deleteVideoAsset:(AssetData *)asset completionHandler:(void(^)(BOOL success, NSError * _Nullable error))completion {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        // 请求删除指定的 PHAsset
+        [PHAssetChangeRequest deleteAssets:@[asset.asset]];
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+        [GCDUtility executeOnMainThread:^{
+            [self deleteData:asset];
+            if (completion) {
+                completion(success, error);
+            }
+        }];
+    }];
+}
+
 - (void)createDataByPHFetchResult:(PHFetchResult *)fetchResult callback:(AssetDatasCallback)callback {
     NSMutableArray<PHAsset *> *sourceVideoArray = [[NSMutableArray alloc] init];
     NSMutableArray<AssetData *> *res = [[NSMutableArray alloc] init];
@@ -130,11 +151,11 @@ static dispatch_once_t onceToken;
                     if (![bindData.isCompress boolValue] && bindData.compressQulity == nil) {
                         [filterData addObject:data];
                     }
-                } else if (filterType == FilterTypeUnCompressResult) {
+                } else if (filterType == FilterTypeCompressResult) {
                     if (bindData.compressQulity != nil) {
                         [filterData addObject:data];
                     }
-                } else if (filterType == FilterTypeCompressed) {
+                } else if (filterType == FilterTypeWaitDelete) {
                     if ([bindData.isCompress boolValue]) {
                         [filterData addObject:data];
                     }

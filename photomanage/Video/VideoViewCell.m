@@ -10,10 +10,12 @@
 #import "../Utils/String+FileSize.h"
 
 
-@interface VideoViewCell()
+@interface VideoViewCell() <CustomButtonViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *compressQuality;
+@property (weak, nonatomic) IBOutlet CustomButtonView *deleteButton;
+@property (nonatomic, strong) AssetData *data;
 
 @end
 @implementation VideoViewCell
@@ -27,13 +29,15 @@
     self.imageView.backgroundColor = [UIColor greenColor];
     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
     self.imageView.clipsToBounds = YES;
+    self.deleteButton.delegate = self;
 }
 
 + (NSString *)reuseIdentifier {
     return @"VideoViewCell";
 }
 
-- (void)updateAssetData:(AssetData *)data isSelected:(BOOL)isSelected {
+- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete {
+    self.data = data;
     [self.imageView setSmallImageWithAsset:data.asset];
     self.sizeLabel.text = [NSString fileSizeStringWithNumber:data.fileSize];
     WEAK_SELF
@@ -45,16 +49,18 @@
         }
     }];
     
-    if (isSelected) {
-        self.contentView.layer.borderWidth = 2.0; // 边框宽度
-        self.contentView.layer.borderColor = [UIColor blackColor].CGColor; // 边框颜色
-        self.contentView.layer.cornerRadius = 6.0; 
-        self.contentView.clipsToBounds = YES; // 裁剪子视图
+    if (showDelete) {
+        self.deleteButton.hidden = NO;
     } else {
-        self.contentView.layer.borderWidth = 0; // 移除边框
-        self.contentView.layer.borderColor = nil;
-        self.contentView.clipsToBounds = NO; // 取消裁剪
+        self.deleteButton.hidden = YES;
     }
 }
+
+-(void)onButtonTap:(CustomButtonView *)view {
+    if ([self.delegete respondsToSelector:@selector(onDeleteButtonTap:data:)]) {
+        [self.delegete onDeleteButtonTap:self data:self.data];
+    }
+}
+
 
 @end

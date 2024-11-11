@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoPlayerViewController : UIViewController
+@interface VideoPlayerViewController : BaseViewController
 - (void)playVideoWithURL:(NSURL *)url;
 // 播放 PHAsset 视频
 - (void)playVideoWithAsset:(PHAsset *)asset;

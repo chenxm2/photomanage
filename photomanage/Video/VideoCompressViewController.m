@@ -13,24 +13,29 @@
 
 static NSString * const kLogTag = @"VideoCompressViewController";
 
-@interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource>
+@interface VideoCompressViewController () <UIPickerViewDelegate, UIPickerViewDataSource, CustomButtonViewDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *qualityLabel;
-@property (weak, nonatomic) IBOutlet UILabel *orgSizeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *compressQualityLabel;
 @property (weak, nonatomic) IBOutlet UILabel *compressedSizeLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *orgImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *compressedImageView;
 @property (strong, nonatomic) AssetData *orgData;
 @property (strong, nonatomic) AssetData *compressedData;
-@property (weak, nonatomic) IBOutlet UIPickerView *qualityPickerView;
 @property (nonatomic, strong) NSArray *qualityOptions; // 存储视频预设的选项
-@property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
 @property (strong, nonatomic) NSURL *compressedURL;
 @property (weak, nonatomic) IBOutlet UIView *compressedContainer;
-@property (weak, nonatomic) IBOutlet StyledButton *compressButton;
-@property (weak, nonatomic) IBOutlet StyledButton *saveToAlbumButton;
+@property (weak, nonatomic) IBOutlet UIView *topContainer;
 @property (strong, nonatomic) NSString *compressAlbumName;
 @property (strong, nonatomic) Compresser *compresser;
+@property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
+@property (weak, nonatomic) IBOutlet CustomButtonView *highQuqlityCompressButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *midQuqlityCompressButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *lowQuqlityCompressButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *playOrgVideoButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *playCompressVideoButton;
+@property (weak, nonatomic) IBOutlet CustomButtonView *saveToAlbumButton;
+
 @end
 
 
@@ -48,11 +53,17 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.compressAlbumName = [NSString localizedStringWithName:@"compress_album_name"];
-    self.orgSizeLabel.text = [NSString fileSizeStringWithNumber:self.orgData.fileSize];
+    self.sizeLabel.text = [NSString fileSizeStringWithNumber:self.orgData.fileSize];
     [self.orgImageView setImageWithAsset:_orgData.asset];
     [self.compressedImageView setImageWithAsset:_orgData.asset];
     [self initPickerView];
     self.title = [NSString localizedStringWithName:@"handle_compress"];
+    
+    self.topContainer.clipsToBounds = YES;
+    self.topContainer.layer.cornerRadius = 8;
+    
+    self.compressedContainer.clipsToBounds = YES;
+    self.compressedContainer.layer.cornerRadius = 8;
 
     
     WEAK_SELF
@@ -66,32 +77,23 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             
             [strongSelf.compressedData loadBindData:^(AssetBindData * _Nonnull compressBindData, AssetData * _Nonnull data) {
                 strongSelf.compressQualityLabel.text = [compressBindData getQualityString];
-                [strongSelf updateCompressButton];
-                [strongSelf updateSaveButton];
             }];
             
         }
         
         strongSelf.qualityLabel.text = [bindData getQualityString];
     }];
+    
+    self.highQuqlityCompressButton.delegate = self;
+    self.midQuqlityCompressButton.delegate = self;
+    self.lowQuqlityCompressButton.delegate = self;
+    self.playOrgVideoButton.delegate = self;
+    self.playCompressVideoButton.delegate = self;
+    self.saveToAlbumButton.delegate = self;
     // Do any additional setup after loading the view from its nib.
 }
 
-- (void)updateCompressButton {
-    if (self.compressedContainer.hidden) {
-        [self.compressButton setTitle:[NSString localizedStringWithName:@"compress"] forState:UIControlStateNormal];
-    } else {
-        [self.compressButton setTitle:[NSString localizedStringWithName:@"re_compress"]  forState:UIControlStateNormal];
-    }
-}
 
-- (void)updateSaveButton {
-    if (self.compressedData != nil) {
-        [self.saveToAlbumButton setTitle:[NSString localizedStringWithName:@"saved"] forState:UIControlStateNormal];
-    } else {
-        [self.saveToAlbumButton setTitle:[NSString localizedStringWithName:@"save_to_album"] forState:UIControlStateNormal];
-    }
-}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
@@ -105,29 +107,36 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         kQualityMiddle,
         kQualityLow,
     ];
-    
-    // 初始化 UIPickerView
-    
-    self.qualityPickerView.delegate = self;
-    self.qualityPickerView.dataSource = self;
-    
-    // 设置初始选择值
-    self.selectedPreset = kQualityHigh;
 }
 
-- (IBAction)beginCompressClicked:(id)sender {
-    [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
+-(void)onButtonTap:(CustomButtonView *)view {
+    if (view == self.highQuqlityCompressButton) {
+        self.selectedPreset = kQualityHigh;
+        [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
+    } else if (view == self.midQuqlityCompressButton) {
+        self.selectedPreset = kQualityMiddle;
+        [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
+        
+    } else if (view == self.lowQuqlityCompressButton) {
+        self.selectedPreset = kQualityLow;
+        [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
+    } else if (view == self.playOrgVideoButton) {
+        [self playOrgVideoClicked];
+    } else if (view == self.playCompressVideoButton) {
+        [self playCompressedVideoClicked];
+    } else if (view == self.saveToAlbumButton) {
+        [self saveToAlbum];
+    }
 }
 
-
-- (IBAction)playOrgVideoClicked:(id)sender {
+- (void)playOrgVideoClicked {
     VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
-    [controller playVideoWithAsset:self.orgData.asset];
+    [controller playVideoWithAsset:self.orgData];
 }
 
 
-- (IBAction)playCompressedVideoClicked:(id)sender {
+- (void)playCompressedVideoClicked {
     if (self.compressedURL != nil) {
         VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
         [self.navigationController pushViewController:controller animated:YES];
@@ -135,19 +144,19 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     } else if (self.compressedData != nil) {
         VideoPlayerViewController *controller = [[VideoPlayerViewController alloc] init];
         [self.navigationController pushViewController:controller animated:YES];
-        [controller playVideoWithAsset:self.compressedData.asset];
+        [controller playVideoWithAsset:self.compressedData];
     }
 }
 
-- (IBAction)saveToAlbum:(id)sender {
+- (void)saveToAlbum {
     if (self.compressedURL != nil) {
-        [STOTE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
-            if (value < kOnePhotoCost) {
-                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
-            } else {
+//        [STOTE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+//            if (value < kOnePhotoCost) {
+//                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+//            } else {
                 [self createAlbumAndSaveCompressed:self.compressedURL];
-            }
-        }];
+//            }
+//        }];
         
     } else {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"already_in_album"]];
@@ -230,8 +239,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:[NSNumber numberWithFloat:compressedSizeMB]];
             strongSelf.compressedURL = fileURL;
             strongSelf.compressedData = nil;
-            [strongSelf updateCompressButton];
-            [strongSelf updateSaveButton];
             strongSelf.compressQualityLabel.text = preset;
         } else {
             [strongSelf.view showToastWithMessage:@""];
@@ -302,7 +309,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                     NSLog(@"onCompressedVideoSaveToAlblum %@", assetData);
                     strongSelf.compressedData = assetData;
                     strongSelf.compressedURL = nil;
-                    [strongSelf updateSaveButton];
                 }];
                 
             }];
@@ -311,11 +317,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 [strongSelf showHintAlert];
             }];
             
-            [STOTE_MANAGER subVirtualCurrency:kOneVideoCost completion:^(BOOL result) {
-                if (!result) {
-                    LogInfo(@"subVirtualCurrency fail");
-                }
-            }];
+//            [STOTE_MANAGER subVirtualCurrency:kOneVideoCost completion:^(BOOL result) {
+//                if (!result) {
+//                    LogInfo(@"subVirtualCurrency fail");
+//                }
+//            }];
         }else {
             NSLog(@"Error adding videos to album: %@", error);
         }
@@ -323,11 +329,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)showHintAlert {
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"删除原视频" message:@"压缩过的视频已经保存到自定义的《压缩相册》中，建议您删除原视频" confirmButtonTitle:@"删除" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"保存成功" message:@"压缩过的视频已经保存在系统《压缩相册》中，建议您删除原视频!!!" confirmButtonTitle:@"删除" cancelButtonTitle:@"不删除" completionHandler:^(BOOL confirmed) {
         if (confirmed) {
-            [self deleteVideoAsset:self.orgData.asset completionHandler:^(BOOL success, NSError * _Nullable error) {
-                [GCDUtility executeOnMainThread:^{
-                }];
+            [VIDEO_DATA_MANAGER deleteVideoAsset:self.orgData completionHandler:^(BOOL success, NSError * _Nullable error) {
+                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees_detail"]];
+                [self.navigationController popViewControllerAnimated:YES];
             }];
         }
     }];
@@ -337,8 +343,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         // 请求删除指定的 PHAsset
         [PHAssetChangeRequest deleteAssets:@[asset]];
-        // 如果你需要删除视频，你可以使用以下代码行
-        // PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromVideo:asset];
     } completionHandler:^(BOOL success, NSError * _Nullable error) {
         if (completion) {
             completion(success, error);

@@ -9,7 +9,7 @@
 
 @implementation UIView (Toast)
 - (void)showToastWithMessage:(NSString *)message {
-    [self showToastWithMessage:message duration:3.0];
+    [self showToastWithMessage:message duration:4.0];
 }
 
 - (void)showToastWithMessage:(NSString *)message duration:(NSTimeInterval)duration {

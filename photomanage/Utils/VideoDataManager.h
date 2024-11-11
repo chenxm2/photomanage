@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, FilterType) {
     FilterTypeUnCompress,
-    FilterTypeUnCompressResult,
-    FilterTypeCompressed,
+    FilterTypeCompressResult,
+    FilterTypeWaitDelete,
 };
 
 typedef NS_ENUM(NSInteger, SortType) {
@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, SortType) {
 
 typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
 @interface VideoDataManager : NSObject
-@property (nonatomic, strong) NSArray<AssetData *> *videoList; // 示例属性，用于存储视频数据
+@property (nonatomic, strong, readonly) NSArray<AssetData *> *videoList; // 示例属性，用于存储视频数据
 /**
  Returns the shared instance of the VideoDataManager class.
  */
@@ -33,6 +33,10 @@ typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
 - (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback;
 
 - (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType completion:(AssetDatasCallback)callback;
+
+- (void)deleteVideoAsset:(AssetData *)asset completionHandler:(void(^)(BOOL success, NSError * _Nullable error))completion;
+
+#define VIDEO_DATA_MANAGER [VideoDataManager sharedManager]
 
 @end
 

@@ -10,9 +10,18 @@
 #import "AssetData.h"
 NS_ASSUME_NONNULL_BEGIN
 
+
+@class VideoViewCell;
+
+@protocol VideoViewCellDelegate <NSObject>
+-(void)onDeleteButtonTap:(VideoViewCell *)cell data:(AssetData *)data;
+@end
+
+
 @interface VideoViewCell : UICollectionViewCell
 + (NSString *)reuseIdentifier;
-- (void)updateAssetData:(AssetData *)data isSelected:(BOOL)isSelected;
+@property (nonatomic, weak) id<VideoViewCellDelegate> delegete;
+- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete;
 @end
 
 NS_ASSUME_NONNULL_END

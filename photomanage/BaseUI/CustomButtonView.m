@@ -110,6 +110,7 @@
                 make.centerY.equalTo(self);
             }];
         } else {
+            self.titleLabel.textAlignment = NSTextAlignmentCenter;
             [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(self).offset(margin);
                 make.trailing.equalTo(self).offset(-margin);
@@ -133,6 +134,7 @@
                 make.width.equalTo(@20); // 固定宽度
             }];
         } else {
+            self.titleLabel.textAlignment = NSTextAlignmentCenter;
             [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(self).offset(margin);
                 make.trailing.equalTo(self).offset(-margin);

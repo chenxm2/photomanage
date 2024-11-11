@@ -8,9 +8,12 @@
 #import "VideoPlayerViewController.h"
 #import <Photos/Photos.h>
 #import <AVKit/AVKit.h>
+#import "AssetData.h"
+#import "VideoDataManager.h"
 
 @interface VideoPlayerViewController ()
 @property (nonatomic, strong) AVPlayerViewController *playerViewController;
+@property (nonatomic, strong) AssetData *assetData;
 @end
 
 @implementation VideoPlayerViewController
@@ -29,6 +32,35 @@
     [self.view addSubview:self.playerViewController.view];
     
     [self.playerViewController didMoveToParentViewController:self];
+    self.title = [NSString localizedStringWithName:@"play_video"];
+    
+    [self overwriteRightBarButton];
+    
+}
+
+- (void)overwriteRightBarButton {
+    UIBarButtonItem *deleteButton = [[UIBarButtonItem alloc] initWithTitle:@"删除" style:UIBarButtonItemStylePlain target:self action:@selector(deleteAction)];
+
+    // 设置文字颜色
+    [deleteButton setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateNormal];
+
+    // 将UIBarButtonItem添加到导航项
+    self.navigationItem.rightBarButtonItem = deleteButton;
+}
+
+- (void)deleteAction {
+    if (self.assetData == nil) {
+        [self.view showToastWithMessage:[NSString localizedStringWithName:@"no_need_delete"]];
+    } else {
+        [VIDEO_DATA_MANAGER deleteVideoAsset:self.assetData completionHandler:^(BOOL success, NSError * _Nullable error) {
+            if (success) {
+                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                // do nothing
+            }
+        }];
+    }
 }
 
 #pragma mark - Public Methods
@@ -42,18 +74,13 @@
 }
 
 // 播放 PHAsset 视频
-- (void)playVideoWithAsset:(PHAsset *)asset {
-    if (asset.mediaType != PHAssetMediaTypeVideo) {
-        NSLog(@"This PHAsset is not a video.");
-        return;
-    }
-    
+- (void)playVideoWithAsset:(AssetData *)assetData {
+    self.assetData = assetData;
     [self loadViewIfNeeded];
-    
     // 获取 PHAsset 的视频资源 URL
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.networkAccessAllowed = YES; // 允许从iCloud下载视频
-    [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary *info) {
+    [[PHImageManager defaultManager] requestAVAssetForVideo:assetData.asset options:options resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary *info) {
         if ([avAsset isKindOfClass:[AVURLAsset class]]) {
             NSURL *url = [(AVURLAsset *)avAsset URL];
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -61,6 +88,25 @@
             });
         }
     }];
+    
+    [self updateTitleIfNeed];
+}
+
+- (void)updateTitleIfNeed {
+    if (self.assetData != nil) {
+        NSDate *creationDate = self.assetData.asset.creationDate;
+
+        // 创建NSDateFormatter对象
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+
+        // 设置日期格式，例如："yyyy年MM月dd日 HH:mm"
+        [dateFormatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+
+        // 将NSDate对象格式化为字符串
+        NSString *formattedDate = [dateFormatter stringFromDate:creationDate];
+
+        self.title = formattedDate;
+    }
 }
 
 /*

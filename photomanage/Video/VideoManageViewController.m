@@ -13,7 +13,7 @@
 
 NSString * const kSelectIndex = @"VideoManage_SelectIndex";
 
-@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate>
+@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate, VideoViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) NSArray<AssetData *> *showDatas;
 @property (nonatomic, assign) Boolean isInitCollectionView;
@@ -42,17 +42,45 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
     
 }
 
-- (BOOL)shouldShowRightButton {
-    return YES;
+
+
+- (void)fetchPhotosIfAuthorized {
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+
+    if (status == PHAuthorizationStatusAuthorized) {
+        // 用户已授权，直接执行相册操作
+        [self handleParamChange];
+    } else if (status == PHAuthorizationStatusNotDetermined) {
+        // 请求权限
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus newStatus) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (newStatus == PHAuthorizationStatusAuthorized) {
+                    // 用户授予权限，执行相册操作
+                    [self handleParamChange];
+                } else {
+                    // 用户拒绝权限或受限
+                    [self handleAuthorizationDenied];
+                }
+            });
+        }];
+    } else {
+        // 用户已拒绝权限或权限受限
+        [self handleAuthorizationDenied];
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)handleAuthorizationDenied {
+    [self.view showToastWithMessage:[NSString localizedStringWithName:@"permission_fail"]];
+}
+
+- (BOOL)shouldShowRightButton {
+    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self initCollectionView];
-    [self handleParamChange];
+    [self fetchPhotosIfAuthorized];
 }
 
 -(void)onButtonTap:(CustomButtonView *)view {
@@ -100,10 +128,10 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
             self.currentFilterType = FilterTypeUnCompress;
             break;
         case 1:
-            self.currentFilterType = FilterTypeUnCompressResult;
+            self.currentFilterType = FilterTypeCompressResult;
             break;
         case 2:
-            self.currentFilterType = FilterTypeCompressed;
+            self.currentFilterType = FilterTypeWaitDelete;
             break;
     }
     
@@ -149,6 +177,17 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
     self.collectionView.dataSource = self;
 }
 
+- (void)onDeleteButtonTap:(VideoViewCell *)cell data:(AssetData *)data {
+    WEAK_SELF
+    [VIDEO_DATA_MANAGER deleteVideoAsset:data completionHandler:^(BOOL success, NSError * _Nullable error) {
+        STRONG_SELF
+        if (success) {
+            [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
+            [strongSelf handleParamChange];
+        }
+    }];
+}
+
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.showDatas count];
@@ -156,8 +195,14 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     VideoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[VideoViewCell reuseIdentifier] forIndexPath:indexPath];
-
-    [cell updateAssetData:self.showDatas[indexPath.row] isSelected:NO];
+    cell.delegete = self;
+    
+    BOOL showDelete = NO;
+    if (self.currentFilterType == FilterTypeWaitDelete) {
+        showDelete = YES;
+    }
+    
+    [cell updateAssetData:self.showDatas[indexPath.row] showDelete:showDelete];
     
     return cell;
 }

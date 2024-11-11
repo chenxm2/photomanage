@@ -67,4 +67,28 @@
             NSStringFromClass([self class]), self, self.assetBindData];
 }
 
+// 重写 isEqual: 方法
+- (BOOL)isEqual:(id)object {
+    // 首先检查对象是否是同一个
+    if (self == object) {
+        return YES;
+    }
+    
+    // 检查对象是否是同一个类或者是否是父类的实例
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    
+    // 将对象转换为 MyClass 类型
+    AssetData *otherObject = (AssetData *)object;
+    
+    // 比较重要的属性，这里以 identifier 为例
+    return [self.asset.localIdentifier isEqualToString:otherObject.asset.localIdentifier];
+}
+
+// 重写 hash 方法，以确保isEqual的对象具有相同的哈希值
+- (NSUInteger)hash {
+    return self.asset.localIdentifier.hash;
+}
+
 @end
