@@ -16,10 +16,12 @@
 @property (strong, nonatomic) AVAssetWriterInput *audioWriterInput;
 @property (strong, nonatomic) AVAssetReaderTrackOutput *audioReaderOutput;
 @property (assign, nonatomic) float progress;
+@property (nonatomic, assign) BOOL compressing;
 @end
 
 @implementation Compresser
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion {
+    self.compressing = YES;
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.version = PHVideoRequestOptionsVersionOriginal;
     options.networkAccessAllowed = true;
@@ -30,6 +32,7 @@
             if (strongSelf.downloadProgress != nil) {
                 if (error) {
                     strongSelf.downloadProgress(progress, YES, error);
+                    strongSelf.compressing = NO;
                 } else {
                     strongSelf.downloadProgress(progress, NO, nil);
                 }
@@ -37,6 +40,10 @@
         }];
     };
     [self requestAVAssetForVideo:asset options:options preset:preset completion:completion];
+}
+
+- (BOOL)isCompressing {
+    return _compressing;
 }
 
 - (void)requestAVAssetForVideo:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(CompressResultCallBack)completion {
@@ -65,6 +72,7 @@
                 STRONG_SELF
                 if (error) {
                     strongSelf.downloadProgress(0, YES, error);
+                    [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"download error fail"];
                 } else {
                     // 视频尚未下载或正在下载中
                     NSLog(@"视频尚未下载，正在等待...");
@@ -206,7 +214,7 @@
     
     NSURL *outputURL = [NSURL fileURLWithPath:outputPath];
     if (![self configAVAssetWriter:outputURL]) {
-        completion(NO, nil, @"configAVAssetWriter fali");
+        [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"configAVAssetWriter fali"];
         return;
     }
     
@@ -227,12 +235,13 @@
     }
     
     if (![self configVideoReaderOutputWithAsset:asset]) {
-        completion(NO, nil, @"configVideoReaderOutputWithAsset fali");
+        [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"configVideoReaderOutputWithAsset fali"];
         return;
     }
     
     if (![self configAudioReaderOutputWithAsset:asset]) {
-        completion(NO, nil, @"configAudioReaderOutputWithAsset fali");
+        [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"configAudioReaderOutputWithAsset fali"];
+        
         return;
     }
     
@@ -368,6 +377,7 @@
 
 - (void)callOnMainThreadCompletion:(CompressResultCallBack)completion succeed:(BOOL) succeed compressURL:(NSURL *)url errMsg:(NSString *)msg {
     [GCDUtility executeOnMainThread:^{
+        self.compressing = NO;
         completion(succeed, url, msg);
     }];
 }

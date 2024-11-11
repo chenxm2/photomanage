@@ -13,6 +13,7 @@ typedef void (^CompressResultCallBack)(BOOL succeed, NSURL * _Nullable fileURL, 
 @property (nonatomic, strong) ProgressCallback downloadProgress;
 @property (nonatomic, strong) ProgressCallback compressProgress;
 @property (nonatomic, strong) CallBack beginCompressCallBack;
+- (BOOL)isCompressing;
 - (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion;
 @end
 

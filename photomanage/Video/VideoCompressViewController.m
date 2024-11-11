@@ -384,6 +384,14 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     return label;
 }
 
+- (void)leftButtonTapped {
+    if ([self.compresser isCompressing]) {
+        [self.view showToastWithMessage:[NSString localizedStringWithName:@"back_block_by_compressing"]];
+    } else {
+        [super leftButtonTapped];
+    }
+}
+
 /*
 #pragma mark - Navigation
 

@@ -9,7 +9,7 @@
 "already_in_album" = "已保存到相册了";
 "compress_sure" = "您确定要进行压缩？";
 "downloading" = "下载中...";
-"compressing" = "压缩中...";
+"compressing" = "压缩中，请勿锁屏...";
 "slimming_coin" = "瘦币";
 "buy" = "购买";
 "coins_not_enough" = "瘦币不足，请充值";
@@ -24,3 +24,4 @@
 "delete_succees_detail" = "删除成功，结果可在已压缩Tab分类中查看";
 "permission_fail" = "权限请求失败，请到系统设打开权限才能正常使用";
 "no_need_delete" = "未保存的到相册的视频无需删";
+"back_block_by_compressing" = "视频压缩中，不可返回";

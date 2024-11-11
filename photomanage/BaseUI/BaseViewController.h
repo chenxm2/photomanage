@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowLeftButton; // 是否显示左侧按钮
 - (BOOL)shouldShowRightButton; // 是否显示右侧按钮
+- (void)leftButtonTapped;
 @end
 
 NS_ASSUME_NONNULL_END

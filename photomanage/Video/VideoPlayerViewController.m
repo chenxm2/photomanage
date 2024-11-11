@@ -27,6 +27,7 @@
     self.playerViewController = [[AVPlayerViewController alloc] init];
     self.playerViewController.view.frame = self.view.bounds;
     self.playerViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.playerViewController.videoGravity = AVLayerVideoGravityResizeAspect;
     self.playerViewController.showsPlaybackControls = YES;
     [self addChildViewController:self.playerViewController];
     [self.view addSubview:self.playerViewController.view];
@@ -80,31 +81,61 @@
     // 获取 PHAsset 的视频资源 URL
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
     options.networkAccessAllowed = YES; // 允许从iCloud下载视频
+    WEAK_SELF
     [[PHImageManager defaultManager] requestAVAssetForVideo:assetData.asset options:options resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary *info) {
-        if ([avAsset isKindOfClass:[AVURLAsset class]]) {
-            NSURL *url = [(AVURLAsset *)avAsset URL];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self playVideoWithURL:url]; // 使用 URL 播放视频
-            });
+        STRONG_SELF
+        if (assetData.asset.mediaSubtypes & PHAssetMediaSubtypeVideoHighFrameRate) {
+            [strongSelf playSlowMotionVideoWithPHAsset:avAsset];
+        } else {
+            if ([avAsset isKindOfClass:[AVURLAsset class]]) {
+                NSURL *url = [(AVURLAsset *)avAsset URL];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [strongSelf playVideoWithURL:url]; // 使用 URL 播放视频
+                });
+            }
         }
     }];
     
     [self updateTitleIfNeed];
 }
 
+- (void)playSlowMotionVideoWithPHAsset:(AVAsset *)avAsset {
+    if ([avAsset isKindOfClass:[AVComposition class]]) {
+        
+        AVAssetTrack *videoTrack = [[avAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+        CGSize videoSize = videoTrack.naturalSize;
+        LogInfo(@"Video size: %@", NSStringFromCGSize(videoSize));
+        
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+        AVComposition *composition = (AVComposition *)avAsset;
+                    
+        // 获取视频的AVVideoComposition
+        AVVideoComposition *videoComposition = [AVVideoComposition videoCompositionWithPropertiesOfAsset:composition];
+
+    
+        playerItem.videoComposition = videoComposition;
+
+        WEAK_SELF
+        [GCDUtility executeOnMainThread:^{
+            STRONG_SELF
+            [strongSelf loadViewIfNeeded];
+            AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
+            
+            strongSelf.playerViewController.player = player;
+            [strongSelf.playerViewController.player play];
+        }];
+    }
+}
+
 - (void)updateTitleIfNeed {
     if (self.assetData != nil) {
         NSDate *creationDate = self.assetData.asset.creationDate;
-
         // 创建NSDateFormatter对象
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-
         // 设置日期格式，例如："yyyy年MM月dd日 HH:mm"
         [dateFormatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
-
         // 将NSDate对象格式化为字符串
         NSString *formattedDate = [dateFormatter stringFromDate:creationDate];
-
         self.title = formattedDate;
     }
 }
