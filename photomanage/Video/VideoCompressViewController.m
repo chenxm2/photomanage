@@ -10,6 +10,7 @@
 #import "VideoPlayerViewController.h"
 #import "VideoDataManager.h"
 #import "Compress/Compresser.h"
+#import "ICloudVideoDownloader.h"
 
 static NSString * const kLogTag = @"VideoCompressViewController";
 
@@ -28,6 +29,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (weak, nonatomic) IBOutlet UIView *topContainer;
 @property (strong, nonatomic) NSString *compressAlbumName;
 @property (strong, nonatomic) Compresser *compresser;
+@property (nonatomic, strong) ICloudVideoDownloader *downloader;
 @property (nonatomic, strong) NSString *selectedPreset; // 记录用户选择的预设
 @property (weak, nonatomic) IBOutlet CustomButtonView *highQuqlityCompressButton;
 @property (weak, nonatomic) IBOutlet CustomButtonView *midQuqlityCompressButton;
@@ -36,7 +38,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (weak, nonatomic) IBOutlet CustomButtonView *playCompressVideoButton;
 @property (weak, nonatomic) IBOutlet CustomButtonView *saveToAlbumButton;
 @property (weak, nonatomic) IBOutlet UIImageView *iCloudTagImageView;
-
 @end
 
 
@@ -77,7 +78,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         strongSelf.compressedData = [[VideoDataManager sharedManager] assetDataByLocalIdentifier:bindData.compressedlocalIdentifier];
         if (strongSelf.compressedData != nil) {
             strongSelf.compressedContainer.hidden = false;
-            [strongSelf.compressedImageView setImageWithAsset:strongSelf.compressedData.asset];
+            [strongSelf.compressedImageView setImageWithAsset:strongSelf.orgData.asset];
             strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:strongSelf.compressedData.fileSize];
             
             [strongSelf.compressedData loadBindData:^(AssetBindData * _Nonnull compressBindData, AssetData * _Nonnull data) {
@@ -179,13 +180,13 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"compress_album_name"] message:[NSString localizedStringWithName:@"compress_sure"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
         STRONG_SELF
         if (confirmed) {
-            [ScreenUility setForceScreenOn:YES];
             [[VideoDataManager sharedManager] checkIfVideoIsOnlyInCloud:data.asset callback:^(AVAsset * _Nullable result) {
                 STRONG_SELF
                 if (result == nil) {
                     [strongSelf showNetWorkConfirm:data preset:preset];
                 } else {
-                    [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:NO];
+                    //todo:
+                    [strongSelf compressVideoWithAsset:data avAsset:result preset:preset];
                 }
             }];
         }
@@ -194,31 +195,37 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)showNetWorkConfirm:(AssetData *)data preset:(NSString *)preset {
     WEAK_SELF
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"压缩视频" message:@"您的视频在仅在icloud中，需要访问网络，才能压缩~" confirmButtonTitle:@"确认" cancelButtonTitle:@"取消" completionHandler:^(BOOL confirmed) {
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"compress_album_name"] message:[NSString localizedStringWithName:@"download_to_compress"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        STRONG_SELF
         if (confirmed) {
-            STRONG_SELF
-            if (confirmed) {
-                [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:YES];
-            }
+            [ScreenUility setForceScreenOn:YES];
+            strongSelf.downloader = [[ICloudVideoDownloader alloc] init];
+            __block MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:strongSelf.view withString:[NSString localizedStringWithName:@"downloading"]];
+            [strongSelf.downloader downloadVideoFromICloud:data.asset progressHandler:^(double progress) {
+                STRONG_SELF
+                hud.progress = progress;
+            } completionHandler:^(AVAsset * _Nullable avAsset, NSError * _Nullable error) {
+                STRONG_SELF
+                [ScreenUility setForceScreenOn:NO];
+                strongSelf.downloader = nil;
+                [hud hideAnimated:YES];
+                if (avAsset != nil) {
+                    [strongSelf compressVideoWithAsset:data avAsset:avAsset preset:preset];
+                } else {
+                    [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"download_fail"]];
+                }
+            }];
         }
     }];
 }
 
-- (void)handleCompressVideoWithAsset:(AssetData *)data preset:(NSString *)preset isInCloud:(BOOL)isInCloud {
-    WEAK_SELF
-    self.compresser = [[Compresser alloc] init];
-    if (isInCloud) {
-        MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:self.view withString:[NSString localizedStringWithName:@"downloading"]];
-        [self.compresser setDownloadProgress:^(double progress, BOOL finished, NSError * _Nonnull error) {
-            if (finished || error) {
-                [hud hideAnimated:YES];
-            } else {
-                hud.progress = progress;
-            }
-        }];
+- (void)compressVideoWithAsset:(AssetData *)data avAsset:(AVAsset *)avAsset preset:(NSString *)preset {
+    if (self.compresser != nil) {
+        [self.view showToastWithMessage:[NSString localizedStringWithName:@"not_dupliacte"]];
+        return;
     }
     
-
+    self.compresser = [[Compresser alloc] init];
     __block MBProgressHUD *beginCompressHUD = nil;
     [self.compresser setBeginCompressCallBack:^{
         beginCompressHUD = [ProgressHUDWrapper showProgressToView:self.view withString:[NSString localizedStringWithName:@"compressing"]];
@@ -233,8 +240,13 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     }];
     
     
-    [self.compresser compressVideoWithAsset:data.asset preset:preset completion:^(BOOL succeed, NSURL * _Nullable fileURL, NSString * _Nonnull errMsg) {
+    [ScreenUility setForceScreenOn:YES];
+    WEAK_SELF
+    [self.compresser compressVideoWithAsset:avAsset preset:preset completion:^(BOOL succeed, NSURL * _Nullable fileURL, NSString * _Nonnull errMsg) {
+        [beginCompressHUD hideAnimated:YES];
+        [ScreenUility setForceScreenOn:NO];
         STRONG_SELF
+        strongSelf.compresser = nil;
         if (succeed) {
             NSData *compressedData = [NSData dataWithContentsOfURL:fileURL];
             CGFloat compressedSizeMB = compressedData.length / (1024.0 * 1024.0);
@@ -247,8 +259,6 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         } else {
             [strongSelf.view showToastWithMessage:@""];
         }
-        
-        [ScreenUility setForceScreenOn:NO];
     }];
 }
 
@@ -333,12 +343,20 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)showHintAlert {
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:@"保存成功" message:@"压缩过的视频已经保存在系统《压缩相册》中，建议您删除原视频!!!" confirmButtonTitle:@"删除" cancelButtonTitle:@"不删除" completionHandler:^(BOOL confirmed) {
+    WEAK_SELF
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_success"] message:[NSString localizedStringWithName:@"save_success_tip"] confirmButtonTitle:[NSString localizedStringWithName:@"delete"] cancelButtonTitle:[NSString localizedStringWithName:@"not_delete"]  completionHandler:^(BOOL confirmed) {
+        STRONG_SELF
         if (confirmed) {
             [VIDEO_DATA_MANAGER deleteVideoAsset:self.orgData completionHandler:^(BOOL success, NSError * _Nullable error) {
-                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees_detail"]];
-                [self.navigationController popViewControllerAnimated:YES];
+                if (success) {
+                    [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees_detail"]];
+                    [strongSelf.navigationController popViewControllerAnimated:YES];
+                } else {
+                    [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
+                }
             }];
+        } else {
+            [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
         }
     }];
 }
@@ -392,6 +410,9 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     if ([self.compresser isCompressing]) {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"back_block_by_compressing"]];
     } else {
+        if (self.downloader != nil) {
+            [self.downloader cancel];
+        }
         [super leftButtonTapped];
     }
 }

@@ -9,6 +9,7 @@
 "already_in_album" = "已保存到相册了";
 "compress_sure" = "您确定要进行压缩？";
 "downloading" = "下载中...";
+"delete_downloading" = "下载中，不可删";
 "download_fail" = "下载失败";
 "compressing" = "压缩中，请勿锁屏...";
 "slimming_coin" = "瘦币";
@@ -28,3 +29,10 @@
 "back_block_by_compressing" = "视频压缩中，不可返回";
 "download_to_play" = "您的视频在仅在icloud中，需要访问网络，才能播放~";
 "download_to_compress" = "您的视频在仅在icloud中，需要访问网络，才能压缩~";
+"not_dupliacte" = "处理中，请勿重复点击";
+"save_success" = "保存成功";
+"save_success_tip" = "压缩过的视频已经保存在系统相删《压缩视频》相簿中，建议您删除原视频!!!";
+"delete" = "删除";
+"not_delete" = "不删除";
+"move_to_todelete" = "视频不删除，被移至首页待删除分类中";
+

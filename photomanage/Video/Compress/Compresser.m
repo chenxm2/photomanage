@@ -20,68 +20,24 @@
 @end
 
 @implementation Compresser
-- (void)compressVideoWithAsset:(PHAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion {
+- (void)compressVideoWithAsset:(AVAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion {
     self.compressing = YES;
-    PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-    options.version = PHVideoRequestOptionsVersionOriginal;
-    options.networkAccessAllowed = true;
     WEAK_SELF
-    options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
-        [GCDUtility executeOnMainThread:^{
-           STRONG_SELF
-            if (strongSelf.downloadProgress != nil) {
-                if (error) {
-                    strongSelf.downloadProgress(progress, YES, error);
-                    strongSelf.compressing = NO;
-                } else {
-                    strongSelf.downloadProgress(progress, NO, nil);
-                }
-            }
-        }];
-    };
-    [self requestAVAssetForVideo:asset options:options preset:preset completion:completion];
+    [GCDUtility executeOnSerialQueue:^{
+        STRONG_SELF
+        [strongSelf finalCompressActionWithAsset:asset preset:preset completion:completion];
+    }];
+    
+    [GCDUtility executeOnMainThread:^{
+        STRONG_SELF
+        if (strongSelf.beginCompressCallBack) {
+            strongSelf.beginCompressCallBack();
+        }
+    }];
 }
 
 - (BOOL)isCompressing {
     return _compressing;
-}
-
-- (void)requestAVAssetForVideo:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(CompressResultCallBack)completion {
-    WEAK_SELF
-    [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        // 检查 avAsset 是否为 nil
-        if (avAsset) {
-            STRONG_SELF
-            [strongSelf finalCompressActionWithAsset:avAsset preset:preset completion:completion];
-            [GCDUtility executeOnMainThread:^{
-                STRONG_SELF
-                
-                if (strongSelf.downloadProgress != nil) {
-                    strongSelf.downloadProgress(1.0, YES, nil);
-                }
-                
-                if (strongSelf.beginCompressCallBack != nil) {
-                    strongSelf.beginCompressCallBack();
-                }
-            }];
-            
-        } else {
-            // 视频下载失败，检查 info 字典
-            [GCDUtility executeOnMainThread:^{
-                NSError *error = info[PHImageErrorKey];
-                STRONG_SELF
-                if (error) {
-                    strongSelf.downloadProgress(0, YES, error);
-                    [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"download error fail"];
-                } else {
-                    // 视频尚未下载或正在下载中
-                    NSLog(@"视频尚未下载，正在等待...");
-                    // 可以使用递归请求的方法，等待直到下载完成
-                    [self waitForAssetToDownload:asset options:options preset:preset completion:completion];
-                }
-            }];
-        }
-    }];
 }
 
 - (BOOL)configAVAssetWriter:(NSURL *)outputURL {
@@ -349,19 +305,6 @@
             }
         }];
     }
-}
-
-// 等待视频下载完成
-- (void)waitForAssetToDownload:(PHAsset *)asset options:(PHVideoRequestOptions *)options preset:(NSString *)preset completion:(CompressResultCallBack)completion {
-    WEAK_SELF
-    // 使用一个简单的定时器，每隔一段时间重新检查下载状态
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        STRONG_SELF
-        if (strongSelf) {
-            [strongSelf requestAVAssetForVideo:asset options:options preset:preset completion:completion];
-        }
-        
-    });
 }
 
 - (CGFloat)calculateBitRateForVideoTrack:(AVAssetTrack *)videoTrack {

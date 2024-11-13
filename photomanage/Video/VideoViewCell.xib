@@ -30,7 +30,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cloud-download" translatesAutoresizingMaskIntoConstraints="NO" id="okk-Vj-JGI">
-                                <rect key="frame" x="42" y="3" width="12" height="12"/>
+                                <rect key="frame" x="45" y="3" width="12" height="12"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="12" id="DiX-5S-SKW"/>
                                     <constraint firstAttribute="height" constant="12" id="s8x-oa-mO9"/>
@@ -49,7 +49,7 @@
                             <constraint firstItem="okk-Vj-JGI" firstAttribute="centerY" secondItem="tae-Cx-dUG" secondAttribute="centerY" id="8uK-Ix-F8g"/>
                             <constraint firstAttribute="height" constant="18" id="8xA-y2-lFc"/>
                             <constraint firstItem="ZVv-jz-Bvc" firstAttribute="top" secondItem="tae-Cx-dUG" secondAttribute="top" id="GF5-J5-ast"/>
-                            <constraint firstItem="okk-Vj-JGI" firstAttribute="leading" secondItem="DRz-yT-5XO" secondAttribute="trailing" id="gPf-tJ-NQq"/>
+                            <constraint firstItem="okk-Vj-JGI" firstAttribute="leading" secondItem="DRz-yT-5XO" secondAttribute="trailing" constant="3" id="gPf-tJ-NQq"/>
                             <constraint firstAttribute="bottom" secondItem="ZVv-jz-Bvc" secondAttribute="bottom" id="nvM-4S-VSX"/>
                             <constraint firstItem="DRz-yT-5XO" firstAttribute="leading" secondItem="tae-Cx-dUG" secondAttribute="leading" constant="8" id="pgP-So-U8N"/>
                             <constraint firstItem="DRz-yT-5XO" firstAttribute="top" secondItem="tae-Cx-dUG" secondAttribute="top" id="yVQ-pZ-xtm"/>

@@ -53,7 +53,7 @@ NSString * const kQualityHigh = @"高清";
 
 - (NSString *)getQualityString {
     if (self.compressQulity == nil) {
-        return @"原始";
+        return @"原视频";
     } else {
         return self.compressQulity;
     }

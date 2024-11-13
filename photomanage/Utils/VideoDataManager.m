@@ -87,7 +87,10 @@ static dispatch_once_t onceToken;
         [PHAssetChangeRequest deleteAssets:@[asset.asset]];
     } completionHandler:^(BOOL success, NSError * _Nullable error) {
         [GCDUtility executeOnMainThread:^{
-            [self deleteData:asset];
+            if (success) {
+                [self deleteData:asset];
+            }
+            
             if (completion) {
                 completion(success, error);
             }

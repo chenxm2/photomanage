@@ -24,8 +24,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.view.backgroundColor = [UIColor whiteColor];
-        
-        // 初始化 AVPlayerViewController
+    
+    // 初始化 AVPlayerViewController
     self.playerViewController = [[AVPlayerViewController alloc] init];
     self.playerViewController.view.frame = self.view.bounds;
     self.playerViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -43,10 +43,10 @@
 
 - (void)overwriteRightBarButton {
     UIBarButtonItem *deleteButton = [[UIBarButtonItem alloc] initWithTitle:@"删除" style:UIBarButtonItemStylePlain target:self action:@selector(deleteAction)];
-
+    
     // 设置文字颜色
     [deleteButton setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateNormal];
-
+    
     // 将UIBarButtonItem添加到导航项
     self.navigationItem.rightBarButtonItem = deleteButton;
 }
@@ -55,14 +55,18 @@
     if (self.assetData == nil) {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"no_need_delete"]];
     } else {
-        [VIDEO_DATA_MANAGER deleteVideoAsset:self.assetData completionHandler:^(BOOL success, NSError * _Nullable error) {
-            if (success) {
-                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            } else {
-                // do nothing
-            }
-        }];
+        if (self.downloader != nil ){
+            [self.view showToastWithMessage:[NSString localizedStringWithName:@"delete_downloading"]];
+        } else {
+            [VIDEO_DATA_MANAGER deleteVideoAsset:self.assetData completionHandler:^(BOOL success, NSError * _Nullable error) {
+                if (success) {
+                    [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                } else {
+                    // do nothing
+                }
+            }];
+        }
     }
 }
 
@@ -97,26 +101,24 @@
 - (void)showNetWorkConfirm:(AssetData *)assetData {
     WEAK_SELF
     [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"play_video"] message:[NSString localizedStringWithName:@"download_to_play"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        STRONG_SELF
         if (confirmed) {
-            STRONG_SELF
-            if (confirmed) {
-                strongSelf.downloader = [[ICloudVideoDownloader alloc] init];
+            strongSelf.downloader = [[ICloudVideoDownloader alloc] init];
                 
-                __block MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:strongSelf.view withString:[NSString localizedStringWithName:@"downloading"]];
-                [strongSelf.downloader downloadVideoFromICloud:assetData.asset progressHandler:^(double progress) {
-                    STRONG_SELF
-                    hud.progress = progress;
-                    
-                } completionHandler:^(AVAsset * _Nullable avAsset, NSError * _Nullable error) {
-                    [hud hideAnimated:YES];
-                    STRONG_SELF
-                    if (avAsset != nil) {
-                        [strongSelf playLocalAsset:avAsset assetData:assetData];
-                    } else {
-                        [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"download_fail"]];
+            __block MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:strongSelf.view withString:[NSString localizedStringWithName:@"downloading"]];
+            [strongSelf.downloader downloadVideoFromICloud:assetData.asset progressHandler:^(double progress) {
+                STRONG_SELF
+                hud.progress = progress;
+            } completionHandler:^(AVAsset * _Nullable avAsset, NSError * _Nullable error) {
+                strongSelf.downloader = nil;
+                [hud hideAnimated:YES];
+                STRONG_SELF
+                if (avAsset != nil) {
+                    [strongSelf playLocalAsset:avAsset assetData:assetData];
+                } else {
+                    [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"download_fail"]];
                     }
-                }];
-            }
+            }];
         }
     }];
 }
@@ -145,13 +147,13 @@
         
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:avAsset];
         AVComposition *composition = (AVComposition *)avAsset;
-                    
+        
         // 获取视频的AVVideoComposition
         AVVideoComposition *videoComposition = [AVVideoComposition videoCompositionWithPropertiesOfAsset:composition];
-
-    
+        
+        
         playerItem.videoComposition = videoComposition;
-
+        
         WEAK_SELF
         [GCDUtility executeOnMainThread:^{
             STRONG_SELF
