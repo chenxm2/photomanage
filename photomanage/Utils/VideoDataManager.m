@@ -128,10 +128,13 @@ static dispatch_once_t onceToken;
     }];
 }
 
-- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType completion:(AssetDatasCallback)callback {
+- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType middleData:(AssetDatasCallback)middleCallback completion:(AssetDatasCallback)callback {
     if (self.orgData.count == 0) {
         LogInfo(@"fetchVideosWithSortedType size orgData == 0 sortType = %ld, filterType = %ld", (long)sortType, filterType);
         [self loadDataFromAlbumWithCompletion:^(NSArray<AssetData *> * _Nonnull dataList) {
+            if (middleCallback) {
+                middleCallback([dataList copy]);
+            }
             [self filterVideosWithSortedType:sortType filterType:filterType orgData:dataList callBack:callback];
         }];
     } else {

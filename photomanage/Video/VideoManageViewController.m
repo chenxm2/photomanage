@@ -11,7 +11,7 @@
 #import "AssetData.h"
 #import "VideoDataManager.h"
 
-NSString * const kSelectIndex = @"VideoManage_SelectIndex";
+NSString * const kSortType = @"VideosortType";
 
 @interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate, VideoViewCellDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
@@ -28,7 +28,8 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"VideoManageViewController viewDidLoad");
-    self.curretSortType = SortTypeByTime;
+    self.curretSortType = [UserDefaultsManager integerForKey:kSortType];
+    [self updateSortButtonByType:self.curretSortType];
     self.currentFilterType = FilterTypeUnCompress;
     self.filterSegmented.selectedSegmentIndex = 0;
     if (@available(iOS 13.0, *)) {
@@ -83,6 +84,17 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
     [self fetchPhotosIfAuthorized];
 }
 
+- (void)updateSortButtonByType:(SortType)sortType {
+    NSString *showString = nil;
+    if (SortTypeBySize == sortType) {
+        showString = [NSString localizedStringWithName:@"sort_by_size"];
+    } else {
+        showString = [NSString localizedStringWithName:@"sort_by_time"];
+    }
+    
+    [self.sortButton setButtonText:showString];
+}
+
 -(void)onButtonTap:(CustomButtonView *)view {
     // 创建 UIAlertController 实例，这里以 actionSheet 样式为例
     WEAK_SELF
@@ -95,16 +107,17 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
     [alertController addAction:[UIAlertAction actionWithTitle:byTime style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         STRONG_SELF
         strongSelf.curretSortType = SortTypeByTime;
-        [strongSelf.sortButton setButtonText:byTime];
-
+        [strongSelf updateSortButtonByType:strongSelf.curretSortType];
         [strongSelf handleParamChange];
+        [UserDefaultsManager setInteger:strongSelf.curretSortType forKey:kSortType];
     }]];
     
     NSString *bySize = [NSString localizedStringWithName:@"sort_by_size"];
     [alertController addAction:[UIAlertAction actionWithTitle:bySize style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         STRONG_SELF
         strongSelf.curretSortType = SortTypeBySize;
-        [strongSelf.sortButton setButtonText:bySize];
+        [strongSelf updateSortButtonByType:strongSelf.curretSortType];
+        [UserDefaultsManager setInteger:strongSelf.curretSortType forKey:kSortType];
         [strongSelf handleParamChange];
         // 按大小排序的操作
         NSLog(@"Sort by size");
@@ -140,11 +153,12 @@ NSString * const kSelectIndex = @"VideoManage_SelectIndex";
 
 - (void)handleParamChange {
     WEAK_SELF
+    __block MBProgressHUD *hud = nil;
     if (self.showDatas == nil || [self.showDatas count] == 0) {
-        [ProgressHUDWrapper showLoadingToView:self.view withString:[NSString localizedLoading]];
+        hud = [ProgressHUDWrapper showLoadingToView:self.view withString:[NSString localizedLoading]];
     }
     
-    [[VideoDataManager sharedManager] fetchVideosWithSortedType:self.curretSortType filterType:self.currentFilterType completion:^(NSArray<AssetData *> * _Nonnull dataList) {
+    [[VideoDataManager sharedManager] fetchVideosWithSortedType:self.curretSortType filterType:self.currentFilterType middleData:nil completion:^(NSArray<AssetData *> * _Nonnull dataList) {
         STRONG_SELF
         [ProgressHUDWrapper hideHUDForView:strongSelf.view];
         strongSelf.showDatas = dataList;

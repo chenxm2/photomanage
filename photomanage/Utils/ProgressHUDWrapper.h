@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 更新进度
 + (void)updateProgress:(MBProgressHUD *)hud progress:(float)progress;
 
++ (void)updateMessage:(MBProgressHUD *)hud message:(NSString *)message;
+
 // 隐藏 HUD
 + (void)hideHUDForView:(UIView *)view;
 @end

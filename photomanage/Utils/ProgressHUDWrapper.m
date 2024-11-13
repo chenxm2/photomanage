@@ -44,6 +44,12 @@
     return hud;
 }
 
++ (void)updateMessage:(MBProgressHUD *)hud message:(NSString *)message {
+    if (hud) {
+        hud.label.text = message; // 更新进度
+    }
+}
+
 + (void)updateProgress:(MBProgressHUD *)hud progress:(float)progress {
     if (hud) {
         hud.progress = progress; // 更新进度

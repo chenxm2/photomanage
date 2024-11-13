@@ -17,8 +17,8 @@ typedef NS_ENUM(NSInteger, FilterType) {
 };
 
 typedef NS_ENUM(NSInteger, SortType) {
+    SortTypeByTime,
     SortTypeBySize,
-    SortTypeByTime
 };
 
 typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
@@ -32,7 +32,7 @@ typedef void (^AssetDatasCallback)(NSArray<AssetData *> *dataList);
 - (void)onCompressedVideoSaveToAlblum:(NSString *)compressedLocalIdentifier compressQuality:(NSString *)quality callBack:(AssetDataCallback)callback;
 - (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CheckInICloudResult)callback;
 
-- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType completion:(AssetDatasCallback)callback;
+- (void)fetchVideosWithSortedType:(SortType)sortType filterType:(FilterType)filterType middleData:(AssetDatasCallback)middleCallback completion:(AssetDatasCallback)callback;
 
 - (void)deleteVideoAsset:(AssetData *)asset completionHandler:(void(^)(BOOL success, NSError * _Nullable error))completion;
 
