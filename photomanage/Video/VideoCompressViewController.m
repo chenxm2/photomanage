@@ -35,6 +35,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (weak, nonatomic) IBOutlet CustomButtonView *playOrgVideoButton;
 @property (weak, nonatomic) IBOutlet CustomButtonView *playCompressVideoButton;
 @property (weak, nonatomic) IBOutlet CustomButtonView *saveToAlbumButton;
+@property (weak, nonatomic) IBOutlet UIImageView *iCloudTagImageView;
 
 @end
 
@@ -64,9 +65,13 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     self.compressedContainer.clipsToBounds = YES;
     self.compressedContainer.layer.cornerRadius = 8;
+    WEAK_SELF
+    [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:self.orgData.asset callback:^(AVAsset * _Nullable result) {
+        STRONG_SELF
+         strongSelf.iCloudTagImageView.hidden = (result != nil);
+    }];
 
     
-    WEAK_SELF
     [self.orgData loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
         STRONG_SELF
         strongSelf.compressedData = [[VideoDataManager sharedManager] assetDataByLocalIdentifier:bindData.compressedlocalIdentifier];
@@ -175,13 +180,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         STRONG_SELF
         if (confirmed) {
             [ScreenUility setForceScreenOn:YES];
-            [[VideoDataManager sharedManager] checkIfVideoIsOnlyInCloud:data.asset callback:^(BOOL result) {
-                if (strongSelf) {
-                    if (result) {
-                        [strongSelf showNetWorkConfirm:data preset:preset];
-                    } else {
-                        [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:NO];
-                    }
+            [[VideoDataManager sharedManager] checkIfVideoIsOnlyInCloud:data.asset callback:^(AVAsset * _Nullable result) {
+                STRONG_SELF
+                if (result == nil) {
+                    [strongSelf showNetWorkConfirm:data preset:preset];
+                } else {
+                    [strongSelf handleCompressVideoWithAsset:data preset:preset isInCloud:NO];
                 }
             }];
         }

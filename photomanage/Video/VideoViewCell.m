@@ -8,6 +8,7 @@
 #import "VideoViewCell.h"
 #import <Photos/Photos.h>
 #import "../Utils/String+FileSize.h"
+#import "VideoDataManager.h"
 
 
 @interface VideoViewCell() <CustomButtonViewDelegate>
@@ -16,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *compressQuality;
 @property (weak, nonatomic) IBOutlet CustomButtonView *deleteButton;
 @property (nonatomic, strong) AssetData *data;
+@property (weak, nonatomic) IBOutlet UIImageView *icloudTag;
 
 @end
 @implementation VideoViewCell
@@ -54,6 +56,11 @@
     } else {
         self.deleteButton.hidden = YES;
     }
+    
+    [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:data.asset callback:^(AVAsset * _Nullable result) {
+        STRONG_SELF
+         strongSelf.icloudTag.hidden = (result != nil);
+    }];
 }
 
 -(void)onButtonTap:(CustomButtonView *)view {

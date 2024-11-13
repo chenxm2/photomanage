@@ -210,7 +210,7 @@ static dispatch_once_t onceToken;
 
 
 
-- (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CompletionResult)callback
+- (void)checkIfVideoIsOnlyInCloud:(PHAsset *)asset callback:(CheckInICloudResult)callback
 {
     // 检查资源类型是否为视频
     if (asset.mediaType == PHAssetMediaTypeVideo) {
@@ -220,9 +220,9 @@ static dispatch_once_t onceToken;
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
             [GCDUtility executeOnMainThread:^{
                 if (avAsset) {
-                    callback(NO);
+                    callback(avAsset);
                 } else {
-                    callback(YES);
+                    callback(nil);
                 }
             }];
             

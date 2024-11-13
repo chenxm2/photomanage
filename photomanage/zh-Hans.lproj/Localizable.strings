@@ -9,6 +9,7 @@
 "already_in_album" = "已保存到相册了";
 "compress_sure" = "您确定要进行压缩？";
 "downloading" = "下载中...";
+"download_fail" = "下载失败";
 "compressing" = "压缩中，请勿锁屏...";
 "slimming_coin" = "瘦币";
 "buy" = "购买";
@@ -25,3 +26,5 @@
 "permission_fail" = "权限请求失败，请到系统设打开权限才能正常使用";
 "no_need_delete" = "未保存的到相册的视频无需删";
 "back_block_by_compressing" = "视频压缩中，不可返回";
+"download_to_play" = "您的视频在仅在icloud中，需要访问网络，才能播放~";
+"download_to_compress" = "您的视频在仅在icloud中，需要访问网络，才能压缩~";

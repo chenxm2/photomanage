@@ -10,10 +10,12 @@
 #import <AVKit/AVKit.h>
 #import "AssetData.h"
 #import "VideoDataManager.h"
+#import "ICloudVideoDownloader.h"
 
 @interface VideoPlayerViewController ()
 @property (nonatomic, strong) AVPlayerViewController *playerViewController;
 @property (nonatomic, strong) AssetData *assetData;
+@property (nonatomic, strong) ICloudVideoDownloader *downloader;
 @end
 
 @implementation VideoPlayerViewController
@@ -78,25 +80,60 @@
 - (void)playVideoWithAsset:(AssetData *)assetData {
     self.assetData = assetData;
     [self loadViewIfNeeded];
-    // 获取 PHAsset 的视频资源 URL
-    PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-    options.networkAccessAllowed = YES; // 允许从iCloud下载视频
+    
     WEAK_SELF
-    [[PHImageManager defaultManager] requestAVAssetForVideo:assetData.asset options:options resultHandler:^(AVAsset *avAsset, AVAudioMix *audioMix, NSDictionary *info) {
+    [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:assetData.asset callback:^(AVAsset * _Nullable result) {
         STRONG_SELF
-        if (assetData.asset.mediaSubtypes & PHAssetMediaSubtypeVideoHighFrameRate) {
-            [strongSelf playSlowMotionVideoWithPHAsset:avAsset];
+        if (result != nil) {
+            [strongSelf playLocalAsset:result assetData:assetData];
         } else {
-            if ([avAsset isKindOfClass:[AVURLAsset class]]) {
-                NSURL *url = [(AVURLAsset *)avAsset URL];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [strongSelf playVideoWithURL:url]; // 使用 URL 播放视频
-                });
-            }
+            [strongSelf showNetWorkConfirm:assetData];
         }
     }];
     
     [self updateTitleIfNeed];
+}
+
+- (void)showNetWorkConfirm:(AssetData *)assetData {
+    WEAK_SELF
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"play_video"] message:[NSString localizedStringWithName:@"download_to_play"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        if (confirmed) {
+            STRONG_SELF
+            if (confirmed) {
+                strongSelf.downloader = [[ICloudVideoDownloader alloc] init];
+                
+                __block MBProgressHUD *hud = [ProgressHUDWrapper showProgressToView:strongSelf.view withString:[NSString localizedStringWithName:@"downloading"]];
+                [strongSelf.downloader downloadVideoFromICloud:assetData.asset progressHandler:^(double progress) {
+                    STRONG_SELF
+                    hud.progress = progress;
+                    
+                } completionHandler:^(AVAsset * _Nullable avAsset, NSError * _Nullable error) {
+                    [hud hideAnimated:YES];
+                    STRONG_SELF
+                    if (avAsset != nil) {
+                        [strongSelf playLocalAsset:avAsset assetData:assetData];
+                    } else {
+                        [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"download_fail"]];
+                    }
+                }];
+            }
+        }
+    }];
+}
+
+- (void)playLocalAsset:(AVAsset *)avAsset assetData:(AssetData *)assetData {
+    if (assetData.asset.mediaSubtypes & PHAssetMediaSubtypeVideoHighFrameRate) {
+        [self playSlowMotionVideoWithPHAsset:avAsset];
+    } else {
+        if ([avAsset isKindOfClass:[AVURLAsset class]]) {
+            NSURL *url = [(AVURLAsset *)avAsset URL];
+            WEAK_SELF
+            [GCDUtility executeOnMainThread:^{
+                STRONG_SELF
+                [strongSelf playVideoWithURL:url]; // 使用 URL 播放视频
+            }];
+        }
+    }
 }
 
 - (void)playSlowMotionVideoWithPHAsset:(AVAsset *)avAsset {

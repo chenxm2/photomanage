@@ -9,8 +9,8 @@
 NSString * const kAssetBindData = @"AssetBindData";
 
 NSString * const kQualityLow = @"低清";
-NSString * const kQualityMiddle = @"标准";
-NSString * const kQualityHigh = @"保真";
+NSString * const kQualityMiddle = @"标清";
+NSString * const kQualityHigh = @"高清";
 
 @implementation AssetBindData
 - (void)setOrgLocalIdentifier:(NSString *)orgLocalIdentifier {
@@ -53,7 +53,7 @@ NSString * const kQualityHigh = @"保真";
 
 - (NSString *)getQualityString {
     if (self.compressQulity == nil) {
-        return @"原始视频";
+        return @"原始";
     } else {
         return self.compressQulity;
     }

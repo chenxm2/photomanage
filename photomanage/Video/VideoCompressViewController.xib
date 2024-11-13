@@ -16,6 +16,7 @@
                 <outlet property="compressedImageView" destination="GJf-Gn-TvI" id="Xus-52-XHy"/>
                 <outlet property="compressedSizeLabel" destination="Pov-Ya-Jtn" id="QxA-bl-SXQ"/>
                 <outlet property="highQuqlityCompressButton" destination="4eZ-li-EVh" id="CVs-28-klD"/>
+                <outlet property="iCloudTagImageView" destination="0PC-Yf-pOb" id="92H-cQ-LAn"/>
                 <outlet property="lowQuqlityCompressButton" destination="HZs-dE-Hhx" id="D6U-qj-eRd"/>
                 <outlet property="midQuqlityCompressButton" destination="Yfr-nY-cP4" id="MUy-hg-EPd"/>
                 <outlet property="orgImageView" destination="AgQ-X0-pSS" id="e9h-MQ-gCT"/>
@@ -48,6 +49,13 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cloud-download" translatesAutoresizingMaskIntoConstraints="NO" id="0PC-Yf-pOb" userLabel="iCloudTagImageView">
+                                    <rect key="frame" x="68" y="4" width="22" height="22"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="22" id="Wnj-NA-2Zg"/>
+                                        <constraint firstAttribute="width" constant="22" id="mlA-hK-H8b"/>
+                                    </constraints>
+                                </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tld-mT-prJ">
                                     <rect key="frame" x="323" y="0.0" width="42" height="30"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -57,11 +65,13 @@
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.3001603890728477" colorSpace="calibratedRGB"/>
                             <constraints>
+                                <constraint firstItem="0PC-Yf-pOb" firstAttribute="centerY" secondItem="91K-b7-7X6" secondAttribute="centerY" id="Dj2-px-sdb"/>
                                 <constraint firstAttribute="trailing" secondItem="tld-mT-prJ" secondAttribute="trailing" constant="12" id="EuO-0n-q4e"/>
                                 <constraint firstItem="GYG-BY-uM8" firstAttribute="leading" secondItem="91K-b7-7X6" secondAttribute="leading" constant="12" id="Ka3-av-b4Z"/>
                                 <constraint firstAttribute="height" constant="30" id="LpD-FU-sca"/>
                                 <constraint firstAttribute="bottom" secondItem="GYG-BY-uM8" secondAttribute="bottom" id="MnV-q2-DEu"/>
                                 <constraint firstItem="GYG-BY-uM8" firstAttribute="top" secondItem="91K-b7-7X6" secondAttribute="top" id="eJG-KH-QGM"/>
+                                <constraint firstItem="0PC-Yf-pOb" firstAttribute="leading" secondItem="GYG-BY-uM8" secondAttribute="trailing" constant="7" id="pKj-ue-Mi0"/>
                                 <constraint firstItem="tld-mT-prJ" firstAttribute="top" secondItem="91K-b7-7X6" secondAttribute="top" id="wFZ-gk-Hnk"/>
                                 <constraint firstAttribute="bottom" secondItem="tld-mT-prJ" secondAttribute="bottom" id="wKB-PR-P40"/>
                             </constraints>
@@ -77,7 +87,7 @@
                                         <constraint firstAttribute="width" constant="66" id="Lgc-HE-LOv"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="保真压缩"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="高清压缩"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="fontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>
@@ -279,6 +289,7 @@
         </view>
     </objects>
     <resources>
+        <image name="cloud-download" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -22,6 +22,7 @@
 		4782E7642CD4AE4C00298191 /* ColorUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E7632CD4AE4C00298191 /* ColorUtility.m */; };
 		4782E7672CD4D52A00298191 /* CustomButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E7662CD4D52A00298191 /* CustomButtonView.m */; };
 		4782E76C2CD9F0BE00298191 /* UserDefaultsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E76B2CD9F0BE00298191 /* UserDefaultsManager.m */; };
+		4782E76F2CE48D7100298191 /* ICloudVideoDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4782E76E2CE48D7100298191 /* ICloudVideoDownloader.m */; };
 		47B5F1832CC7922F0031E2DF /* GoodsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B5F1812CC7922F0031E2DF /* GoodsViewController.m */; };
 		47B5F1842CC7922F0031E2DF /* GoodsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */; };
 		47B5F1862CC799550031E2DF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47B5F1852CC799550031E2DF /* StoreKit.framework */; };
@@ -96,6 +97,8 @@
 		4782E7662CD4D52A00298191 /* CustomButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomButtonView.m; sourceTree = "<group>"; };
 		4782E76A2CD9F0BE00298191 /* UserDefaultsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDefaultsManager.h; sourceTree = "<group>"; };
 		4782E76B2CD9F0BE00298191 /* UserDefaultsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsManager.m; sourceTree = "<group>"; };
+		4782E76D2CE48D7100298191 /* ICloudVideoDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICloudVideoDownloader.h; sourceTree = "<group>"; };
+		4782E76E2CE48D7100298191 /* ICloudVideoDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICloudVideoDownloader.m; sourceTree = "<group>"; };
 		47B5F1802CC7922F0031E2DF /* GoodsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoodsViewController.h; sourceTree = "<group>"; };
 		47B5F1812CC7922F0031E2DF /* GoodsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoodsViewController.m; sourceTree = "<group>"; };
 		47B5F1822CC7922F0031E2DF /* GoodsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GoodsViewController.xib; sourceTree = "<group>"; };
@@ -340,6 +343,8 @@
 			children = (
 				47D9E6822CBE4F0000880083 /* Compresser.h */,
 				47D9E6832CBE4F0000880083 /* Compresser.m */,
+				4782E76D2CE48D7100298191 /* ICloudVideoDownloader.h */,
+				4782E76E2CE48D7100298191 /* ICloudVideoDownloader.m */,
 			);
 			path = Compress;
 			sourceTree = "<group>";
@@ -510,6 +515,7 @@
 			files = (
 				47D6BA332C956A3F00516CD6 /* AssetData.m in Sources */,
 				47D6BA472C9ADE5C00516CD6 /* AlertUtility.m in Sources */,
+				4782E76F2CE48D7100298191 /* ICloudVideoDownloader.m in Sources */,
 				47D6BA502C9BCF8A00516CD6 /* StyledButton.m in Sources */,
 				47F558A72C85A9BF0053CB04 /* VideoViewCell.m in Sources */,
 				47D6BA3C2C9572A200516CD6 /* UIImageView+PHAsset.m in Sources */,
