@@ -1,5 +1,5 @@
 //
-//  String+FileSize.h
+//  String+Bussiness.h
 //  photomanage
 //
 //  Created by chenxianming on 2024/9/14.
@@ -9,8 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSString (FileSize)
+@interface NSString (Bussiness)
 + (NSString *)fileSizeStringWithNumber:(NSNumber *)fileSize;
++ (NSString *)virtualCurrencyStringWithValue:(NSUInteger)virtualCurrency;
 @end
 
 NS_ASSUME_NONNULL_END

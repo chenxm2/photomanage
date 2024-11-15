@@ -30,5 +30,9 @@
    return [UIImage imageNamed:@"coins"];
 }
 
++ (UIImage *)coinsItemImg {
+   return [UIImage imageNamed:@"coins"];
+}
+
 @end
 

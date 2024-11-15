@@ -7,7 +7,7 @@
 
 #import "VideoViewCell.h"
 #import <Photos/Photos.h>
-#import "../Utils/String+FileSize.h"
+#import "../Utils/String+Bussiness.h"
 #import "VideoDataManager.h"
 
 
@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet CustomButtonView *deleteButton;
 @property (nonatomic, strong) AssetData *data;
 @property (weak, nonatomic) IBOutlet UIImageView *icloudTag;
+@property (weak, nonatomic) IBOutlet UIImageView *viewedImage;
 
 @end
 @implementation VideoViewCell
@@ -38,7 +39,7 @@
     return @"VideoViewCell";
 }
 
-- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete {
+- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete shouldShowViewd:(BOOL)shouldShowViewed {
     self.data = data;
     [self.imageView setSmallImageWithAsset:data.asset];
     self.sizeLabel.text = [NSString fileSizeStringWithNumber:data.fileSize];
@@ -46,8 +47,11 @@
     
     [data loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
         STRONG_SELF
-        if (strongSelf) {
-            self.compressQuality.text = [bindData getQualityString];
+        strongSelf.compressQuality.text = [bindData getQualityString];
+        if (shouldShowViewed && bindData.viewed) {
+            strongSelf.viewedImage.hidden = NO;
+        } else {
+            strongSelf.viewedImage.hidden = YES;
         }
     }];
     

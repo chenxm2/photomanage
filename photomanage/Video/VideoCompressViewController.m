@@ -6,7 +6,7 @@
 //
 
 #import "VideoCompressViewController.h"
-#import "../Utils/String+FileSize.h"
+#import "../Utils/String+Bussiness.h"
 #import "VideoPlayerViewController.h"
 #import "VideoDataManager.h"
 #import "Compress/Compresser.h"

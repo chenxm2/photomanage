@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)buttonTextColor; // 默认按钮文字颜色
 + (UIColor *)viewBackgroundColor; // 视图背景颜色
 + (UIImage *)rightItemImg; // 视图背景颜色
-
++ (UIImage *)coinsItemImg;
 @end
 
 NS_ASSUME_NONNULL_END

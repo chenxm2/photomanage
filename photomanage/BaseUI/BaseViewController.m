@@ -73,7 +73,7 @@
 
     if ([self shouldShowRightButton]) {
         // 创建默认右侧按钮
-        [self configureRightButtonText:@"123"
+        [self configureRightButtonText:@"123111"
                                  image:[BaseConfiguration rightItemImg]  textColor:nil];
     } else {
         self.navigationItem.rightBarButtonItem = nil; // 隐藏右侧按钮
@@ -91,6 +91,11 @@
     int margin = 8; // 标签和图片之间的间距
     int sidePadding = 12; // 左右边距
     int customViewHeight = 26;
+    
+    // 创建图片视图
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.frame = CGRectMake(sidePadding, (customViewHeight - imageSize) / 2, imageSize, imageSize);
     
     // 创建标签
     UILabel *label = [[UILabel alloc] init];
@@ -111,17 +116,12 @@
     customView.layer.cornerRadius = customViewHeight / 2;
     customView.layer.masksToBounds = YES;
     
-    // 调整标签的位置
-    label.frame = CGRectMake(sidePadding, 0, label.frame.size.width, customViewHeight);
+    // 调整标签的位置，使其位于图片右侧
+    label.frame = CGRectMake(sidePadding + imageSize + margin, 0, label.frame.size.width, customViewHeight);
     
-    // 创建图片视图
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.frame = CGRectMake(customViewWidth - imageSize - sidePadding, (customViewHeight - imageSize) / 2, imageSize, imageSize);
-    
-    // 添加标签和图片到自定义视图中
-    [customView addSubview:label];
+    // 添加图片和标签到自定义视图中
     [customView addSubview:imageView];
+    [customView addSubview:label];
     
     // 创建一个 UITapGestureRecognizer，添加到自定义视图
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped)];
@@ -132,6 +132,61 @@
     UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customView];
     self.navigationItem.rightBarButtonItem = rightBarButtonItem;
 }
+
+
+
+//- (void)configureRightButtonText:(NSString *)text
+//                           image:(UIImage *)image
+//                       textColor:(UIColor * _Nullable)color {
+//    if (!color) {
+//        color = [BaseConfiguration buttonTextColor]; // 使用默认文字颜色
+//    }
+//    
+//    int imageSize = 16;
+//    int margin = 8; // 标签和图片之间的间距
+//    int sidePadding = 12; // 左右边距
+//    int customViewHeight = 26;
+//    
+//    // 创建标签
+//    UILabel *label = [[UILabel alloc] init];
+//    label.text = text;
+//    label.font = [UIFont systemFontOfSize:10];
+//    label.textColor = color;
+//    label.textAlignment = NSTextAlignmentRight;
+//    [label sizeToFit]; // 自动调整标签的大小以适应文本内容
+//    
+//    // 计算自定义视图的宽度，增加左右边距
+//    int customViewWidth = label.frame.size.width + imageSize + margin + (2 * sidePadding);
+//    
+//    // 创建自定义视图
+//    UIView *customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, customViewWidth, customViewHeight)];
+//    customView.backgroundColor = [UIColor clearColor];
+//    customView.layer.borderColor = [ColorUtility colorWithDecimalRed:30 green:143 blue:56].CGColor;
+//    customView.layer.borderWidth = 1.0;
+//    customView.layer.cornerRadius = customViewHeight / 2;
+//    customView.layer.masksToBounds = YES;
+//    
+//    // 调整标签的位置
+//    label.frame = CGRectMake(sidePadding, 0, label.frame.size.width, customViewHeight);
+//    
+//    // 创建图片视图
+//    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+//    imageView.contentMode = UIViewContentModeScaleAspectFit;
+//    imageView.frame = CGRectMake(customViewWidth - imageSize - sidePadding, (customViewHeight - imageSize) / 2, imageSize, imageSize);
+//    
+//    // 添加标签和图片到自定义视图中
+//    [customView addSubview:label];
+//    [customView addSubview:imageView];
+//    
+//    // 创建一个 UITapGestureRecognizer，添加到自定义视图
+//    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped)];
+//    [customView addGestureRecognizer:tapGesture];
+//    customView.userInteractionEnabled = YES; // 使自定义视图可交互
+//    
+//    // 将自定义视图设置为导航项的右侧按钮
+//    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customView];
+//    self.navigationItem.rightBarButtonItem = rightBarButtonItem;
+//}
 
 
 - (void)leftButtonTapped {
@@ -150,7 +205,7 @@
 }
 
 - (BOOL)shouldShowRightButton {
-    return YES; // 默认显示右侧按钮
+    return NO; // 默认显示右侧按钮
 }
 
 @end

@@ -136,6 +136,10 @@
             }];
         }
     }
+    
+    [assetData loadBindData:^(AssetBindData * _Nonnull bindData, AssetData * _Nonnull data) {
+        bindData.viewed = YES;
+    }];
 }
 
 - (void)playSlowMotionVideoWithPHAsset:(AVAsset *)avAsset {

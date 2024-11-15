@@ -28,6 +28,11 @@ NSString * const kQualityHigh = @"高清";
     [self writeDataToFile];
 }
 
+- (void)setViewed:(BOOL)viewed {
+    _viewed = viewed;
+    [self writeDataToFile];
+}
+
 - (void)setCompressedlocalIdentifier:(NSString *)compressedlocalIdentifier
 {
     _compressedlocalIdentifier = compressedlocalIdentifier;

@@ -33,7 +33,7 @@
 		47D6BA2F2C95610000516CD6 /* VideoCompressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA2D2C95610000516CD6 /* VideoCompressViewController.m */; };
 		47D6BA302C95610000516CD6 /* VideoCompressViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47D6BA2E2C95610000516CD6 /* VideoCompressViewController.xib */; };
 		47D6BA332C956A3F00516CD6 /* AssetData.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA322C956A3F00516CD6 /* AssetData.m */; };
-		47D6BA392C956D6F00516CD6 /* String+FileSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA382C956D6F00516CD6 /* String+FileSize.m */; };
+		47D6BA392C956D6F00516CD6 /* String+Bussiness.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA382C956D6F00516CD6 /* String+Bussiness.m */; };
 		47D6BA3C2C9572A200516CD6 /* UIImageView+PHAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA3B2C9572A200516CD6 /* UIImageView+PHAsset.m */; };
 		47D6BA432C9ACC0200516CD6 /* VideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D6BA412C9ACC0200516CD6 /* VideoPlayerViewController.m */; };
 		47D6BA442C9ACC0200516CD6 /* VideoPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47D6BA422C9ACC0200516CD6 /* VideoPlayerViewController.xib */; };
@@ -115,8 +115,8 @@
 		47D6BA2E2C95610000516CD6 /* VideoCompressViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCompressViewController.xib; sourceTree = "<group>"; };
 		47D6BA312C956A3F00516CD6 /* AssetData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AssetData.h; sourceTree = "<group>"; };
 		47D6BA322C956A3F00516CD6 /* AssetData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AssetData.m; sourceTree = "<group>"; };
-		47D6BA372C956D6F00516CD6 /* String+FileSize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "String+FileSize.h"; sourceTree = "<group>"; };
-		47D6BA382C956D6F00516CD6 /* String+FileSize.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "String+FileSize.m"; sourceTree = "<group>"; };
+		47D6BA372C956D6F00516CD6 /* String+Bussiness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "String+Bussiness.h"; sourceTree = "<group>"; };
+		47D6BA382C956D6F00516CD6 /* String+Bussiness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "String+Bussiness.m"; sourceTree = "<group>"; };
 		47D6BA3A2C9572A200516CD6 /* UIImageView+PHAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImageView+PHAsset.h"; sourceTree = "<group>"; };
 		47D6BA3B2C9572A200516CD6 /* UIImageView+PHAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+PHAsset.m"; sourceTree = "<group>"; };
 		47D6BA3D2C95751F00516CD6 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
@@ -233,8 +233,8 @@
 			children = (
 				47D6BA262C95277200516CD6 /* GCDUtility.h */,
 				47D6BA272C95277200516CD6 /* GCDUtility.m */,
-				47D6BA372C956D6F00516CD6 /* String+FileSize.h */,
-				47D6BA382C956D6F00516CD6 /* String+FileSize.m */,
+				47D6BA372C956D6F00516CD6 /* String+Bussiness.h */,
+				47D6BA382C956D6F00516CD6 /* String+Bussiness.m */,
 				47D6BA3A2C9572A200516CD6 /* UIImageView+PHAsset.h */,
 				47D6BA3B2C9572A200516CD6 /* UIImageView+PHAsset.m */,
 				47D6BA3F2C95798E00516CD6 /* DefineHeader.h */,
@@ -520,7 +520,7 @@
 				47F558A72C85A9BF0053CB04 /* VideoViewCell.m in Sources */,
 				47D6BA3C2C9572A200516CD6 /* UIImageView+PHAsset.m in Sources */,
 				47BDE2E92BFC7FE300419853 /* ConfirmDeleteController.m in Sources */,
-				47D6BA392C956D6F00516CD6 /* String+FileSize.m in Sources */,
+				47D6BA392C956D6F00516CD6 /* String+Bussiness.m in Sources */,
 				47D6FDB42BFB0367000385EA /* PhotoManageViewController.m in Sources */,
 				47D6BA4A2C9AE03E00516CD6 /* ActivityIndicatorUtility.m in Sources */,
 				4714122E2CD481D1003F3589 /* BaseConfiguration.m in Sources */,

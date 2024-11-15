@@ -10,10 +10,12 @@
 #import "VideoCompressViewController.h"
 #import "AssetData.h"
 #import "VideoDataManager.h"
+#import "BaseConfiguration.h"
+#import "GoodsViewController.h"
 
 NSString * const kSortType = @"VideosortType";
 
-@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate, VideoViewCellDelegate>
+@interface VideoManageViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CustomButtonViewDelegate, VideoViewCellDelegate, StoreManagerObserver>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) NSArray<AssetData *> *showDatas;
 @property (nonatomic, assign) Boolean isInitCollectionView;
@@ -21,6 +23,8 @@ NSString * const kSortType = @"VideosortType";
 @property (nonatomic, assign) FilterType currentFilterType;
 @property (weak, nonatomic) IBOutlet CustomButtonView *sortButton;
 @property (nonatomic, assign) SortType curretSortType;
+@property (weak, nonatomic) IBOutlet UIButton *testClearCoins;
+@property (weak, nonatomic) IBOutlet UIButton *testClearCoinsAndState;
 @end
 
 @implementation VideoManageViewController
@@ -41,9 +45,121 @@ NSString * const kSortType = @"VideosortType";
     // Do any additional setup after loading the view.
     self.sortButton.delegate = self;
     
+    [self overwriteLeftBarButton];
+    
+#ifdef DEBUG
+    self.testClearCoins.hidden = NO;
+    self.testClearCoinsAndState.hidden = NO;
+#else
+#endif
+    
+    [STORE_MANAGER addObserver:self];
+    WEAK_SELF
+    [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+        STRONG_SELF
+        [strongSelf updateLeftButtonText:[NSString virtualCurrencyStringWithValue:value]];
+    }];
+    
 }
 
 
+- (void)overwriteLeftBarButton {
+    [self configureLeftButtonText:@"0"
+                             image:[BaseConfiguration coinsItemImg]  textColor:nil];
+}
+
+
+
+- (void)configureLeftButtonText:(NSString *)text
+                           image:(UIImage *)image
+                       textColor:(UIColor * _Nullable)color {
+    if (!color) {
+        color = [BaseConfiguration buttonTextColor]; // 使用默认文字颜色
+    }
+    
+    int imageSize = 16;
+    int margin = 8; // 标签和图片之间的间距
+    int sidePadding = 12; // 左右边距
+    int customViewHeight = 26;
+    
+    // 创建图片视图
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.tag = 101; // 给子视图打标签方便查找
+    imageView.frame = CGRectMake(sidePadding, (customViewHeight - imageSize) / 2, imageSize, imageSize);
+    
+    // 创建标签
+    UILabel *label = [[UILabel alloc] init];
+    label.text = text;
+    label.font = [UIFont systemFontOfSize:10];
+    label.textColor = color;
+    label.textAlignment = NSTextAlignmentRight;
+    label.tag = 102; // 给子视图打标签方便查找
+    [label sizeToFit]; // 自动调整标签的大小以适应文本内容
+    
+    // 计算自定义视图的宽度
+    int customViewWidth = label.frame.size.width + imageSize + margin + (2 * sidePadding);
+    
+    // 创建自定义视图
+    UIView *customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, customViewWidth, customViewHeight)];
+    customView.backgroundColor = [UIColor clearColor];
+    customView.layer.borderColor = [ColorUtility colorWithDecimalRed:30 green:143 blue:56].CGColor;
+    customView.layer.borderWidth = 1.0;
+    customView.layer.cornerRadius = customViewHeight / 2;
+    customView.layer.masksToBounds = YES;
+    
+    // 调整标签的位置
+    label.frame = CGRectMake(sidePadding + imageSize + margin, 0, label.frame.size.width, customViewHeight);
+    
+    // 添加图片和标签到自定义视图中
+    [customView addSubview:imageView];
+    [customView addSubview:label];
+    
+    // 创建一个 UITapGestureRecognizer，添加到自定义视图
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonClicked:)];
+    [customView addGestureRecognizer:tapGesture];
+    customView.userInteractionEnabled = YES; // 使自定义视图可交互
+    
+    // 将自定义视图设置为导航项的左侧按钮
+    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customView];
+    self.navigationItem.leftBarButtonItem = leftBarButtonItem;
+}
+
+- (void)updateLeftButtonText:(NSString *)text {
+    UIView *customView = self.navigationItem.leftBarButtonItem.customView;
+    if (!customView) {
+        return;
+    }
+    
+    UILabel *label = [customView viewWithTag:102]; // 找到标签
+    UIImageView *imageView = [customView viewWithTag:101]; // 找到图片视图
+    if (!label || !imageView) {
+        return;
+    }
+    
+    // 更新文本
+    label.text = text;
+    [label sizeToFit];
+    
+    // 重新计算布局
+    int imageSize = 16;
+    int margin = 8; // 标签和图片之间的间距
+    int sidePadding = 12; // 左右边距
+    int customViewHeight = customView.frame.size.height;
+    int customViewWidth = label.frame.size.width + imageSize + margin + (2 * sidePadding);
+    
+    // 更新视图的宽度
+    customView.frame = CGRectMake(0, 0, customViewWidth, customViewHeight);
+    
+    // 调整子视图的位置
+    imageView.frame = CGRectMake(sidePadding, (customViewHeight - imageSize) / 2, imageSize, imageSize);
+    label.frame = CGRectMake(sidePadding + imageSize + margin, 0, label.frame.size.width, customViewHeight);
+}
+
+- (void)leftButtonClicked:(id)button {
+    GoodsViewController *controller = [[GoodsViewController alloc] init];
+    [self.navigationController presentViewController:controller animated:YES completion:nil];
+}
 
 - (void)fetchPhotosIfAuthorized {
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
@@ -216,7 +332,12 @@ NSString * const kSortType = @"VideosortType";
         showDelete = YES;
     }
     
-    [cell updateAssetData:self.showDatas[indexPath.row] showDelete:showDelete];
+    BOOL shouldShowViewed = NO;
+    if (self.currentFilterType == FilterTypeUnCompress) {
+        shouldShowViewed = YES;
+    }
+    
+    [cell updateAssetData:self.showDatas[indexPath.row] showDelete:showDelete shouldShowViewd:shouldShowViewed];
     
     return cell;
 }
@@ -227,7 +348,27 @@ NSString * const kSortType = @"VideosortType";
     [self.navigationController pushViewController:controller animated:YES];        
 }
 
+#pragma mark - StoreManagerObserver
+- (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency {
+    [self updateLeftButtonText:[NSString virtualCurrencyStringWithValue:virtualCurrency]];
+}
 
+#pragma mark - Test
+
+- (IBAction)clearCoins:(id)sender {
+    WEAK_SELF
+    [STORE_MANAGER clearCoins:^{
+       STRONG_SELF
+        [strongSelf.view showToastWithMessage:@"清除成功"];
+    }];
+}
+- (IBAction)clearCoinsAndState:(id)sender {
+    WEAK_SELF
+    [STORE_MANAGER clearCoinsAndState:^{
+       STRONG_SELF
+        [strongSelf.view showToastWithMessage:@"清除成功"];
+    }];
+}
 
 /*
 #pragma mark - Navigation

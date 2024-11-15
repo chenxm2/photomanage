@@ -341,7 +341,7 @@
         frameRate = 30; // 高帧率
         outputSize = videoSize;
     } else if ([kQualityMiddle isEqual:preset]) {
-        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 70% 原码率
+        videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
         frameRate = 24; // 中等帧率
         outputSize = CGSizeMake(videoSize.width * 0.8, videoSize.height * 0.8); // 减小到 80% 原始分辨率
     } else if ([kQualityLow isEqual:preset]) {
@@ -368,6 +368,4 @@
 
     return videoSettings;
 }
-
-
 @end

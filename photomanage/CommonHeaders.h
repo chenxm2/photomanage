@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 #import "Utils/GCDUtility.h"
-#import "Utils/String+FileSize.h"
+#import "Utils/String+Bussiness.h"
 #import "Utils/UIImageView+PHAsset.h"
 #import "Utils/DefineHeader.h"
 #import "Utils/AlertUtility.h"

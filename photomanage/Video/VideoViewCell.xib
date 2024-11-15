@@ -56,6 +56,13 @@
                             <constraint firstAttribute="bottom" secondItem="DRz-yT-5XO" secondAttribute="bottom" id="z3g-vG-nXI"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="viewed" translatesAutoresizingMaskIntoConstraints="NO" id="Nir-N5-QUI">
+                        <rect key="frame" x="8" y="8" width="12" height="12"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="12" id="38T-5p-RFf"/>
+                            <constraint firstAttribute="height" constant="12" id="DCi-gD-mFG"/>
+                        </constraints>
+                    </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FDQ-5p-d1H" customClass="CustomButtonView">
                         <rect key="frame" x="69" y="3" width="40" height="20"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -81,6 +88,8 @@
                 <constraint firstItem="FDQ-5p-d1H" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="3" id="5b0-d6-uXw"/>
                 <constraint firstItem="aE9-lE-Dgc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="5bt-4m-07a"/>
                 <constraint firstItem="tae-Cx-dUG" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Hk5-Lk-0at"/>
+                <constraint firstItem="Nir-N5-QUI" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="8" id="VZI-4K-5Fh"/>
+                <constraint firstItem="Nir-N5-QUI" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="fS8-iH-NK0"/>
                 <constraint firstAttribute="bottom" secondItem="aE9-lE-Dgc" secondAttribute="bottom" id="jVF-rw-5rL"/>
                 <constraint firstAttribute="trailing" secondItem="aE9-lE-Dgc" secondAttribute="trailing" id="kdU-UU-hGh"/>
                 <constraint firstAttribute="bottom" secondItem="tae-Cx-dUG" secondAttribute="bottom" id="meY-46-utH"/>
@@ -94,12 +103,14 @@
                 <outlet property="icloudTag" destination="okk-Vj-JGI" id="XE5-52-uDS"/>
                 <outlet property="imageView" destination="aE9-lE-Dgc" id="UAb-R4-e9O"/>
                 <outlet property="sizeLabel" destination="ZVv-jz-Bvc" id="B5t-tw-brp"/>
+                <outlet property="viewedImage" destination="Nir-N5-QUI" id="oLg-0z-qiU"/>
             </connections>
             <point key="canvasLocation" x="54.961832061068698" y="32.74647887323944"/>
         </collectionViewCell>
     </objects>
     <resources>
         <image name="cloud-download" width="16" height="16"/>
+        <image name="viewed" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -207,17 +207,37 @@
                                 </collectionViewFlowLayout>
                                 <cells/>
                             </collectionView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lH6-gb-m4f">
+                                <rect key="frame" x="20" y="763" width="76" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="清货币"/>
+                                <connections>
+                                    <action selector="clearCoins:" destination="sHx-dC-XLf" eventType="touchUpInside" id="jmr-S7-Qwh"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qM8-wp-Z1b">
+                                <rect key="frame" x="314.33333333333331" y="763" width="58.666666666666686" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="全清"/>
+                                <connections>
+                                    <action selector="clearCoinsAndState:" destination="sHx-dC-XLf" eventType="touchUpInside" id="Eom-vE-1Mv"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jk0-KA-muC"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="SFC-dB-vwd" secondAttribute="trailing" id="66c-bB-VKd"/>
                             <constraint firstItem="ZIK-rG-bOV" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="BsM-iT-3zC"/>
+                            <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="qM8-wp-Z1b" secondAttribute="trailing" constant="20" id="Dxu-UF-WgO"/>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="Efq-XG-nQx"/>
+                            <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="lH6-gb-m4f" secondAttribute="bottom" constant="20" id="EpO-3B-zeu"/>
+                            <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="qM8-wp-Z1b" secondAttribute="bottom" constant="20" id="I7b-dX-wLR"/>
                             <constraint firstItem="ZIK-rG-bOV" firstAttribute="top" secondItem="jk0-KA-muC" secondAttribute="top" id="aJy-al-Zla"/>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="top" secondItem="ZIK-rG-bOV" secondAttribute="bottom" id="ouw-rC-rkE"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="SFC-dB-vwd" secondAttribute="bottom" id="slf-r9-TVE"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="ZIK-rG-bOV" secondAttribute="trailing" id="wPb-Of-GZ2"/>
+                            <constraint firstItem="lH6-gb-m4f" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" constant="20" id="yWX-k2-no0"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="视频压缩" id="XYp-Ie-GR9"/>
@@ -226,6 +246,8 @@
                         <outlet property="collectionView" destination="SFC-dB-vwd" id="7hG-MK-B6Y"/>
                         <outlet property="filterSegmented" destination="c7S-sE-u3M" id="GQc-ch-grB"/>
                         <outlet property="sortButton" destination="SWz-Pl-TuL" id="8Ta-rH-i5h"/>
+                        <outlet property="testClearCoins" destination="lH6-gb-m4f" id="wVs-vZ-Rcj"/>
+                        <outlet property="testClearCoinsAndState" destination="qM8-wp-Z1b" id="Rb6-ez-bsE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HK8-fc-rNU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VideoViewCell : UICollectionViewCell
 + (NSString *)reuseIdentifier;
 @property (nonatomic, weak) id<VideoViewCellDelegate> delegete;
-- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete;
+- (void)updateAssetData:(AssetData *)data showDelete:(BOOL)showDelete shouldShowViewd:(BOOL)shouldShowViewed;
 @end
 
 NS_ASSUME_NONNULL_END
