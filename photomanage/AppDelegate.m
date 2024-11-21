@@ -17,6 +17,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    if (@available(iOS 13.0, *)) {
+        // 强制设置所有UIView的界面风格为Light模式
+        [[UIView appearance] setOverrideUserInterfaceStyle:UIUserInterfaceStyleLight];
+    }
     return YES;
 }
 

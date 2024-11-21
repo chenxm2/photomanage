@@ -12,6 +12,12 @@
 		471412312CD4825A003F3589 /* BaseTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 471412302CD4825A003F3589 /* BaseTabBarController.m */; };
 		471412342CD4845D003F3589 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 471412332CD4845D003F3589 /* MainTabBarController.m */; };
 		472557552CD2329100B769A0 /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 472557542CD2329100B769A0 /* BaseViewController.m */; };
+		47547AB92CEDC30B00DC9DE2 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47547AB82CEDC30B00DC9DE2 /* SettingsViewController.xib */; };
+		47547ABA2CEDC30B00DC9DE2 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47547AB72CEDC30B00DC9DE2 /* SettingsViewController.m */; };
+		47547ABE2CEDC80E00DC9DE2 /* SettingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47547ABD2CEDC80E00DC9DE2 /* SettingViewCell.xib */; };
+		47547ABF2CEDC80E00DC9DE2 /* SettingViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47547ABC2CEDC80E00DC9DE2 /* SettingViewCell.m */; };
+		47547AC22CEDD16000DC9DE2 /* SettingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 47547AC12CEDD16000DC9DE2 /* SettingInfo.m */; };
+		47547AC52CEDE71800DC9DE2 /* SimpleWebviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47547AC42CEDE71800DC9DE2 /* SimpleWebviewController.m */; };
 		475958382C9C346F004B24B5 /* AssetBindData.m in Sources */ = {isa = PBXBuildFile; fileRef = 475958372C9C346F004B24B5 /* AssetBindData.m */; };
 		476862022BFB1ED4003D7DA8 /* PhotoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 476861FF2BFB1ED4003D7DA8 /* PhotoCollectionViewCell.m */; };
 		476862082BFB3BF5003D7DA8 /* PhotoPreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 476862072BFB3BF5003D7DA8 /* PhotoPreviewController.m */; };
@@ -75,6 +81,16 @@
 		471412332CD4845D003F3589 /* MainTabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
 		472557532CD2329100B769A0 /* BaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
 		472557542CD2329100B769A0 /* BaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
+		47547AB62CEDC30B00DC9DE2 /* SettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		47547AB72CEDC30B00DC9DE2 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		47547AB82CEDC30B00DC9DE2 /* SettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		47547ABB2CEDC80E00DC9DE2 /* SettingViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewCell.h; sourceTree = "<group>"; };
+		47547ABC2CEDC80E00DC9DE2 /* SettingViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewCell.m; sourceTree = "<group>"; };
+		47547ABD2CEDC80E00DC9DE2 /* SettingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingViewCell.xib; sourceTree = "<group>"; };
+		47547AC02CEDD16000DC9DE2 /* SettingInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingInfo.h; sourceTree = "<group>"; };
+		47547AC12CEDD16000DC9DE2 /* SettingInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingInfo.m; sourceTree = "<group>"; };
+		47547AC32CEDE71800DC9DE2 /* SimpleWebviewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleWebviewController.h; sourceTree = "<group>"; };
+		47547AC42CEDE71800DC9DE2 /* SimpleWebviewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleWebviewController.m; sourceTree = "<group>"; };
 		475958362C9C346F004B24B5 /* AssetBindData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AssetBindData.h; sourceTree = "<group>"; };
 		475958372C9C346F004B24B5 /* AssetBindData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AssetBindData.m; sourceTree = "<group>"; };
 		476861FE2BFB1ED4003D7DA8 /* PhotoCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoCollectionViewCell.h; sourceTree = "<group>"; };
@@ -209,6 +225,23 @@
 			path = BaseUI;
 			sourceTree = "<group>";
 		};
+		47547AB52CEDC2C100DC9DE2 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				47547AB62CEDC30B00DC9DE2 /* SettingsViewController.h */,
+				47547AB72CEDC30B00DC9DE2 /* SettingsViewController.m */,
+				47547AB82CEDC30B00DC9DE2 /* SettingsViewController.xib */,
+				47547ABB2CEDC80E00DC9DE2 /* SettingViewCell.h */,
+				47547ABC2CEDC80E00DC9DE2 /* SettingViewCell.m */,
+				47547ABD2CEDC80E00DC9DE2 /* SettingViewCell.xib */,
+				47547AC02CEDD16000DC9DE2 /* SettingInfo.h */,
+				47547AC12CEDD16000DC9DE2 /* SettingInfo.m */,
+				47547AC32CEDE71800DC9DE2 /* SimpleWebviewController.h */,
+				47547AC42CEDE71800DC9DE2 /* SimpleWebviewController.m */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		478031222CA68CA300AC4BC0 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -292,6 +325,7 @@
 		47D6FDAB2BFB0367000385EA /* photomanage */ = {
 			isa = PBXGroup;
 			children = (
+				47547AB52CEDC2C100DC9DE2 /* Settings */,
 				472557522CD2321E00B769A0 /* BaseUI */,
 				47B5F17F2CC792080031E2DF /* Goods */,
 				47E86E312CC102E600AECAF7 /* StoreManager */,
@@ -452,7 +486,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				47D6FDB92BFB0368000385EA /* Assets.xcassets in Resources */,
+				47547ABE2CEDC80E00DC9DE2 /* SettingViewCell.xib in Resources */,
 				47D9E6742CBA5FEA00880083 /* InfoPlist.strings in Resources */,
+				47547AB92CEDC30B00DC9DE2 /* SettingsViewController.xib in Resources */,
 				47BDE2E82BFC7FE300419853 /* ConfirmDeleteController.xib in Resources */,
 				47D6BA302C95610000516CD6 /* VideoCompressViewController.xib in Resources */,
 				47D9E6782CBA621000880083 /* Localizable.strings in Resources */,
@@ -515,17 +551,20 @@
 			files = (
 				47D6BA332C956A3F00516CD6 /* AssetData.m in Sources */,
 				47D6BA472C9ADE5C00516CD6 /* AlertUtility.m in Sources */,
+				47547AC22CEDD16000DC9DE2 /* SettingInfo.m in Sources */,
 				4782E76F2CE48D7100298191 /* ICloudVideoDownloader.m in Sources */,
 				47D6BA502C9BCF8A00516CD6 /* StyledButton.m in Sources */,
 				47F558A72C85A9BF0053CB04 /* VideoViewCell.m in Sources */,
 				47D6BA3C2C9572A200516CD6 /* UIImageView+PHAsset.m in Sources */,
 				47BDE2E92BFC7FE300419853 /* ConfirmDeleteController.m in Sources */,
 				47D6BA392C956D6F00516CD6 /* String+Bussiness.m in Sources */,
+				47547AC52CEDE71800DC9DE2 /* SimpleWebviewController.m in Sources */,
 				47D6FDB42BFB0367000385EA /* PhotoManageViewController.m in Sources */,
 				47D6BA4A2C9AE03E00516CD6 /* ActivityIndicatorUtility.m in Sources */,
 				4714122E2CD481D1003F3589 /* BaseConfiguration.m in Sources */,
 				478031252CA68D0D00AC4BC0 /* VideoDataManager.m in Sources */,
 				47D6BA282C95277200516CD6 /* GCDUtility.m in Sources */,
+				47547ABF2CEDC80E00DC9DE2 /* SettingViewCell.m in Sources */,
 				471412342CD4845D003F3589 /* MainTabBarController.m in Sources */,
 				475958382C9C346F004B24B5 /* AssetBindData.m in Sources */,
 				47F558A02C859E3D0053CB04 /* VideoManageViewController.m in Sources */,
@@ -549,6 +588,7 @@
 				47D6BA2F2C95610000516CD6 /* VideoCompressViewController.m in Sources */,
 				47D6BA432C9ACC0200516CD6 /* VideoPlayerViewController.m in Sources */,
 				47D6BA4D2C9AE45600516CD6 /* UIView+Toast.m in Sources */,
+				47547ABA2CEDC30B00DC9DE2 /* SettingsViewController.m in Sources */,
 				47D6FDB12BFB0367000385EA /* SceneDelegate.m in Sources */,
 				4782E76C2CD9F0BE00298191 /* UserDefaultsManager.m in Sources */,
 				47E86E302CC0EB6C00AECAF7 /* JSONConverter.m in Sources */,
@@ -744,7 +784,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.private.test.photomanage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -779,7 +819,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.private.test.photomanage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

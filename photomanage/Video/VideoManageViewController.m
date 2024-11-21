@@ -12,6 +12,7 @@
 #import "VideoDataManager.h"
 #import "BaseConfiguration.h"
 #import "GoodsViewController.h"
+#import "SettingsViewController.h"
 
 NSString * const kSortType = @"VideosortType";
 
@@ -46,6 +47,7 @@ NSString * const kSortType = @"VideosortType";
     self.sortButton.delegate = self;
     
     [self overwriteLeftBarButton];
+    [self configureRightButton];
     
 #ifdef DEBUG
     self.testClearCoins.hidden = NO;
@@ -60,6 +62,17 @@ NSString * const kSortType = @"VideosortType";
         [strongSelf updateLeftButtonText:[NSString virtualCurrencyStringWithValue:value]];
     }];
     
+}
+
+- (void)configureRightButton {
+    UIImage *buttonImage = [[UIImage imageNamed:@"settings"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];; // 替换为你的图标名称    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:buttonImage style:UIBarButtonItemStylePlain target:self action:@selector(rightBarButtonTapped)];
+}
+
+// 按钮点击事件
+- (void)rightBarButtonTapped {
+    SettingsViewController *controller = [[SettingsViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 
@@ -158,7 +171,7 @@ NSString * const kSortType = @"VideosortType";
 
 - (void)leftButtonClicked:(id)button {
     GoodsViewController *controller = [[GoodsViewController alloc] init];
-    [self.navigationController presentViewController:controller animated:YES completion:nil];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)fetchPhotosIfAuthorized {
@@ -188,10 +201,6 @@ NSString * const kSortType = @"VideosortType";
 
 - (void)handleAuthorizationDenied {
     [self.view showToastWithMessage:[NSString localizedStringWithName:@"permission_fail"]];
-}
-
-- (BOOL)shouldShowRightButton {
-    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
