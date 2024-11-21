@@ -26,6 +26,12 @@
     return [UIColor whiteColor]; // 视图的默认背景颜色
 }
 
++ (UIColor *)darkGrayColor {
+    return [ColorUtility colorWithHexString:@"#80000000"];
+}
+
+
+
 + (UIImage *)rightItemImg {
    return [UIImage imageNamed:@"coins"];
 }
@@ -33,6 +39,7 @@
 + (UIImage *)coinsItemImg {
    return [UIImage imageNamed:@"coins"];
 }
+
 
 @end
 

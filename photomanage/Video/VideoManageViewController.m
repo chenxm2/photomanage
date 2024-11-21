@@ -78,7 +78,7 @@ NSString * const kSortType = @"VideosortType";
 
 - (void)overwriteLeftBarButton {
     [self configureLeftButtonText:@"0"
-                             image:[BaseConfiguration coinsItemImg]  textColor:nil];
+                             image:[BaseConfiguration coinsItemImg]  textColor:[BaseConfiguration darkGrayColor]];
 }
 
 
@@ -116,7 +116,7 @@ NSString * const kSortType = @"VideosortType";
     // 创建自定义视图
     UIView *customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, customViewWidth, customViewHeight)];
     customView.backgroundColor = [UIColor clearColor];
-    customView.layer.borderColor = [ColorUtility colorWithDecimalRed:30 green:143 blue:56].CGColor;
+    customView.layer.borderColor = color.CGColor;
     customView.layer.borderWidth = 1.0;
     customView.layer.cornerRadius = customViewHeight / 2;
     customView.layer.masksToBounds = YES;

@@ -34,6 +34,14 @@
     [self.view addSubview:self.webView];
     // Do any additional setup after loading the view.
     
+    // 设置约束
+    [NSLayoutConstraint activateConstraints:@[
+        [self.webView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        [self.webView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [self.webView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        [self.webView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
+    ]];
+    
     // 加载URL
     if (self.pageURL) {
         NSURL *url = [NSURL URLWithString:self.pageURL];
@@ -44,6 +52,11 @@
     if (self.pageTitle) {
         self.title = self.pageTitle;
     }
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    self.webView.frame = UIEdgeInsetsInsetRect(self.view.bounds, self.view.safeAreaInsets);
 }
 
 /*
