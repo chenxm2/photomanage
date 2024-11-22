@@ -28,6 +28,9 @@
     
     // 根据子类的配置显示或隐藏左右按钮
     [self configureButtons];
+    
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
 - (void)configureNavigationBar {
@@ -187,7 +190,9 @@
 //    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customView];
 //    self.navigationItem.rightBarButtonItem = rightBarButtonItem;
 //}
-
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return self.navigationController.viewControllers.count > 1;
+}
 
 - (void)leftButtonTapped {
     // 实现左侧按钮点击逻辑

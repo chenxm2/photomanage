@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-@interface BaseViewController : UIViewController
+@interface BaseViewController : UIViewController <UIGestureRecognizerDelegate>
 
 - (void)configureRightButtonText:(NSString *)text
                             image:(UIImage *)image
@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldShowLeftButton; // 是否显示左侧按钮
 - (BOOL)shouldShowRightButton; // 是否显示右侧按钮
 - (void)leftButtonTapped;
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -425,6 +425,16 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     }
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if ([self.compresser isCompressing]) {
+        return NO;
+    } else if (self.downloader) {
+        return NO;
+    } else {
+        return [super gestureRecognizerShouldBegin:gestureRecognizer];
+    }
+}
+
 /*
 #pragma mark - Navigation
 
