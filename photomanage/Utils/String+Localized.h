@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (Localized)
++ (NSString *)localizedStringWithFormat:(NSString *)name, ...;
 + (NSString *)localizedStringWithName:(NSString *)name;
 + (NSString *)localizedConfirm;
 + (NSString *)localizedCancel;

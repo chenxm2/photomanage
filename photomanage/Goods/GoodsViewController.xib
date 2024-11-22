@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GoodsViewController">
             <connections>
+                <outlet property="buyButtonView" destination="NO1-db-QTG" id="0VX-C1-AUX"/>
                 <outlet property="leftBackgroundView" destination="bS9-l0-jWU" id="9Lv-mc-Mee"/>
                 <outlet property="leftCoinsLabel" destination="dyv-oA-NfF" id="SLs-Oo-X7p"/>
                 <outlet property="payBackgroundView" destination="5Jo-Jb-JUI" id="LuO-hV-dgs"/>

@@ -11,6 +11,7 @@
 #import "VideoDataManager.h"
 #import "Compress/Compresser.h"
 #import "ICloudVideoDownloader.h"
+#import "StoreManager.h"
 
 static NSString * const kLogTag = @"VideoCompressViewController";
 
@@ -164,17 +165,47 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)saveToAlbum {
     if (self.compressedURL != nil) {
-//        [STOTE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
-//            if (value < kOnePhotoCost) {
-//                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
-//            } else {
-                [self createAlbumAndSaveCompressed:self.compressedURL];
-//            }
-//        }];
+        WEAK_SELF
+        [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+            STRONG_SELF
+            if (value < [strongSelf caculateCostCoins]) {
+                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+            } else {
+                [self showSaveToAlbumAlert];
+            }
+        }];
         
     } else {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"already_in_album"]];
     }
+}
+
+- (NSInteger)caculateCostCoins {
+    CGFloat orgSize = [self.orgData.fileSize floatValue];
+    CGFloat compressSize = [self fileSizeWithURL:self.compressedURL];
+    NSInteger optSize = floor(orgSize - compressSize);
+
+    return optSize;
+}
+
+- (void)showSaveToAlbumAlert {
+    WEAK_SELF
+    CGFloat orgSize = [self.orgData.fileSize floatValue];
+    CGFloat compressSize = [self fileSizeWithURL:self.compressedURL];
+    NSInteger optSize = floor(orgSize - compressSize);
+    
+    if (optSize < 0) {
+        optSize = 0;
+    }
+    
+    NSString *message = [NSString localizedStringWithFormat:[NSString localizedStringWithName:@"save_to_album_message"], compressSize, orgSize, optSize, optSize];
+    
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_to_album"] message:message confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        STRONG_SELF
+        if (confirmed) {
+            [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
+        }
+    }];
 }
 
 
@@ -270,7 +301,17 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     }];
 }
 
-- (void)createAlbumAndSaveCompressed:(NSURL *)compressedURL {
+- (CGFloat)fileSizeWithURL:(NSURL *)fileURL {
+    CGFloat fizeSize = 0;
+    if (fileURL != nil) {
+        NSData *fileData = [NSData dataWithContentsOfURL:fileURL];
+        fizeSize = fileData.length / (1024.0 * 1024.0);
+    }
+    
+    return fizeSize;
+}
+
+- (void)createAlbumAndSaveCompressed:(NSURL *)compressedURL cost:(NSInteger)costCoins {
     __block PHAssetCollection *createdCollection = nil;
     
     // 查找自定义相册
@@ -291,16 +332,16 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             if (success) {
                 NSLog(@"Custom album created.");
                 [GCDUtility executeOnMainThread:^{
-                    [self saveCompressedVideo:compressedURL];
+                    [self saveCompressedVideo:compressedURL cost:costCoins];
                 }];
             }
         }];
     } else {
-        [self saveCompressedVideo:compressedURL];
+        [self saveCompressedVideo:compressedURL cost:costCoins];
     }
 }
 
-- (void)saveCompressedVideo:(NSURL *)compressedURL {
+- (void)saveCompressedVideo:(NSURL *)compressedURL cost:(NSInteger)costCoins {
     // 获取自定义相册
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
     
@@ -339,11 +380,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
                 [strongSelf showHintAlert];
             }];
             
-//            [STOTE_MANAGER subVirtualCurrency:kOneVideoCost completion:^(BOOL result) {
-//                if (!result) {
-//                    LogInfo(@"subVirtualCurrency fail");
-//                }
-//            }];
+            [STORE_MANAGER subVirtualCurrency:costCoins completion:^(BOOL result) {
+                if (!result) {
+                    LogInfo(@"subVirtualCurrency fail");
+                }
+            }];
         }else {
             NSLog(@"Error adding videos to album: %@", error);
         }

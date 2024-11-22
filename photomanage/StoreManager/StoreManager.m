@@ -10,7 +10,7 @@
 #import <RMStore/RMStore.h>
 
 NSString * const kProductId = @"com.private.test.photomanage.product1";
-NSUInteger const kProductIdContainCoin = 50;
+NSUInteger const kProductIdContainCoin = 100;
 NSUInteger const kOnePhotoCost = 1;
 NSUInteger const kOneVideoCost = 10;
 NSUInteger const kFirstFreeVirtualCurrency = 100;
@@ -45,7 +45,7 @@ NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
     if (self) {
         _observers = [NSHashTable weakObjectsHashTable]; // 使用弱引用防止循环引用
     }
-    
+
     return self;
 }
 

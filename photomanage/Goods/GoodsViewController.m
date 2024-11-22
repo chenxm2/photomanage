@@ -8,12 +8,12 @@
 #import "GoodsViewController.h"
 #import "../StoreManager/StoreManager.h"
 
-@interface GoodsViewController ()
+@interface GoodsViewController () <CustomButtonViewDelegate, StoreManagerObserver>
 @property (weak, nonatomic) IBOutlet UILabel *slimmingCoinText;
-@property (weak, nonatomic) IBOutlet UIButton *buyButton;
 @property (weak, nonatomic) IBOutlet UILabel *leftCoinsLabel;
 @property (weak, nonatomic) IBOutlet UIView *leftBackgroundView;
 @property (weak, nonatomic) IBOutlet UIView *payBackgroundView;
+@property (weak, nonatomic) IBOutlet CustomButtonView *buyButtonView;
 
 @property (nonatomic, strong) NSString *productId;
 @end
@@ -26,7 +26,7 @@
     NSString *slimmingText = [NSString localizedStringWithName:@"slimming_coin"];
     self.slimmingCoinText.text = [NSString stringWithFormat:@"%d%@", kProductIdContainCoin, slimmingText];
     [self fetchsGoods];
-    self.buyButton.hidden = YES;
+    self.buyButtonView.hidden = YES;
     self.title = [NSString localizedStringWithName:@"slimming_coin"];
     
     WEAK_SELF
@@ -39,6 +39,11 @@
     self.leftBackgroundView.clipsToBounds = YES;
     self.payBackgroundView.layer.cornerRadius = 8;
     self.payBackgroundView.clipsToBounds = YES;
+    self.buyButtonView.hidden = YES;
+    self.buyButtonView.delegate = self;
+    
+    [STORE_MANAGER addObserver:self];
+    
 }
 
 - (void)fetchsGoods {
@@ -50,7 +55,6 @@
         STRONG_SELF
         for (SKProduct *product in products) {
             LogInfo(@"fetchAvailableProducts  %@, %@",  product.description, product.productIdentifier);
-            
             NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
             priceFormatter.numberStyle = NSNumberFormatterCurrencyStyle;
             priceFormatter.locale = [product priceLocale];
@@ -58,21 +62,32 @@
             LogInfo(@"fetchAvailableProducts  %@, %@",  res , product.productIdentifier);
             
             strongSelf.productId = product.productIdentifier;
-            NSString *buy = [NSString localizedStringWithName:@"buy"];
-            NSString *fullBuyText = [NSString stringWithFormat:@"%@ %@", res, buy];
-            [strongSelf.buyButton setTitle:fullBuyText forState:UIControlStateNormal];
-            strongSelf.buyButton.hidden = NO;
+            NSString *buy = [NSString localizedStringWithName:@"buy_coins"];
+            NSString *fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
+            strongSelf.buyButtonView.hidden = NO;
+            strongSelf.buyButtonView.buttonText = fullBuyText;
+            
         }
     } failure:^(NSError * _Nonnull error) {
         LogInfo(@"fetchAvailableProducts fail = %@", error);
     }];
 }
-- (IBAction)buyProduct:(id)sender {
+
+- (void)dealloc {
+    [STORE_MANAGER removeObserver:self];
+}
+
+-(void)onButtonTap:(CustomButtonView *)view {
     [[StoreManager sharedManager] purchaseProduct:self.productId success:^{
         } failure:^(NSError * _Nonnull error) {
         
     }];
 }
+
+- (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency {
+   self.leftCoinsLabel.text =  [NSString virtualCurrencyStringWithValue:virtualCurrency];
+}
+
 
 /*
 #pragma mark - Navigation

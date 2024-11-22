@@ -51,11 +51,11 @@ NSString * const kSortType = @"VideosortType";
     [self overwriteLeftBarButton];
     [self configureRightButton];
     
-#ifdef DEBUG
+//#ifdef DEBUG
     self.testClearCoins.hidden = NO;
     self.testClearCoinsAndState.hidden = NO;
-#else
-#endif
+//#else
+//#endif
     
     [STORE_MANAGER addObserver:self];
     WEAK_SELF
