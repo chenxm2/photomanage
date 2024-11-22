@@ -34,6 +34,7 @@
         STRONG_SELF
         strongSelf.leftCoinsLabel.text = [NSString virtualCurrencyStringWithValue:value];
     }];
+    self.view.backgroundColor = [UIColor whiteColor];
     self.leftBackgroundView.layer.cornerRadius = 8;
     self.leftBackgroundView.clipsToBounds = YES;
     self.payBackgroundView.layer.cornerRadius = 8;
