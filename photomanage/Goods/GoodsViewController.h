@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface GoodsViewController : UIViewController
+@interface GoodsViewController : BaseViewController
 
 @end
 

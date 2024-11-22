@@ -26,6 +26,8 @@ NSString * const kSortType = @"VideosortType";
 @property (nonatomic, assign) SortType curretSortType;
 @property (weak, nonatomic) IBOutlet UIButton *testClearCoins;
 @property (weak, nonatomic) IBOutlet UIButton *testClearCoinsAndState;
+@property (weak, nonatomic) IBOutlet UIView *downImageView;
+@property (weak, nonatomic) IBOutlet UIView *upImageView;
 @end
 
 @implementation VideoManageViewController
@@ -41,7 +43,7 @@ NSString * const kSortType = @"VideosortType";
         self.filterSegmented.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
     }
 
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = [UIColor clearColor];
     self.title = [NSString localizedStringWithName:@"video_compress"];
     // Do any additional setup after loading the view.
     self.sortButton.delegate = self;
@@ -61,6 +63,14 @@ NSString * const kSortType = @"VideosortType";
         STRONG_SELF
         [strongSelf updateLeftButtonText:[NSString virtualCurrencyStringWithValue:value]];
     }];
+    
+    // 创建 UITapGestureRecognizer
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scrollDown:)];
+    [self.downImageView addGestureRecognizer:tapGesture];
+    
+    // 创建 UITapGestureRecognizer
+    tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scrollUp:)];
+    [self.upImageView addGestureRecognizer:tapGesture];
     
 }
 
@@ -105,7 +115,7 @@ NSString * const kSortType = @"VideosortType";
     UILabel *label = [[UILabel alloc] init];
     label.text = text;
     label.font = [UIFont systemFontOfSize:10];
-    label.textColor = color;
+    label.textColor = [ColorUtility colorWithHexString:@"#FF1A1A1A"];
     label.textAlignment = NSTextAlignmentRight;
     label.tag = 102; // 给子视图打标签方便查找
     [label sizeToFit]; // 自动调整标签的大小以适应文本内容
@@ -280,12 +290,13 @@ NSString * const kSortType = @"VideosortType";
     WEAK_SELF
     __block MBProgressHUD *hud = nil;
     if (self.showDatas == nil || [self.showDatas count] == 0) {
-        hud = [ProgressHUDWrapper showLoadingToView:self.view withString:[NSString localizedLoading]];
+        hud = [ProgressHUDWrapper showLoadingToView:nil withString:[NSString localizedLoading]];
+        hud.userInteractionEnabled = YES;
     }
     
     [[VideoDataManager sharedManager] fetchVideosWithSortedType:self.curretSortType filterType:self.currentFilterType middleData:nil completion:^(NSArray<AssetData *> * _Nonnull dataList) {
         STRONG_SELF
-        [ProgressHUDWrapper hideHUDForView:strongSelf.view];
+        [ProgressHUDWrapper hideHUDForView:nil];
         strongSelf.showDatas = dataList;
         [strongSelf.collectionView reloadData];
     }];
@@ -377,6 +388,30 @@ NSString * const kSortType = @"VideosortType";
        STRONG_SELF
         [strongSelf.view showToastWithMessage:@"清除成功"];
     }];
+}
+
+#pragma mark - Scroll up and down
+- (void)scrollDown:(id)sender {
+    [self scrollToBottom];
+}
+
+- (void)scrollUp:(id)sender {
+    [self scrollToTop];
+}
+
+- (void)scrollToTop {
+    [self.collectionView setContentOffset:CGPointZero animated:YES];
+}
+
+- (void)scrollToBottom {
+    NSInteger lastSection = [self.collectionView numberOfSections] - 1;
+    if (lastSection >= 0) {
+        NSInteger lastItem = [self.collectionView numberOfItemsInSection:lastSection] - 1;
+        if (lastItem >= 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:lastItem inSection:lastSection];
+            [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        }
+    }
 }
 
 /*

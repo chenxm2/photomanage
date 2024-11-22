@@ -38,6 +38,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 @property (weak, nonatomic) IBOutlet CustomButtonView *playCompressVideoButton;
 @property (weak, nonatomic) IBOutlet CustomButtonView *saveToAlbumButton;
 @property (weak, nonatomic) IBOutlet UIImageView *iCloudTagImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *heartImageView;
 @end
 
 
@@ -66,6 +67,13 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     self.compressedContainer.clipsToBounds = YES;
     self.compressedContainer.layer.cornerRadius = 8;
+    
+    if (self.orgData.asset.isFavorite){
+        self.heartImageView.hidden = NO;
+    } else {
+        self.heartImageView.hidden = YES;
+    }
+    
     WEAK_SELF
     [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:self.orgData.asset callback:^(AVAsset * _Nullable result) {
         STRONG_SELF

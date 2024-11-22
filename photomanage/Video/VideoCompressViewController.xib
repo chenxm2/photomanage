@@ -15,6 +15,7 @@
                 <outlet property="compressedContainer" destination="m0I-hz-oRp" id="SqF-GV-ePa"/>
                 <outlet property="compressedImageView" destination="GJf-Gn-TvI" id="Xus-52-XHy"/>
                 <outlet property="compressedSizeLabel" destination="Pov-Ya-Jtn" id="QxA-bl-SXQ"/>
+                <outlet property="heartImageView" destination="BMJ-4P-XRk" id="FVP-iM-HIi"/>
                 <outlet property="highQuqlityCompressButton" destination="4eZ-li-EVh" id="CVs-28-klD"/>
                 <outlet property="iCloudTagImageView" destination="0PC-Yf-pOb" id="92H-cQ-LAn"/>
                 <outlet property="lowQuqlityCompressButton" destination="HZs-dE-Hhx" id="D6U-qj-eRd"/>
@@ -43,6 +44,13 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="91K-b7-7X6">
                             <rect key="frame" x="0.0" y="0.0" width="377" height="30"/>
                             <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="heart" translatesAutoresizingMaskIntoConstraints="NO" id="BMJ-4P-XRk">
+                                    <rect key="frame" x="69" y="7" width="16" height="16"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="16" id="n4U-gn-Pcf"/>
+                                        <constraint firstAttribute="width" constant="16" id="qjO-jO-dIq"/>
+                                    </constraints>
+                                </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="原视频" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GYG-BY-uM8">
                                     <rect key="frame" x="12" y="0.0" width="49" height="30"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -50,10 +58,10 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cloud-download" translatesAutoresizingMaskIntoConstraints="NO" id="0PC-Yf-pOb" userLabel="iCloudTagImageView">
-                                    <rect key="frame" x="68" y="4" width="22" height="22"/>
+                                    <rect key="frame" x="297" y="6" width="18" height="18"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="22" id="Wnj-NA-2Zg"/>
-                                        <constraint firstAttribute="width" constant="22" id="mlA-hK-H8b"/>
+                                        <constraint firstAttribute="height" constant="18" id="Wnj-NA-2Zg"/>
+                                        <constraint firstAttribute="width" constant="18" id="mlA-hK-H8b"/>
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tld-mT-prJ">
@@ -65,13 +73,15 @@
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.3001603890728477" colorSpace="calibratedRGB"/>
                             <constraints>
+                                <constraint firstItem="BMJ-4P-XRk" firstAttribute="centerY" secondItem="91K-b7-7X6" secondAttribute="centerY" id="7CM-uu-8ut"/>
+                                <constraint firstItem="tld-mT-prJ" firstAttribute="leading" secondItem="0PC-Yf-pOb" secondAttribute="trailing" constant="8" id="9OL-3z-rcX"/>
                                 <constraint firstItem="0PC-Yf-pOb" firstAttribute="centerY" secondItem="91K-b7-7X6" secondAttribute="centerY" id="Dj2-px-sdb"/>
                                 <constraint firstAttribute="trailing" secondItem="tld-mT-prJ" secondAttribute="trailing" constant="12" id="EuO-0n-q4e"/>
                                 <constraint firstItem="GYG-BY-uM8" firstAttribute="leading" secondItem="91K-b7-7X6" secondAttribute="leading" constant="12" id="Ka3-av-b4Z"/>
                                 <constraint firstAttribute="height" constant="30" id="LpD-FU-sca"/>
                                 <constraint firstAttribute="bottom" secondItem="GYG-BY-uM8" secondAttribute="bottom" id="MnV-q2-DEu"/>
+                                <constraint firstItem="BMJ-4P-XRk" firstAttribute="leading" secondItem="GYG-BY-uM8" secondAttribute="trailing" constant="8" id="auR-IA-tA9"/>
                                 <constraint firstItem="GYG-BY-uM8" firstAttribute="top" secondItem="91K-b7-7X6" secondAttribute="top" id="eJG-KH-QGM"/>
-                                <constraint firstItem="0PC-Yf-pOb" firstAttribute="leading" secondItem="GYG-BY-uM8" secondAttribute="trailing" constant="7" id="pKj-ue-Mi0"/>
                                 <constraint firstItem="tld-mT-prJ" firstAttribute="top" secondItem="91K-b7-7X6" secondAttribute="top" id="wFZ-gk-Hnk"/>
                                 <constraint firstAttribute="bottom" secondItem="tld-mT-prJ" secondAttribute="bottom" id="wKB-PR-P40"/>
                             </constraints>
@@ -290,6 +300,7 @@
     </objects>
     <resources>
         <image name="cloud-download" width="16" height="16"/>
+        <image name="heart" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

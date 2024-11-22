@@ -12,6 +12,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *slimmingCoinText;
 @property (weak, nonatomic) IBOutlet UIButton *buyButton;
 @property (weak, nonatomic) IBOutlet UILabel *leftCoinsLabel;
+@property (weak, nonatomic) IBOutlet UIView *leftBackgroundView;
+@property (weak, nonatomic) IBOutlet UIView *payBackgroundView;
+
 @property (nonatomic, strong) NSString *productId;
 @end
 
@@ -24,12 +27,17 @@
     self.slimmingCoinText.text = [NSString stringWithFormat:@"%d%@", kProductIdContainCoin, slimmingText];
     [self fetchsGoods];
     self.buyButton.hidden = YES;
+    self.title = [NSString localizedStringWithName:@"slimming_coin"];
     
     WEAK_SELF
     [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
         STRONG_SELF
         strongSelf.leftCoinsLabel.text = [NSString virtualCurrencyStringWithValue:value];
     }];
+    self.leftBackgroundView.layer.cornerRadius = 8;
+    self.leftBackgroundView.clipsToBounds = YES;
+    self.payBackgroundView.layer.cornerRadius = 8;
+    self.payBackgroundView.clipsToBounds = YES;
 }
 
 - (void)fetchsGoods {

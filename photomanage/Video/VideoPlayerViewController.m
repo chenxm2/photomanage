@@ -58,16 +58,30 @@
         if (self.downloader != nil ){
             [self.view showToastWithMessage:[NSString localizedStringWithName:@"delete_downloading"]];
         } else {
-            [VIDEO_DATA_MANAGER deleteVideoAsset:self.assetData completionHandler:^(BOOL success, NSError * _Nullable error) {
-                if (success) {
-                    [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
-                    [self.navigationController popToRootViewControllerAnimated:YES];
-                } else {
-                    // do nothing
-                }
-            }];
+            WEAK_SELF
+            if (self.assetData.asset.isFavorite) {
+                [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"delete"] message:[NSString localizedStringWithName:@"delete_favorite_message"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+                    STRONG_SELF
+                    if (confirmed) {
+                        [strongSelf handleDelete];
+                    }
+                }];
+            } else {
+                [self handleDelete];
+            }
         }
     }
+}
+
+- (void)handleDelete {
+    [VIDEO_DATA_MANAGER deleteVideoAsset:self.assetData completionHandler:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees"]];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        } else {
+            // do nothing
+        }
+    }];
 }
 
 #pragma mark - Public Methods

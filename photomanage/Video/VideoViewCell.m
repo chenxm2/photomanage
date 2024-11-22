@@ -17,7 +17,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *compressQuality;
 @property (weak, nonatomic) IBOutlet CustomButtonView *deleteButton;
 @property (nonatomic, strong) AssetData *data;
-@property (weak, nonatomic) IBOutlet UIImageView *icloudTag;
+@property (weak, nonatomic) IBOutlet UIImageView *favoriteTag;
 @property (weak, nonatomic) IBOutlet UIImageView *viewedImage;
 
 @end
@@ -27,9 +27,9 @@
     [super awakeFromNib];
     // Initialization code
     
-    self.contentView.backgroundColor = [UIColor redColor];
+    self.contentView.backgroundColor = [UIColor clearColor];
     self.contentView.clipsToBounds = YES;
-    self.imageView.backgroundColor = [UIColor greenColor];
+    self.imageView.backgroundColor = [UIColor clearColor];
     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
     self.imageView.clipsToBounds = YES;
     self.deleteButton.delegate = self;
@@ -61,10 +61,16 @@
         self.deleteButton.hidden = YES;
     }
     
-    [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:data.asset callback:^(AVAsset * _Nullable result) {
-        STRONG_SELF
-         strongSelf.icloudTag.hidden = (result != nil);
-    }];
+//    [VIDEO_DATA_MANAGER checkIfVideoIsOnlyInCloud:data.asset callback:^(AVAsset * _Nullable result) {
+//        STRONG_SELF
+//         strongSelf.icloudTag.hidden = (result != nil);
+//    }];
+    
+    if (data.asset.isFavorite) {
+        self.favoriteTag.hidden = NO;
+    } else {
+        self.favoriteTag.hidden = YES;
+    }
 }
 
 -(void)onButtonTap:(CustomButtonView *)view {

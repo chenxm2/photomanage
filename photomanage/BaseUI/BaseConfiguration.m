@@ -23,7 +23,7 @@
 }
 
 + (UIColor *)viewBackgroundColor {
-    return [UIColor whiteColor]; // 视图的默认背景颜色
+    return [ColorUtility colorWithDecimalRed:240 green:238 blue:247]; // 视图的默认背景颜色
 }
 
 + (UIColor *)darkGrayColor {
