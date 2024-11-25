@@ -41,6 +41,8 @@ extern NSUInteger const kOneVideoCost;
 
 - (BOOL)subVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion;
 
+- (BOOL)addVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion;
+
 - (void)clearCoins:(CallBack)callBack;
 - (void)clearCoinsAndState:(CallBack)callBack;
 @end

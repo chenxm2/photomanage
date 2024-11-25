@@ -12,6 +12,7 @@
 #import "Compress/Compresser.h"
 #import "ICloudVideoDownloader.h"
 #import "StoreManager.h"
+#import "GoodsViewController.h"
 
 static NSString * const kLogTag = @"VideoCompressViewController";
 
@@ -169,9 +170,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
             STRONG_SELF
             if (value < [strongSelf caculateCostCoins]) {
-                [self.view showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+                [GoodsViewController goToGoodsViewController:self.navigationController];
             } else {
-                [self showSaveToAlbumAlert];
+//                [self showSaveToAlbumAlert];
+                NSInteger optSize = [strongSelf caculateCostCoins];
+                [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
             }
         }];
         
@@ -198,12 +202,11 @@ static NSString * const kLogTag = @"VideoCompressViewController";
         optSize = 0;
     }
     
-    NSString *message = [NSString localizedStringWithFormat:[NSString localizedStringWithName:@"save_to_album_message"], compressSize, orgSize, optSize, optSize];
+    NSString *message = [NSString localizedStringWithFormat:@"save_to_album_message", compressSize, orgSize, optSize, optSize];
     
     [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_to_album"] message:message confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
         STRONG_SELF
         if (confirmed) {
-            [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
         }
     }];
 }
@@ -377,7 +380,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             }];
             [GCDUtility executeOnMainThread:^{
                 [ActivityIndicatorUtility hideActivityIndicatorInView:strongSelf.view];
-                [strongSelf showHintAlert];
+                [strongSelf showHintAlertWithSize:costCoins];
             }];
             
             [STORE_MANAGER subVirtualCurrency:costCoins completion:^(BOOL result) {
@@ -391,23 +394,48 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     }];
 }
 
-- (void)showHintAlert {
+- (void)showHintAlertWithSize:(NSInteger)size {
     WEAK_SELF
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_success"] message:[NSString localizedStringWithName:@"save_success_tip"] confirmButtonTitle:[NSString localizedStringWithName:@"delete"] cancelButtonTitle:[NSString localizedStringWithName:@"not_delete"]  completionHandler:^(BOOL confirmed) {
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_success"] message:[NSString localizedStringWithFormat:@"save_success_tip", size] confirmButtonTitle:[NSString localizedStringWithName:@"delete"] cancelButtonTitle:[NSString localizedStringWithName:@"not_delete"]  completionHandler:^(BOOL confirmed) {
         STRONG_SELF
         if (confirmed) {
             [VIDEO_DATA_MANAGER deleteVideoAsset:self.orgData completionHandler:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
-                    [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"delete_succees_detail"]];
-                    [strongSelf.navigationController popViewControllerAnimated:YES];
+                    
+                    if ([strongSelf checkShowFirstGuideIfNeed]) {
+                        // do nothing
+                        [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithFormat:@"delete_succees_detail_first", size]];
+                    } else {
+                        [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithFormat:@"delete_succees_detail", size]];
+                        [strongSelf.navigationController popViewControllerAnimated:YES];
+                    }
                 } else {
-                    [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
+                    if ([strongSelf checkShowFirstGuideIfNeed]) {
+                        [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithFormat:@"move_to_todelete_first", size]];
+                    } else {
+                        [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
+                    }
+                    
                 }
             }];
         } else {
-            [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
+            if ([strongSelf checkShowFirstGuideIfNeed]) {
+                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithFormat:@"move_to_todelete_first", size]];
+            } else {
+                [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"move_to_todelete"]];
+            }
         }
     }];
+}
+
+- (BOOL)checkShowFirstGuideIfNeed {
+    BOOL res = NO;
+    if (![UserDefaultsManager boolForKey:kHadShowGuidance]) {
+        [GoodsViewController goToGoodsViewController:self.navigationController];
+        res = YES;
+    }
+    
+    return res;
 }
 
 - (void)deleteVideoAsset:(PHAsset *)asset completionHandler:(void(^)(BOOL success, NSError * _Nullable error))completion {

@@ -9,6 +9,7 @@
 #import "KeychainHelper.h"
 #import <RMStore/RMStore.h>
 
+
 NSString * const kProductId = @"com.private.test.photomanage.product1";
 NSUInteger const kProductIdContainCoin = 100;
 NSUInteger const kOnePhotoCost = 1;

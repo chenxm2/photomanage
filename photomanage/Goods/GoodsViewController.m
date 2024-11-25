@@ -20,6 +20,11 @@
 
 @implementation GoodsViewController
 
++ (void)goToGoodsViewController:(UINavigationController *)navigationController {
+    GoodsViewController *controller = [[GoodsViewController alloc] init];
+    [navigationController pushViewController:controller animated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
@@ -44,7 +49,9 @@
     
     [STORE_MANAGER addObserver:self];
     
+    [UserDefaultsManager setBool:YES forKey:kHadShowGuidance];
 }
+
 
 - (void)fetchsGoods {
     NSMutableSet<NSString *> *param = [[NSMutableSet alloc] init];

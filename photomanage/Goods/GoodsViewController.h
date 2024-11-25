@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GoodsViewController : BaseViewController
-
++ (void)goToGoodsViewController:(UINavigationController *)navigationController;
 @end
 
 NS_ASSUME_NONNULL_END

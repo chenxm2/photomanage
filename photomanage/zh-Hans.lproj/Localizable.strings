@@ -24,7 +24,8 @@
 "handle_compress" = "压缩处理";
 "play_video" = "播放";
 "delete_succees" = "删除成功";
-"delete_succees_detail" = "删除成功，结果可在已压缩Tab分类中查看";
+"delete_succees_detail" = "删除成功，优化空间%dMB";
+"delete_succees_detail_first" = "删除成功,首次使用请阅读使用说明";
 "permission_fail" = "权限请求失败，请到系统设打开权限才能正常使用";
 "no_need_delete" = "未保存的到相册的视频无需删";
 "back_block_by_compressing" = "视频压缩中，不可返回";
@@ -32,10 +33,11 @@
 "download_to_compress" = "您的视频在仅在icloud中，需要访问网络，才能压缩~";
 "not_dupliacte" = "处理中，请勿重复点击";
 "save_success" = "保存成功";
-"save_success_tip" = "压缩过的视频已经保存在系统相删《压缩视频》相簿中，建议您删除原视频!!!";
+"save_success_tip" = "保存花费了%d瘦币，可在系统相册《压缩视频》相簿中查看，建议您删除原视频以节省空间!!!";
 "delete" = "删除";
 "not_delete" = "不删除";
-"move_to_todelete" = "视频不删除，被移至首页待删除分类中";
+"move_to_todelete" = "原视频不删除，在首页待删除分类中";
+"move_to_todelete_first" = "原视频不删除,首次使用请阅读使用说明";
 "setting" = "设置";
 "version" = "版本";
 "usage" = "使用条款";
@@ -43,4 +45,5 @@
 "about" = "关于";
 "delete_favorite_message" = "视频为收藏视频，确定要删除？";
 "buy_coins" = "购买3000瘦币";
+"coins_cost" = "本次保存花费了%d瘦币";
 "save_to_album_message" = "您保存压缩视频大小为%.2fMB，原视频大小为%.2fMB，总共节约空间%dMB，需要花费瘦币%d，确认要保存？";

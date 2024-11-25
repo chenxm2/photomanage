@@ -7,6 +7,8 @@
 
 #import "String+Bussiness.h"
 
+NSString * const kHadShowGuidance = @"hadShowGuidance";
+
 @implementation NSString (Bussiness)
 +(NSString *)fileSizeStringWithNumber:(NSNumber *)fileSize
 {

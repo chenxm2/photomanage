@@ -180,8 +180,7 @@ NSString * const kSortType = @"VideosortType";
 }
 
 - (void)leftButtonClicked:(id)button {
-    GoodsViewController *controller = [[GoodsViewController alloc] init];
-    [self.navigationController pushViewController:controller animated:YES];
+    [GoodsViewController goToGoodsViewController:self.navigationController];
 }
 
 - (void)fetchPhotosIfAuthorized {
@@ -412,6 +411,12 @@ NSString * const kSortType = @"VideosortType";
             [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
         }
     }
+}
+
+- (IBAction)addCoins:(id)sender {
+    [STORE_MANAGER addVirtualCurrency:100 completion:^(BOOL result) {
+        
+    }];
 }
 
 /*
