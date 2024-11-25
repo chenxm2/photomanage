@@ -28,7 +28,12 @@
     
     // 根据子类的配置显示或隐藏左右按钮
     [self configureButtons];
-    
+
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
