@@ -20,12 +20,12 @@
 @end
 
 @implementation Compresser
-- (void)compressVideoWithAsset:(AVAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion {
+- (void)compressVideoWithAsset:(AVAsset *)asset assetData:(AssetData *)assetData preset:(NSString *)preset completion:(CompressResultCallBack)completion {
     self.compressing = YES;
     WEAK_SELF
     [GCDUtility executeOnSerialQueue:^{
         STRONG_SELF
-        [strongSelf finalCompressActionWithAsset:asset preset:preset completion:completion];
+        [strongSelf finalCompressActionWithAsset:asset assetData:(AssetData *)assetData preset:preset completion:completion];
     }];
     
     [GCDUtility executeOnMainThread:^{
@@ -63,13 +63,13 @@
     return res;
 }
 
-- (BOOL)configVideoWriterInputWithAsset:(AVAsset *)asset preset:(NSString *)preset {
+- (BOOL)configVideoWriterInputWithAsset:(AVAsset *)asset assetData:(AssetData *)assetData  preset:(NSString *)preset {
     BOOL res = YES;
 
     AVAssetTrack *videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
     // 获取原始码率
     CGAffineTransform videoTransform = videoTrack.preferredTransform;  // 获取变换矩阵
-    CGFloat originalBitRate = [self calculateBitRateForVideoTrack:videoTrack];
+    CGFloat originalBitRate = [self calculateBitRateForVideoTrack:videoTrack assetData:assetData];
     // 设置压缩参数，按比例压缩码率
     NSDictionary *videoSettings = [self videoSettingsForPreset:preset videoTrack:videoTrack originalBitRate:originalBitRate];
     
@@ -133,14 +133,22 @@
     return res;
 }
 
+
 - (BOOL)configAudioWriterInputWithAsset:(AVAsset *)asset {
     BOOL res = YES;
     // 创建音频写入输入
     if ([[asset tracksWithMediaType:AVMediaTypeAudio] count] > 0) {
+        
+        NSUInteger channelCount = 2;
+        
         AVAssetTrack *audioTrack = [[asset tracksWithMediaType:AVMediaTypeAudio] firstObject];
+        channelCount = audioTrack.formatDescriptions.count;
+        channelCount = MIN(channelCount, 2); // 限制最大通道数为 2（AAC 格式支持）
+        
+        
         NSDictionary *audioSettings = @{
             AVFormatIDKey: @(kAudioFormatMPEG4AAC),
-            AVNumberOfChannelsKey: @(audioTrack.formatDescriptions.count),
+            AVNumberOfChannelsKey: @(channelCount),
             AVSampleRateKey: @(44100),
             AVEncoderBitRateKey: @(128000)
         };
@@ -156,7 +164,7 @@
     return res;
 }
 
-- (void)finalCompressActionWithAsset:(AVAsset *)asset preset:(NSString *)preset completion:(CompressResultCallBack)completion {
+- (void)finalCompressActionWithAsset:(AVAsset *)asset assetData:(AssetData *)assetData preset:(NSString *)preset completion:(CompressResultCallBack)completion {
         
     // 定义输出路径
     NSString *outputPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"compressedVideo.mp4"];
@@ -175,7 +183,7 @@
     }
     
     
-    if (![self configVideoWriterInputWithAsset:asset preset:preset]) {
+    if (![self configVideoWriterInputWithAsset:asset assetData:assetData preset:preset]) {
         [self callOnMainThreadCompletion:completion succeed:NO compressURL:nil errMsg:@"configVideoWriterInputWithAsset fail"];
         return;
     }
@@ -307,12 +315,16 @@
     }
 }
 
-- (CGFloat)calculateBitRateForVideoTrack:(AVAssetTrack *)videoTrack {
+- (CGFloat)calculateBitRateForVideoTrack:(AVAssetTrack *)videoTrack assetData:(AssetData *)assetData {
     CGSize videoSize = videoTrack.naturalSize;
     CMTime duration = videoTrack.timeRange.duration;
     float videoDurationInSeconds = CMTimeGetSeconds(duration);
     // 用视频大小和持续时间估算码率
     float estimatedSize = videoTrack.totalSampleDataLength;
+    if (estimatedSize <= 0) {
+        estimatedSize = [assetData.fileSize floatValue] * 1024 * 1024;
+    }
+    
     CGFloat bitRate = (estimatedSize * 8) / videoDurationInSeconds; // bitRate = 文件大小 * 8 / 时间 (bps)
     
     return bitRate;

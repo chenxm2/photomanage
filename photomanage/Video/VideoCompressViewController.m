@@ -284,7 +284,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
     
     [ScreenUility setForceScreenOn:YES];
     WEAK_SELF
-    [self.compresser compressVideoWithAsset:avAsset preset:preset completion:^(BOOL succeed, NSURL * _Nullable fileURL, NSString * _Nonnull errMsg) {
+    [self.compresser compressVideoWithAsset:avAsset assetData:data preset:preset completion:^(BOOL succeed, NSURL * _Nullable fileURL, NSString * _Nonnull errMsg) {
         [beginCompressHUD hideAnimated:YES];
         [ScreenUility setForceScreenOn:NO];
         STRONG_SELF
