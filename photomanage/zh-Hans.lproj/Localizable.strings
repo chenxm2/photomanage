@@ -33,11 +33,11 @@
 "download_to_compress" = "您的视频在仅在icloud中，需要访问网络，才能压缩~";
 "not_dupliacte" = "处理中，请勿重复点击";
 "save_success" = "保存成功";
-"save_success_tip" = "保存花费了%d瘦币，可在系统相册《压缩视频》相簿中查看，建议您删除原视频以节省空间!!!";
+"save_success_tip" = "保存花费了%d瘦币，建议您删除原视频以节省空间!!!";
 "delete" = "删除";
-"not_delete" = "不删除";
-"move_to_todelete" = "原视频不删除，在首页待删除分类中";
-"move_to_todelete_first" = "原视频不删除,首次使用请阅读使用说明";
+"not_delete" = "暂不";
+"move_to_todelete" = "原视频暂不删除，在首页待删除分类中";
+"move_to_todelete_first" = "原视频暂不删除,首次使用请阅读使用说明";
 "setting" = "设置";
 "version" = "版本";
 "usage" = "使用条款";
