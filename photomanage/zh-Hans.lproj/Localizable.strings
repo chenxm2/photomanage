@@ -47,3 +47,8 @@
 "buy_coins" = "购买3000瘦币";
 "coins_cost" = "本次保存花费了%d瘦币";
 "save_to_album_message" = "您保存压缩视频大小为%.2fMB，原视频大小为%.2fMB，总共节约空间%dMB，需要花费瘦币%d，确认要保存？";
+
+"confirm_back" = "确定要退出？";
+"not_save_message" = "压缩的视频未保存至相册，退出后需要重新压缩~";
+
+

@@ -484,25 +484,44 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 }
 
 - (void)leftButtonTapped {
-    if ([self.compresser isCompressing]) {
-        [self.view showToastWithMessage:[NSString localizedStringWithName:@"back_block_by_compressing"]];
-    } else {
-        if (self.downloader != nil) {
-            [self.downloader cancel];
-        }
+    if ([self checkCanBack]) {
         [super leftButtonTapped];
     }
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ([self.compresser isCompressing]) {
-        return NO;
-    } else if (self.downloader) {
-        return NO;
-    } else {
-        return [super gestureRecognizerShouldBegin:gestureRecognizer];
-    }
+    return [self checkCanBack];
 }
+
+- (BOOL)checkCanBack {
+    BOOL res = YES;
+    
+    if (self.downloader != nil) {
+        [self.downloader cancel];
+        self.downloader = nil;
+    }
+    
+    if ([self.compresser isCompressing]) {
+        res = NO;
+        [self.view showToastWithMessage:[NSString localizedStringWithName:@"back_block_by_compressing"]];
+    } else if (self.compressedURL != nil) {
+        [self showNotSaveAlert];
+        res = NO;
+    }
+    
+    return res;
+}
+
+- (void)showNotSaveAlert {
+    WEAK_SELF
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"confirm_back"] message:[NSString localizedStringWithName:@"not_save_message"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        STRONG_SELF
+        if (confirmed) {
+            [strongSelf.navigationController popViewControllerAnimated:YES];
+        }
+    }];
+}
+
 
 /*
 #pragma mark - Navigation
