@@ -119,22 +119,22 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 - (void)initPickerView {
     // 初始化视频清晰度选项数组
     self.qualityOptions = @[
+        kQualitySupperHigh,
         kQualityHigh,
         kQualityMiddle,
-        kQualityLow,
     ];
 }
 
 -(void)onButtonTap:(CustomButtonView *)view {
     if (view == self.highQuqlityCompressButton) {
-        self.selectedPreset = kQualityHigh;
+        self.selectedPreset = kQualitySupperHigh;
         [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
     } else if (view == self.midQuqlityCompressButton) {
-        self.selectedPreset = kQualityMiddle;
+        self.selectedPreset = kQualityHigh;
         [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
         
     } else if (view == self.lowQuqlityCompressButton) {
-        self.selectedPreset = kQualityLow;
+        self.selectedPreset = kQualityMiddle;
         [self showConfirmationAlertWithData:self.orgData preset:self.selectedPreset];
     } else if (view == self.playOrgVideoButton) {
         [self playOrgVideoClicked];
@@ -297,7 +297,7 @@ static NSString * const kLogTag = @"VideoCompressViewController";
             strongSelf.compressedSizeLabel.text = [NSString fileSizeStringWithNumber:[NSNumber numberWithFloat:compressedSizeMB]];
             strongSelf.compressedURL = fileURL;
             strongSelf.compressedData = nil;
-            strongSelf.compressQualityLabel.text = preset;
+            strongSelf.compressQualityLabel.text = [NSString getQualityString:preset];
         } else {
             [strongSelf.view showToastWithMessage:@""];
         }

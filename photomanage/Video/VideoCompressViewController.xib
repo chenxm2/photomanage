@@ -97,7 +97,7 @@
                                         <constraint firstAttribute="width" constant="66" id="Lgc-HE-LOv"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="高清压缩"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="超清压缩"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="fontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>
@@ -114,7 +114,7 @@
                                         <constraint firstAttribute="width" constant="66" id="yxO-6A-pfe"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="标清压缩"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="高清压缩"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="fontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>
@@ -131,7 +131,7 @@
                                         <constraint firstAttribute="width" constant="66" id="pDi-El-TNO"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="低清压缩"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="buttonText" value="标清压缩"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="fontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>

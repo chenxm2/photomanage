@@ -8,9 +8,7 @@
 #import "AssetBindData.h"
 NSString * const kAssetBindData = @"AssetBindData";
 
-NSString * const kQualityLow = @"低清";
-NSString * const kQualityMiddle = @"标清";
-NSString * const kQualityHigh = @"高清";
+
 
 @implementation AssetBindData
 - (void)setOrgLocalIdentifier:(NSString *)orgLocalIdentifier {
@@ -57,11 +55,7 @@ NSString * const kQualityHigh = @"高清";
 }
 
 - (NSString *)getQualityString {
-    if (self.compressQulity == nil) {
-        return @"原视频";
-    } else {
-        return self.compressQulity;
-    }
+    return [NSString getQualityString:self.compressQulity];
 }
 
 - (NSString *)description {

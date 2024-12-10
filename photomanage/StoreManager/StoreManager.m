@@ -10,11 +10,9 @@
 #import <RMStore/RMStore.h>
 
 
-NSString * const kProductId = @"com.private.test.photomanage.product1";
-NSUInteger const kProductIdContainCoin = 100;
-NSUInteger const kOnePhotoCost = 1;
-NSUInteger const kOneVideoCost = 10;
-NSUInteger const kFirstFreeVirtualCurrency = 100;
+NSString * const kProductId = @"com.xiaoma.slimcoin";
+NSUInteger const kProductIdContainCoin = 3000;
+NSUInteger const kFirstFreeVirtualCurrency = 1000;
 
 NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
 

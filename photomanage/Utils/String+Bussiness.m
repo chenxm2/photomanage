@@ -7,7 +7,11 @@
 
 #import "String+Bussiness.h"
 
+
 NSString * const kHadShowGuidance = @"hadShowGuidance";
+NSString * const kQualityMiddle = @"kQualityMiddle";
+NSString * const kQualityHigh = @"kQualityHigh";
+NSString * const kQualitySupperHigh = @"kQualitySupperHigh";
 
 @implementation NSString (Bussiness)
 +(NSString *)fileSizeStringWithNumber:(NSNumber *)fileSize
@@ -24,4 +28,19 @@ NSString * const kHadShowGuidance = @"hadShowGuidance";
 + (NSString *)virtualCurrencyStringWithValue:(NSUInteger)virtualCurrency {
     return [NSString stringWithFormat:@"%ld", virtualCurrency];
 }
+
++ (NSString *)getQualityString:(NSString *)quality {
+    NSString *res = [NSString localizedStringWithName:@"quality_orig"];
+    if ([kQualityMiddle isEqualToString:quality]) {
+         res = [NSString localizedStringWithName:@"quality_middle"];
+    } if ([kQualityHigh isEqualToString:quality]) {
+         res = [NSString localizedStringWithName:@"quality_high"];
+        
+    } if ([kQualitySupperHigh isEqualToString:quality]) {
+        res = [NSString localizedStringWithName:@"quality_supper_high"];
+    }
+    
+    return res;
+}
+
 @end

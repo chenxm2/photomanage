@@ -10,10 +10,6 @@
 NS_ASSUME_NONNULL_BEGIN
 extern NSString * const kAssetBindData;
 
-extern NSString * const kQualityLow;
-extern NSString * const kQualityMiddle;
-extern NSString * const kQualityHigh;
-
 @interface AssetBindData : NSObject<YYModel>
 @property (nonatomic, strong) NSString *orgLocalIdentifier; //当前频的id
 @property (nonatomic, strong) NSString *compressedlocalIdentifier; //与这个视频关联的压缩视频id

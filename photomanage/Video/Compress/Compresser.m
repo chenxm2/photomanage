@@ -348,15 +348,15 @@
     CGSize outputSize;
     CGFloat videoBitRate = originalBitRate * 0.6; // 默认压缩到 70%
     NSInteger frameRate = 30;
-    if ([kQualityHigh isEqual:preset]) {
+    if ([kQualitySupperHigh isEqual:preset]) {
         videoBitRate = originalBitRate * 0.9; // 高保真，压缩到 90% 原码率
         frameRate = 30; // 高帧率
         outputSize = videoSize;
-    } else if ([kQualityMiddle isEqual:preset]) {
+    } else if ([kQualityHigh isEqual:preset]) {
         videoBitRate = originalBitRate * 0.6; // 中等质量，压缩到 60% 原码率
         frameRate = 24; // 中等帧率
         outputSize = CGSizeMake(videoSize.width * 0.8, videoSize.height * 0.8); // 减小到 80% 原始分辨率
-    } else if ([kQualityLow isEqual:preset]) {
+    } else if ([kQualityMiddle isEqual:preset]) {
         videoBitRate = originalBitRate * 0.3; // 低质量，压缩到 30% 原码率
         frameRate = 15;
         outputSize = CGSizeMake(videoSize.width * 0.5, videoSize.height * 0.5);
