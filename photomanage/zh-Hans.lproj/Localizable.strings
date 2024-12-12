@@ -44,7 +44,7 @@
 "privacy" = "隐私政策";
 "about" = "关于";
 "delete_favorite_message" = "视频为收藏视频，确定要删除？";
-"buy_coins" = "购买3000瘦币";
+"buy_coins" = "购买%d瘦币";
 "coins_cost" = "本次保存花费了%d瘦币";
 "save_to_album_message" = "您保存压缩视频大小为%.2fMB，原视频大小为%.2fMB，总共节约空间%dMB，需要花费瘦币%d，确认要保存？";
 "confirm_back" = "确定要退出？";
@@ -54,5 +54,11 @@
 "quality_middle" = "标清";
 "quality_high" = "高清";
 "quality_supper_high" = "超清";
+
+
+"buy_resume" = "购买恢复";
+"buy_resume_message" = "检测到您之前购买流程未完成，现需要进行恢复，请确保网络正常，点取消将视为放弃的恢复，确认恢复吗？";
+"buy_resume_success" = "购买恢复成功";
+"buy_resume_fail" = "购买恢复失败";
 
 

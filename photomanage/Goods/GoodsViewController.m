@@ -13,7 +13,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *leftCoinsLabel;
 @property (weak, nonatomic) IBOutlet UIView *leftBackgroundView;
 @property (weak, nonatomic) IBOutlet UIView *payBackgroundView;
+
 @property (weak, nonatomic) IBOutlet CustomButtonView *buyButtonView;
+@property (strong, nonatomic) NSString *fullBuyText;
 
 @property (nonatomic, strong) NSString *productId;
 @end
@@ -44,18 +46,16 @@
     self.leftBackgroundView.clipsToBounds = YES;
     self.payBackgroundView.layer.cornerRadius = 8;
     self.payBackgroundView.clipsToBounds = YES;
-    self.buyButtonView.hidden = YES;
     self.buyButtonView.delegate = self;
-    
     [STORE_MANAGER addObserver:self];
-    
     [UserDefaultsManager setBool:YES forKey:kHadShowGuidance];
+    
 }
 
 
 - (void)fetchsGoods {
     NSMutableSet<NSString *> *param = [[NSMutableSet alloc] init];
-    [param addObject:kProductId];
+    [param addObject:kProductIdOnce];
     WEAK_SELF
     [[StoreManager sharedManager] fetchAvailableProducts:param success:^(NSArray<SKProduct *> * _Nonnull products) {
         LogInfo(@"fetchAvailableProducts success = %@",  products);
@@ -69,15 +69,17 @@
             LogInfo(@"fetchAvailableProducts  %@, %@",  res , product.productIdentifier);
             
             strongSelf.productId = product.productIdentifier;
-            NSString *buy = [NSString localizedStringWithName:@"buy_coins"];
-            NSString *fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
-            strongSelf.buyButtonView.hidden = NO;
-            strongSelf.buyButtonView.buttonText = fullBuyText;
-            
+            NSString *buy = [NSString localizedStringWithFormat:@"buy_coins", kProductIdContainCoin];
+            self.fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];;
+            strongSelf.productId = kProductIdOnce;
         }
     } failure:^(NSError * _Nonnull error) {
         LogInfo(@"fetchAvailableProducts fail = %@", error);
     }];
+}
+
+- (void)updateButtonText:(BOOL)freeForever isInterrupt:(BOOL)isInterrupt buyString:(NSString *)buyString {
+    
 }
 
 - (void)dealloc {
@@ -105,5 +107,6 @@
     // Pass the selected object to the new view controller.
 }
 */
+
 
 @end

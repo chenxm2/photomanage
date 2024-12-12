@@ -10,11 +10,20 @@
 #import <RMStore/RMStore.h>
 
 
-NSString * const kProductId = @"com.xiaoma.slimcoin";
+NSString * const kProductIdOnce = @"com.xiaoma.slimcoin";
+NSString * const kProductIdForever = @"com.xiaoma.slimcoin.forever";
 NSUInteger const kProductIdContainCoin = 3000;
 NSUInteger const kFirstFreeVirtualCurrency = 1000;
 
+NSString * const kIAPReceiptData = @"kIAPReceiptData";
+NSString * const kProductKey = @"kProductKey";
+NSString * const kReceiptDataKey = @"kReceiptDataKey";
 NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
+
+//NSString * const kVerifyReceiptURL = @"https://buy.itunes.apple.com/verifyReceipt";
+NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyReceipt";
+
+
 
 @interface StoreManager () <RMStoreObserver, RMStoreReceiptVerificator>
 @property (nonatomic, strong) RMStore *store;
@@ -98,6 +107,34 @@ NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
     return YES;
 }
 
+- (BOOL)isLastPurchaseInterrupt {
+    return [self retrieveReceiptData] != nil;
+}
+
+- (BOOL)isFreeForever {
+    return YES;
+}
+
+- (void)resumeInterruptProductSuccess:(void (^)(void))successBlock
+                              failure:(void (^)(NSError *error))failureBlock {
+    NSDictionary *dic = [self retrieveReceiptData];
+    if (dic != nil) {
+        NSString *receiptDataString = [dic objectForKey:kReceiptDataKey];
+        NSString *productId = [dic objectForKey:kProductKey];
+        NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:receiptDataString options:0];
+        [self verifyTransactionWithData:decodedData productId:productId success:^(NSString *productId) {
+            if (successBlock) {
+                successBlock();
+            }
+        } failure:^(NSError *error) {
+                    if (failureBlock) {
+                        failureBlock(error);
+                    }
+        }];
+    }
+}
+
+
 // Purchase a product
 - (BOOL)purchaseProduct:(NSString *)productIdentifier
                 success:(void (^)(void))successBlock
@@ -127,108 +164,171 @@ NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
     return YES;
 }
 
-// Verify transaction using Apple’s validation service
-- (void)verifyTransaction:(SKPaymentTransaction *)transaction
-                  success:(void (^)())successBlock
-                  failure:(void (^)(NSError *error))failureBlock {
-    
-    
-    if (successBlock) {
-        // todo:修复验证逻辑，callBack也一定要主线程
-        [GCDUtility executeOnMainThread:^{
-                    successBlock();
-        }];
-        return;
-    }
-    // Get the receipt data directly from the transaction
-    NSData *receiptData = transaction.transactionReceipt;
 
+- (void)verifyTransactionWithData:(NSData *)receiptData productId:(NSString *)productId
+                  success:(void (^)(NSString *productId))successBlock
+                  failure:(void (^)(NSError *error))failureBlock {
     if (!receiptData) {
-        // Handle receipt not found
+        // 收据不存在的处理
         if (failureBlock) {
             NSError *error = [NSError errorWithDomain:@"StoreManagerErrorDomain"
                                                  code:1001
-                                             userInfo:@{NSLocalizedDescriptionKey : @"Receipt data not found."}];
-            failureBlock(error);
+                                             userInfo:@{NSLocalizedDescriptionKey : @"Receipt data not found"}];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failureBlock(error);
+            });
         }
         return;
     }
 
-    // Convert receipt data to base64 string
+    // 将收据数据转换为 Base64 字符串
     NSString *receiptString = [receiptData base64EncodedStringWithOptions:0];
 
-    // Create the request to Apple’s server
-    NSURL *url = [NSURL URLWithString:@"https://buy.itunes.apple.com/verifyReceipt"]; // For production
+    // 创建请求体
+    NSDictionary *requestBody = @{
+        @"receipt-data": receiptString,
+    };
+    
+    NSError *jsonError;
+    NSData *requestData = [NSJSONSerialization dataWithJSONObject:requestBody options:0 error:&jsonError];
+
+    if (jsonError) {
+        NSLog(@"[StoreManager] Failed to serialize request body: %@", jsonError.localizedDescription);
+        if (failureBlock) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failureBlock(jsonError);
+            });
+        }
+        return;
+    }
+
+    // 沙盒环境的验证 URL
+    NSURL *url = [NSURL URLWithString:kVerifyReceiptURL];
+    NSLog(@"[StoreManager] Using URL: %@", url);
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = @"POST";
-    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:@{@"receipt-data": receiptString}
-                                                    options:0
-                                                      error:nil];
-    request.allHTTPHeaderFields = @{@"Content-Type": @"application/json"};
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.HTTPBody = requestData;
 
-    // Send the request
-    NSURLSession *session = [NSURLSession sharedSession];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSLog(@"[StoreManager] Sending request with body: %@", [[NSString alloc] initWithData:requestData encoding:NSUTF8StringEncoding]);
+    
+    // 使用 NSURLSession 发送验证请求
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
+            [self saveReceiptData:receiptData productId:productId];
+            NSLog(@"[StoreManager] Request failed with error: %@", error.localizedDescription);
             if (failureBlock) {
-                failureBlock(error);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failureBlock(error);
+                });
+            }
+            return;
+        }
+        
+        [self removeReceiptData];
+        // 打印响应数据
+        NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"[StoreManager] Response: %@", responseString);
+
+        NSError *jsonResponseError;
+        NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonResponseError];
+
+        if (jsonResponseError) {
+            NSLog(@"[StoreManager] Failed to parse response JSON: %@", jsonResponseError.localizedDescription);
+            if (failureBlock) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failureBlock(jsonResponseError);
+                });
             }
             return;
         }
 
-        // Parse the response
-        NSError *jsonError;
-        NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-
-        if (jsonError) {
-            if (failureBlock) {
-                failureBlock(jsonError);
-            }
-            return;
-        }
-
-        // Check the status of the response
+        // 解析状态码
         NSNumber *status = jsonResponse[@"status"];
-        if ([status integerValue] == 0) {
-            // Receipt is valid, check transactions
-            NSArray *latestReceiptInfo = jsonResponse[@"latest_receipt_info"];
-            BOOL transactionFound = NO;
+        NSLog(@"[StoreManager] Validation status: %@", status);
 
-            for (NSDictionary *transactionInfo in latestReceiptInfo) {
-                // Compare the transaction ID or product ID to verify
-                if ([transactionInfo[@"transaction_id"] isEqualToString:transaction.transactionIdentifier] &&
-                    [transactionInfo[@"product_id"] isEqualToString:transaction.payment.productIdentifier]) {
-                    transactionFound = YES;
-                    break;
-                }
-            }
-
-            if (transactionFound) {
-                // Verified transaction successfully
-                if (successBlock) {
-                    successBlock();
-                }
-            } else {
-                // Transaction not found in the receipt
-                NSError *validationError = [NSError errorWithDomain:@"StoreManagerErrorDomain"
-                                                                code:1002
-                                                            userInfo:@{NSLocalizedDescriptionKey : @"Transaction not found in receipt."}];
-                if (failureBlock) {
-                    failureBlock(validationError);
-                }
+        if (status.integerValue == 0) {
+            NSLog(@"[StoreManager] Receipt validation succeeded.");
+            // 验证成功
+            if (successBlock) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successBlock(productId);
+                });
             }
         } else {
-            // Receipt is invalid, handle error based on status code
+            // 根据状态码处理失败情况
+            NSString *errorMessage = [NSString stringWithFormat:@"Receipt validation failed with status: %@", status];
+            NSLog(@"[StoreManager] %@", errorMessage);
+
             NSError *validationError = [NSError errorWithDomain:@"StoreManagerErrorDomain"
-                                                            code:[status integerValue]
-                                                        userInfo:@{NSLocalizedDescriptionKey : @"Receipt validation failed."}];
+                                                            code:status.integerValue
+                                                        userInfo:@{NSLocalizedDescriptionKey : errorMessage}];
             if (failureBlock) {
-                failureBlock(validationError);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failureBlock(validationError);
+                });
             }
         }
     }];
 
     [task resume];
+}
+
+- (void)verifyTransaction:(SKPaymentTransaction *)transaction
+                  success:(void (^)(void))successBlock
+                  failure:(void (^)(NSError *error))failureBlock {
+    
+    // 获取收据文件路径
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];
+    [self verifyTransactionWithData:receiptData productId:transaction.payment.productIdentifier success:^(NSString *productId) {
+        if (successBlock) {
+            successBlock();
+        }
+        
+    } failure:^(NSError *error) {
+        if (failureBlock) {
+            failureBlock(error);
+        }
+    }];
+}
+
+// 保存 receiptData 到本地存储
+- (void)saveReceiptData:(NSData *)receiptData productId:(NSString *)productId {
+    if (receiptData) {
+        // 将 receiptData 转换为 base64 字符串
+        NSString *base64Receipt = [receiptData base64EncodedStringWithOptions:0];
+        NSDictionary *receiptInfo = @{
+                kReceiptDataKey: base64Receipt,
+                kProductKey: productId,
+                
+        };
+        
+        [UserDefaultsManager setObject:receiptInfo forKey:kIAPReceiptData];
+        [self notifyLastPurchaseInterruptChange];
+    }
+}
+
+// 从本地存储读取 receiptData
+- (NSDictionary *)retrieveReceiptData {
+    return [UserDefaultsManager objectForKey:kIAPReceiptData];
+}
+
+- (void)removeReceiptData {
+    [UserDefaultsManager removeObjectForKey:kIAPReceiptData];
+    [self notifyLastPurchaseInterruptChange];
+}
+
+- (void)notifyLastPurchaseInterruptChange {
+    [GCDUtility executeOnMainThread:^{
+        BOOL isLastPurchaseInterrupt = [self isLastPurchaseInterrupt];
+        for (id<StoreManagerObserver> observer in self.observers) {
+            if ([observer respondsToSelector:@selector(onLastPurchaseInterrupt:)]) {
+                [observer onLastPurchaseInterrupt:isLastPurchaseInterrupt];
+            }
+        }
+    }];
 }
 
 // Get unique device identifier
@@ -358,7 +458,7 @@ NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
 - (NSInteger)virtualCurrencyForProduct:(NSString *)productIdentifier {
     // Add logic to determine the virtual currency amount for the given product
     // Example:
-    if ([productIdentifier isEqualToString:kProductId]) {
+    if ([productIdentifier isEqualToString:kProductIdOnce]) {
         return kProductIdContainCoin; // 100 units for product 1
     }
     return 0; // Default to 0 if not found

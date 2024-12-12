@@ -10,13 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kProductId;
+extern NSString * const kProductIdOnce;
 extern NSUInteger const kProductIdContainCoin;
 extern NSUInteger const kOnePhotoCost;
 extern NSUInteger const kOneVideoCost;
 
 @protocol StoreManagerObserver <NSObject>
+@optional
 - (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency;
+- (void)onLastPurchaseInterrupt:(BOOL)isInterrupt;
 @end
 
 @interface StoreManager : NSObject
@@ -34,6 +36,14 @@ extern NSUInteger const kOneVideoCost;
 - (BOOL)purchaseProduct:(NSString *)productIdentifier
                 success:(void (^)(void))successBlock
                 failure:(void (^)(NSError *error))failureBlock;
+
+
+- (void)resumeInterruptProductSuccess:(void (^)(void))successBlock
+                    failure:(void (^)(NSError *error))failureBlock;
+
+- (void)removeReceiptData;
+- (BOOL)isLastPurchaseInterrupt;
+- (BOOL)isFreeForever;
 
 
 // Get total virtual currency

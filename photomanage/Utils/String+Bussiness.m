@@ -35,7 +35,6 @@ NSString * const kQualitySupperHigh = @"kQualitySupperHigh";
          res = [NSString localizedStringWithName:@"quality_middle"];
     } if ([kQualityHigh isEqualToString:quality]) {
          res = [NSString localizedStringWithName:@"quality_high"];
-        
     } if ([kQualitySupperHigh isEqualToString:quality]) {
         res = [NSString localizedStringWithName:@"quality_supper_high"];
     }

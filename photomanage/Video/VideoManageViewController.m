@@ -189,6 +189,7 @@ NSString * const kSortType = @"VideosortType";
     if (status == PHAuthorizationStatusAuthorized) {
         // 用户已授权，直接执行相册操作
         [self handleParamChange];
+        [self showResumeBuyAlertIfNeed];
     } else if (status == PHAuthorizationStatusNotDetermined) {
         // 请求权限
         [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus newStatus) {
@@ -371,6 +372,36 @@ NSString * const kSortType = @"VideosortType";
 - (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency {
     [self updateLeftButtonText:[NSString virtualCurrencyStringWithValue:virtualCurrency]];
 }
+
+- (void)onLastPurchaseInterrupt:(BOOL)isInterrupt {
+    if (isInterrupt) {
+        [self showResumeBuyAlert];
+    }
+}
+
+- (void)showResumeBuyAlertIfNeed {
+    if ([STORE_MANAGER isLastPurchaseInterrupt]) {
+        [self showResumeBuyAlert];
+    }
+}
+
+- (void)showResumeBuyAlert {
+    [AlertUtility showConfirmationAlertInViewController:self.navigationController.topViewController withTitle:[NSString localizedStringWithName:@"buy_resume"] message:[NSString localizedStringWithName:@"buy_resume_message"] confirmButtonTitle:[NSString localizedConfirm] cancelButtonTitle:[NSString localizedCancel] completionHandler:^(BOOL confirmed) {
+        if (confirmed) {
+            WEAK_SELF
+            [STORE_MANAGER resumeInterruptProductSuccess:^{
+                STRONG_SELF
+                [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_success"]];
+            } failure:^(NSError * _Nonnull error) {
+                STRONG_SELF
+                [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_fail"]];
+            }];
+        } else {
+            
+        }
+    }];
+}
+
 
 #pragma mark - Test
 
