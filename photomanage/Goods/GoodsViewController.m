@@ -70,7 +70,9 @@
             
             strongSelf.productId = product.productIdentifier;
             NSString *buy = [NSString localizedStringWithFormat:@"buy_coins", kProductIdContainCoin];
-            self.fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];;
+            self.fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
+            self.buyButtonView.buttonText = self.fullBuyText;
+            self.buyButtonView.hidden = NO;
             strongSelf.productId = kProductIdOnce;
         }
     } failure:^(NSError * _Nonnull error) {

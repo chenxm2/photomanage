@@ -146,15 +146,9 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     [self.store addPayment:productIdentifier success:^(SKPaymentTransaction *transaction) {
         NSLog(@"purchaseProduct success");
         NSInteger coins = [self virtualCurrencyForProduct:productIdentifier];
-        [self addVirtualCurrency:coins completion:^(BOOL result) {
-            if (result) {
+            [GCDUtility executeOnMainThread:^{
                 successBlock();
-            } else {
-                //todo: 后续考虑是不是把流程插入到验证阶段，存本地成功再验证通过。
-                failureBlock(nil);
-            }
-        }];
-            
+            }];
         } failure:^(SKPaymentTransaction *transaction, NSError *error) {
             [GCDUtility executeOnMainThread:^{
                 failureBlock(error);
@@ -251,10 +245,12 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
         if (status.integerValue == 0) {
             NSLog(@"[StoreManager] Receipt validation succeeded.");
             // 验证成功
-            if (successBlock) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    successBlock(productId);
-                });
+            if ([kProductIdOnce isEqualToString:productId]) {
+                [self addVirtualCurrency:kProductIdContainCoin completion:^(BOOL result) {
+                    if (successBlock) {
+                        successBlock(productId);
+                    }
+                }];
             }
         } else {
             // 根据状态码处理失败情况

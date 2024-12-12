@@ -391,10 +391,10 @@ NSString * const kSortType = @"VideosortType";
             WEAK_SELF
             [STORE_MANAGER resumeInterruptProductSuccess:^{
                 STRONG_SELF
-                [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_success"]];
+                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_success"]];
             } failure:^(NSError * _Nonnull error) {
                 STRONG_SELF
-                [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_fail"]];
+                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_fail"]];
             }];
         } else {
             
