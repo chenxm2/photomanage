@@ -36,9 +36,9 @@ IB_DESIGNABLE
 @property (nonatomic, assign) IBInspectable CGFloat fontSize;
 @property (nonatomic, strong) IBInspectable UIColor *buttonColor;
 @property (nonatomic, weak) id<CustomButtonViewDelegate> delegate;
+@property (nonatomic, strong) id customData;
 
 - (void)updateUI; // 更新界面
-
 @end
 
 

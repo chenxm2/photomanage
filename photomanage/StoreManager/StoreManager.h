@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const kProductIdOnce;
+extern NSString * const kProductIdForever;
 extern NSUInteger const kProductIdContainCoin;
 extern NSUInteger const kOnePhotoCost;
 extern NSUInteger const kOneVideoCost;
@@ -19,6 +20,7 @@ extern NSUInteger const kOneVideoCost;
 @optional
 - (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency;
 - (void)onLastPurchaseInterrupt:(BOOL)isInterrupt;
+- (void)onBecomeMember;
 @end
 
 @interface StoreManager : NSObject
@@ -43,8 +45,8 @@ extern NSUInteger const kOneVideoCost;
 
 - (void)removeReceiptData;
 - (BOOL)isLastPurchaseInterrupt;
-- (BOOL)isFreeForever;
-
+- (BOOL)isMemberForever;
+- (void)loadIsMemer;
 
 // Get total virtual currency
 - (BOOL)getTotalVirtualCurrencyWithCompletion:(void (^)(NSUInteger value))completion;
@@ -55,6 +57,7 @@ extern NSUInteger const kOneVideoCost;
 
 - (void)clearCoins:(CallBack)callBack;
 - (void)clearCoinsAndState:(CallBack)callBack;
+- (void)clearMember;
 @end
 
 #define STORE_MANAGER [StoreManager sharedManager]

@@ -11,7 +11,7 @@
 
 
 NSString * const kProductIdOnce = @"com.xiaoma.slimcoin";
-NSString * const kProductIdForever = @"com.xiaoma.slimcoin.forever";
+NSString * const kProductIdForever = @"com.xiaoma.memberforever";
 NSUInteger const kProductIdContainCoin = 3000;
 NSUInteger const kFirstFreeVirtualCurrency = 1000;
 
@@ -19,6 +19,8 @@ NSString * const kIAPReceiptData = @"kIAPReceiptData";
 NSString * const kProductKey = @"kProductKey";
 NSString * const kReceiptDataKey = @"kReceiptDataKey";
 NSString * const kUniqueDeviceIdentifier = @"uniqueDeviceIdentifier";
+NSString * const kMemberForeverIdentifier = kProductIdForever;
+NSString * const kMemberForeverValue = @"YES";
 
 //NSString * const kVerifyReceiptURL = @"https://buy.itunes.apple.com/verifyReceipt";
 NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyReceipt";
@@ -29,7 +31,7 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
 @property (nonatomic, strong) RMStore *store;
 @property (nonatomic, strong) NSString *savedCoinsKey;
 @property (nonatomic, strong) NSHashTable<id<StoreManagerObserver>> *observers;
-
+@property (nonatomic, assign) BOOL isMember;
 @end
 
 @implementation StoreManager
@@ -52,6 +54,7 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     self = [super init];
     if (self) {
         _observers = [NSHashTable weakObjectsHashTable]; // 使用弱引用防止循环引用
+        _isMember = NO;
     }
 
     return self;
@@ -111,8 +114,15 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     return [self retrieveReceiptData] != nil;
 }
 
-- (BOOL)isFreeForever {
-    return YES;
+- (void)loadIsMemer {
+    [KeychainHelper loadStringForKey:kMemberForeverIdentifier withCompletion:^(NSString * _Nullable value) {
+        LogInfo(@"loadIsMemer complete");
+        self.isMember = [kMemberForeverValue isEqualToString:value];
+    }];
+}
+
+- (BOOL)isMemberForever {
+    return self.isMember;
 }
 
 - (void)resumeInterruptProductSuccess:(void (^)(void))successBlock
@@ -144,15 +154,13 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     }
     
     [self.store addPayment:productIdentifier success:^(SKPaymentTransaction *transaction) {
-        NSLog(@"purchaseProduct success");
-        NSInteger coins = [self virtualCurrencyForProduct:productIdentifier];
-            [GCDUtility executeOnMainThread:^{
-                successBlock();
-            }];
-        } failure:^(SKPaymentTransaction *transaction, NSError *error) {
-            [GCDUtility executeOnMainThread:^{
-                failureBlock(error);
-            }];
+        [GCDUtility executeOnMainThread:^{
+            successBlock();
+        }];
+    } failure:^(SKPaymentTransaction *transaction, NSError *error) {
+        [GCDUtility executeOnMainThread:^{
+            failureBlock(error);
+        }];
     }];
     
     return YES;
@@ -247,8 +255,36 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
             // 验证成功
             if ([kProductIdOnce isEqualToString:productId]) {
                 [self addVirtualCurrency:kProductIdContainCoin completion:^(BOOL result) {
-                    if (successBlock) {
-                        successBlock(productId);
+                    if (result) {
+                        if (successBlock) {
+                            successBlock(productId);
+                        }
+                    } else {
+                        [self saveReceiptData:receiptData productId:productId];
+                        if (failureBlock) {
+                            NSError *error = [NSError errorWithDomain:@"KeychainHelperErrorDomain"
+                                                                            code:1003
+                                                                        userInfo:nil];
+                            failureBlock(error);
+                        }
+                    }
+                   
+                }];
+            } else if ([kProductIdForever isEqualToString:productId]) {
+                [self becomeMember:^(BOOL success) {
+                    if (success) {
+                        [self notifyBecomeMember];
+                        if (successBlock) {
+                            successBlock(productId);
+                        }
+                    } else {
+                        [self saveReceiptData:receiptData productId:productId];
+                        if (failureBlock) {
+                            NSError *error = [NSError errorWithDomain:@"KeychainHelperErrorDomain"
+                                                                            code:1004
+                                                                        userInfo:nil];
+                            failureBlock(error);
+                        }
                     }
                 }];
             }
@@ -327,6 +363,19 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     }];
 }
 
+- (void)notifyBecomeMember {
+    self.isMember = YES;
+    [GCDUtility executeOnMainThread:^{
+        for (id<StoreManagerObserver> observer in self.observers) {
+            if ([observer respondsToSelector:@selector(onBecomeMember)]) {
+                [observer onBecomeMember];
+            }
+        }
+    }];
+}
+
+
+
 // Get unique device identifier
 - (BOOL)getOrCreateUUIDWithCompletion:(void (^)(NSString *__nullable coinKey, BOOL isCreate))completion {
     if (completion == nil) {
@@ -404,6 +453,11 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
 
 - (BOOL)subVirtualCurrency:(NSUInteger)amount completion:(CompletionResult)completion {
 
+    if (_isMember) {
+        completion(YES);
+        return YES;
+    }
+    
     if (completion == nil) {
         return NO;
     }
@@ -450,14 +504,8 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     return YES;
 }
 
-// Get virtual currency amount for specific product
-- (NSInteger)virtualCurrencyForProduct:(NSString *)productIdentifier {
-    // Add logic to determine the virtual currency amount for the given product
-    // Example:
-    if ([productIdentifier isEqualToString:kProductIdOnce]) {
-        return kProductIdContainCoin; // 100 units for product 1
-    }
-    return 0; // Default to 0 if not found
+- (void)becomeMember:(void (^)(BOOL success))completion {
+    [KeychainHelper saveString:kMemberForeverValue forKey:kMemberForeverIdentifier withCompletion:completion];
 }
 
 - (void)clearCoins:(CallBack)callBack {
@@ -476,7 +524,15 @@ NSString * const kVerifyReceiptURL = @"https://sandbox.itunes.apple.com/verifyRe
     }];
 }
 
+- (void)clearMember {
+    self.isMember = NO;
+    [KeychainHelper saveString:@"" forKey:kMemberForeverIdentifier withCompletion:^(BOOL success) {
+        LogInfo(@"clearCoins success");
+    }];
+}
+
 - (void)clearCoinsAndState:(CallBack)callBack {
+    [self clearMember];
     self.savedCoinsKey = nil;
     [self getOrCreateUUIDWithCompletion:^(NSString * _Nullable coinKey, BOOL isCreate) {
         [KeychainHelper saveNumber:@(0) forKey:coinKey withCompletion:^(BOOL success) {

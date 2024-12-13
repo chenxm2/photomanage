@@ -207,18 +207,10 @@
                                 </collectionViewFlowLayout>
                                 <cells/>
                             </collectionView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lH6-gb-m4f">
-                                <rect key="frame" x="100" y="807" width="76" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="清货币"/>
-                                <connections>
-                                    <action selector="clearCoins:" destination="sHx-dC-XLf" eventType="touchUpInside" id="jmr-S7-Qwh"/>
-                                </connections>
-                            </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qM8-wp-Z1b">
-                                <rect key="frame" x="255" y="807" width="59" height="35"/>
+                                <rect key="frame" x="115" y="827" width="184" height="35"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="全清"/>
+                                <buttonConfiguration key="configuration" style="plain" title="清空货币会员（测试）"/>
                                 <connections>
                                     <action selector="clearCoinsAndState:" destination="sHx-dC-XLf" eventType="touchUpInside" id="Eom-vE-1Mv"/>
                                 </connections>
@@ -264,36 +256,23 @@
                                     <constraint firstItem="8K1-gt-w6m" firstAttribute="centerY" secondItem="d4r-8T-GQu" secondAttribute="centerY" id="y5e-wX-QHt"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qvK-iD-zSw">
-                                <rect key="frame" x="177.5" y="827" width="59" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="加币"/>
-                                <connections>
-                                    <action selector="addCoins:" destination="sHx-dC-XLf" eventType="touchUpInside" id="PHz-MC-vZY"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jk0-KA-muC"/>
                         <color key="backgroundColor" red="0.94117647059999998" green="0.93333333330000001" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="SFC-dB-vwd" secondAttribute="trailing" id="66c-bB-VKd"/>
+                            <constraint firstItem="qM8-wp-Z1b" firstAttribute="centerX" secondItem="1Ez-ek-WqW" secondAttribute="centerX" id="86W-ba-D80"/>
                             <constraint firstItem="d4r-8T-GQu" firstAttribute="top" secondItem="SFC-dB-vwd" secondAttribute="bottom" id="8n1-qe-jYd"/>
                             <constraint firstItem="ZIK-rG-bOV" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="BsM-iT-3zC"/>
-                            <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="qM8-wp-Z1b" secondAttribute="trailing" constant="100" id="Dxu-UF-WgO"/>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" id="Efq-XG-nQx"/>
-                            <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="lH6-gb-m4f" secondAttribute="bottom" constant="20" id="EpO-3B-zeu"/>
-                            <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="qM8-wp-Z1b" secondAttribute="bottom" constant="20" id="I7b-dX-wLR"/>
-                            <constraint firstItem="qvK-iD-zSw" firstAttribute="bottom" secondItem="jk0-KA-muC" secondAttribute="bottom" id="ND4-Qh-XXF"/>
-                            <constraint firstItem="qM8-wp-Z1b" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lH6-gb-m4f" secondAttribute="trailing" symbolic="YES" id="SVq-uM-jCR"/>
+                            <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="qM8-wp-Z1b" secondAttribute="bottom" id="I7b-dX-wLR"/>
                             <constraint firstItem="HAL-Xm-eBR" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" constant="16" id="Xvt-y2-lfw"/>
                             <constraint firstItem="ZIK-rG-bOV" firstAttribute="top" secondItem="jk0-KA-muC" secondAttribute="top" id="aJy-al-Zla"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="d4r-8T-GQu" secondAttribute="trailing" constant="16" id="dle-uV-gYU"/>
-                            <constraint firstItem="qvK-iD-zSw" firstAttribute="centerX" secondItem="1Ez-ek-WqW" secondAttribute="centerX" id="kMJ-Pw-B2x"/>
                             <constraint firstItem="SFC-dB-vwd" firstAttribute="top" secondItem="ZIK-rG-bOV" secondAttribute="bottom" id="ouw-rC-rkE"/>
                             <constraint firstItem="HAL-Xm-eBR" firstAttribute="top" secondItem="SFC-dB-vwd" secondAttribute="bottom" id="sNh-K5-VGn"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="bottom" secondItem="SFC-dB-vwd" secondAttribute="bottom" constant="44" id="slf-r9-TVE"/>
                             <constraint firstItem="jk0-KA-muC" firstAttribute="trailing" secondItem="ZIK-rG-bOV" secondAttribute="trailing" id="wPb-Of-GZ2"/>
-                            <constraint firstItem="lH6-gb-m4f" firstAttribute="leading" secondItem="jk0-KA-muC" secondAttribute="leading" constant="100" id="yWX-k2-no0"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="视频压缩" id="XYp-Ie-GR9"/>
@@ -303,7 +282,6 @@
                         <outlet property="downImageView" destination="d4r-8T-GQu" id="nhQ-pB-MZ6"/>
                         <outlet property="filterSegmented" destination="c7S-sE-u3M" id="GQc-ch-grB"/>
                         <outlet property="sortButton" destination="SWz-Pl-TuL" id="8Ta-rH-i5h"/>
-                        <outlet property="testClearCoins" destination="lH6-gb-m4f" id="wVs-vZ-Rcj"/>
                         <outlet property="testClearCoinsAndState" destination="qM8-wp-Z1b" id="Rb6-ez-bsE"/>
                         <outlet property="upImageView" destination="HAL-Xm-eBR" id="KfM-EW-dgw"/>
                     </connections>

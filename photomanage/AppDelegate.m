@@ -6,8 +6,7 @@
 //
 
 #import "AppDelegate.h"
-#import "RMStore.h"
-
+#import "StoreManager/StoreManager.h"
 @interface AppDelegate ()
 
 @end
@@ -21,6 +20,7 @@
         // 强制设置所有UIView的界面风格为Light模式
         [[UIView appearance] setOverrideUserInterfaceStyle:UIUserInterfaceStyleLight];
     }
+    [STORE_MANAGER loadIsMemer];
     return YES;
 }
 

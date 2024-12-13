@@ -13,11 +13,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *leftCoinsLabel;
 @property (weak, nonatomic) IBOutlet UIView *leftBackgroundView;
 @property (weak, nonatomic) IBOutlet UIView *payBackgroundView;
+@property (weak, nonatomic) IBOutlet UIView *memberFlagView;
 
-@property (weak, nonatomic) IBOutlet CustomButtonView *buyButtonView;
-@property (strong, nonatomic) NSString *fullBuyText;
-
-@property (nonatomic, strong) NSString *productId;
+@property (weak, nonatomic) IBOutlet CustomButtonView *buyCoinButtonView;
+@property (weak, nonatomic) IBOutlet CustomButtonView *buyMemberButtonView;
+@property (assign, nonatomic) BOOL isMemberForever;
 @end
 
 @implementation GoodsViewController
@@ -31,22 +31,32 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     NSString *slimmingText = [NSString localizedStringWithName:@"slimming_coin"];
-    self.slimmingCoinText.text = [NSString stringWithFormat:@"%d%@", kProductIdContainCoin, slimmingText];
-    [self fetchsGoods];
-    self.buyButtonView.hidden = YES;
-    self.title = [NSString localizedStringWithName:@"slimming_coin"];
-    
+    self.slimmingCoinText.text = [NSString stringWithFormat:@"%lu%@", (unsigned long)kProductIdContainCoin, slimmingText];
+    self.buyCoinButtonView.hidden = YES;
+    self.buyMemberButtonView.hidden = YES;
+    self.memberFlagView.hidden = YES;
+
+    self.title = nil;
+    self.isMemberForever = NO;
     WEAK_SELF
     [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
         STRONG_SELF
         strongSelf.leftCoinsLabel.text = [NSString virtualCurrencyStringWithValue:value];
     }];
+    self.title = [NSString localizedStringWithName:@"slimming_coin"];
+    if ([STORE_MANAGER isMemberForever]) {
+        self.memberFlagView.hidden = NO;
+    } else {
+        [self fetchsGoods];
+    }
+    
     self.view.backgroundColor = [UIColor whiteColor];
     self.leftBackgroundView.layer.cornerRadius = 8;
     self.leftBackgroundView.clipsToBounds = YES;
     self.payBackgroundView.layer.cornerRadius = 8;
     self.payBackgroundView.clipsToBounds = YES;
-    self.buyButtonView.delegate = self;
+    self.buyCoinButtonView.delegate = self;
+    self.buyMemberButtonView.delegate = self;
     [STORE_MANAGER addObserver:self];
     [UserDefaultsManager setBool:YES forKey:kHadShowGuidance];
     
@@ -56,6 +66,7 @@
 - (void)fetchsGoods {
     NSMutableSet<NSString *> *param = [[NSMutableSet alloc] init];
     [param addObject:kProductIdOnce];
+    [param addObject:kProductIdForever];
     WEAK_SELF
     [[StoreManager sharedManager] fetchAvailableProducts:param success:^(NSArray<SKProduct *> * _Nonnull products) {
         LogInfo(@"fetchAvailableProducts success = %@",  products);
@@ -67,13 +78,18 @@
             priceFormatter.locale = [product priceLocale];
             NSString *res = [priceFormatter stringFromNumber:product.price];
             LogInfo(@"fetchAvailableProducts  %@, %@",  res , product.productIdentifier);
-            
-            strongSelf.productId = product.productIdentifier;
-            NSString *buy = [NSString localizedStringWithFormat:@"buy_coins", kProductIdContainCoin];
-            self.fullBuyText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
-            self.buyButtonView.buttonText = self.fullBuyText;
-            self.buyButtonView.hidden = NO;
-            strongSelf.productId = kProductIdOnce;
+        
+            if ([kProductIdOnce isEqualToString:product.productIdentifier]) {
+                NSString *buy = [NSString localizedStringWithFormat:@"buy_coins", kProductIdContainCoin];
+                self.buyCoinButtonView.buttonText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
+                self.buyCoinButtonView.hidden = NO;
+                self.buyCoinButtonView.customData = kProductIdOnce;
+            } else if ([kProductIdForever isEqualToString:product.productIdentifier]) {
+                NSString *buy = [NSString localizedStringWithName:@"buy_member_forever"];
+                self.buyMemberButtonView.buttonText = [NSString stringWithFormat:@"%@ (%@)", buy, res];
+                self.buyMemberButtonView.hidden = NO;
+                self.buyMemberButtonView.customData = kProductIdForever;
+            }
         }
     } failure:^(NSError * _Nonnull error) {
         LogInfo(@"fetchAvailableProducts fail = %@", error);
@@ -89,14 +105,31 @@
 }
 
 -(void)onButtonTap:(CustomButtonView *)view {
-    [[StoreManager sharedManager] purchaseProduct:self.productId success:^{
+    
+    __block MBProgressHUD *hud = nil;
+    
+    hud = [ProgressHUDWrapper showLoadingToView:nil withString:@""];
+    hud.userInteractionEnabled = YES;
+    WEAK_SELF
+    [[StoreManager sharedManager] purchaseProduct:view.customData success:^{
+        [ProgressHUDWrapper hideHUDForView:nil];
+            STRONG_SELF
+            [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_success"]];
         } failure:^(NSError * _Nonnull error) {
-        
+            STRONG_SELF
+            [strongSelf.view showToastWithMessage:[NSString localizedStringWithName:@"buy_fail"]];
+        [ProgressHUDWrapper hideHUDForView:nil];
     }];
 }
 
 - (void)onVirtualCurrencyUpdate:(NSUInteger)virtualCurrency {
    self.leftCoinsLabel.text =  [NSString virtualCurrencyStringWithValue:virtualCurrency];
+}
+
+- (void)onBecomeMember {
+    self.buyCoinButtonView.hidden = YES;
+    self.buyMemberButtonView.hidden = YES;
+    self.memberFlagView.hidden = NO;
 }
 
 

@@ -24,7 +24,6 @@ NSString * const kSortType = @"VideosortType";
 @property (nonatomic, assign) FilterType currentFilterType;
 @property (weak, nonatomic) IBOutlet CustomButtonView *sortButton;
 @property (nonatomic, assign) SortType curretSortType;
-@property (weak, nonatomic) IBOutlet UIButton *testClearCoins;
 @property (weak, nonatomic) IBOutlet UIButton *testClearCoinsAndState;
 @property (weak, nonatomic) IBOutlet UIView *downImageView;
 @property (weak, nonatomic) IBOutlet UIView *upImageView;
@@ -52,7 +51,6 @@ NSString * const kSortType = @"VideosortType";
     [self configureRightButton];
     
 //#ifdef DEBUG
-    self.testClearCoins.hidden = NO;
     self.testClearCoinsAndState.hidden = NO;
 //#else
 //#endif
@@ -391,10 +389,10 @@ NSString * const kSortType = @"VideosortType";
             WEAK_SELF
             [STORE_MANAGER resumeInterruptProductSuccess:^{
                 STRONG_SELF
-                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_success"]];
+                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_success"]];
             } failure:^(NSError * _Nonnull error) {
                 STRONG_SELF
-                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_resume_fail"]];
+                [strongSelf.navigationController.topViewController.view showToastWithMessage:[NSString localizedStringWithName:@"buy_fail"]];
             }];
         } else {
             
@@ -404,14 +402,6 @@ NSString * const kSortType = @"VideosortType";
 
 
 #pragma mark - Test
-
-- (IBAction)clearCoins:(id)sender {
-    WEAK_SELF
-    [STORE_MANAGER clearCoins:^{
-       STRONG_SELF
-        [strongSelf.view showToastWithMessage:@"清除成功"];
-    }];
-}
 - (IBAction)clearCoinsAndState:(id)sender {
     WEAK_SELF
     [STORE_MANAGER clearCoinsAndState:^{

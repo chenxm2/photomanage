@@ -12,7 +12,8 @@
 "delete_downloading" = "下载中，不可删";
 "download_fail" = "下载失败";
 "compressing" = "压缩中，请勿锁屏...";
-"slimming_coin" = "积分";
+"slimming_coin" = "积分&会员";
+"already_member" = "您已是永久会员";
 "buy" = "购买";
 "coins_not_enough" = "积分不足，请充值";
 "sort_option" = "排序方式";
@@ -34,6 +35,7 @@
 "not_dupliacte" = "处理中，请勿重复点击";
 "save_success" = "保存成功";
 "save_success_tip" = "保存花费了%d积分，建议您删除原视频以节省空间!!!";
+"save_success_member_tip" = "保存成功，建议您删除原视频以节省空间!!!";
 "delete" = "删除";
 "not_delete" = "暂不";
 "move_to_todelete" = "原视频暂不删除，在首页待删除分类中";
@@ -45,6 +47,7 @@
 "about" = "关于";
 "delete_favorite_message" = "视频为收藏视频，确定要删除？";
 "buy_coins" = "购买%d积分";
+"buy_member_forever" = "购买永久会员";
 "coins_cost" = "本次保存花费了%d积分";
 "save_to_album_message" = "您保存压缩视频大小为%.2fMB，原视频大小为%.2fMB，总共节约空间%dMB，需要花费积分%d，确认要保存？";
 "confirm_back" = "确定要退出？";
@@ -58,7 +61,7 @@
 
 "buy_resume" = "购买恢复";
 "buy_resume_message" = "检测到您之前购买流程未完成，现需要进行恢复，请确保网络正常，点取消将视为放弃的恢复，确认恢复吗？";
-"buy_resume_success" = "购买恢复成功";
-"buy_resume_fail" = "购买恢复失败";
+"buy_success" = "购买成功";
+"buy_fail" = "购买失败";
 
 

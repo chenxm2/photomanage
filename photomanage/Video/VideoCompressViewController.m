@@ -166,18 +166,23 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)saveToAlbum {
     if (self.compressedURL != nil) {
-        WEAK_SELF
-        [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
-            STRONG_SELF
-            if (value < [strongSelf caculateCostCoins]) {
-                [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
-                [GoodsViewController goToGoodsViewController:self.navigationController];
-            } else {
-//                [self showSaveToAlbumAlert];
-                NSInteger optSize = [strongSelf caculateCostCoins];
-                [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
-            }
-        }];
+        
+        if ([STORE_MANAGER isMemberForever]) {
+            NSInteger optSize = [self caculateCostCoins];
+            [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
+        } else {
+            WEAK_SELF
+            [STORE_MANAGER getTotalVirtualCurrencyWithCompletion:^(NSUInteger value) {
+                STRONG_SELF
+                if (value < [strongSelf caculateCostCoins]) {
+                    [[[UIApplication sharedApplication] keyWindow] showToastWithMessage:[NSString localizedStringWithName:@"coins_not_enough"]];
+                    [GoodsViewController goToGoodsViewController:self.navigationController];
+                } else {
+                    NSInteger optSize = [strongSelf caculateCostCoins];
+                    [self createAlbumAndSaveCompressed:self.compressedURL cost:optSize];
+                }
+            }];
+        }
         
     } else {
         [self.view showToastWithMessage:[NSString localizedStringWithName:@"already_in_album"]];
@@ -396,7 +401,12 @@ static NSString * const kLogTag = @"VideoCompressViewController";
 
 - (void)showHintAlertWithSize:(NSInteger)size {
     WEAK_SELF
-    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_success"] message:[NSString localizedStringWithFormat:@"save_success_tip", size] confirmButtonTitle:[NSString localizedStringWithName:@"delete"] cancelButtonTitle:[NSString localizedStringWithName:@"not_delete"]  completionHandler:^(BOOL confirmed) {
+    NSString *message = [NSString localizedStringWithFormat:@"save_success_tip", size];
+    if ([STORE_MANAGER isMemberForever]) {
+        message = [NSString localizedStringWithFormat:@"save_success_member_tip"];
+    }
+    
+    [AlertUtility showConfirmationAlertInViewController:self withTitle:[NSString localizedStringWithName:@"save_success"] message:message confirmButtonTitle:[NSString localizedStringWithName:@"delete"] cancelButtonTitle:[NSString localizedStringWithName:@"not_delete"]  completionHandler:^(BOOL confirmed) {
         STRONG_SELF
         if (confirmed) {
             [VIDEO_DATA_MANAGER deleteVideoAsset:self.orgData completionHandler:^(BOOL success, NSError * _Nullable error) {
